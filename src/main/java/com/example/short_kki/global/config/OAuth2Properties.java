@@ -14,23 +14,24 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "oauth2")
 public class OAuth2Properties {
 
-  private Map<String, Provider> provider = new HashMap<>();
+    private Map<String, Provider> provider = new HashMap<>();
 
-  @Getter
-  @Setter
-  public static class Provider {
-    private String clientId;
-    private String clientSecret;
-    private String redirectUri;
-    private String tokenUri;
-    private String userInfoUri;
-  }
-
-  public Provider getProvider(String providerName) {
-    Provider p = provider.get(providerName.toLowerCase());
-    if (p == null) {
-      throw new IllegalArgumentException("Unsupported OAuth provider: " + providerName);
+    public Provider getProvider(String providerName) {
+        Provider p = provider.get(providerName.toLowerCase());
+        if (p == null) {
+            throw new IllegalArgumentException("Unsupported OAuth provider: " + providerName);
+        }
+        return p;
     }
-    return p;
-  }
+
+    @Getter
+    @Setter
+    public static class Provider {
+
+        private String clientId;
+        private String clientSecret;
+        private String redirectUri;
+        private String tokenUri;
+        private String userInfoUri;
+    }
 }

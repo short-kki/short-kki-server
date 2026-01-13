@@ -24,55 +24,55 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private static final String AUTHORIZATION_HEADER = "Authorization";
-  private static final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
-  private final JwtTokenProvider jwtTokenProvider;
-  private final ObjectMapper objectMapper;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain)
-      throws ServletException, IOException {
-    String token = resolveToken(request);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
+        String token = resolveToken(request);
 
-    if (StringUtils.hasText(token)) {
-      try {
-        if (jwtTokenProvider.validateToken(token)) {
-          Authentication authentication = jwtTokenProvider.getAuthentication(token);
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-          log.debug("Set Authentication to SecurityContext for '{}', uri: {}",
-              authentication.getName(), request.getRequestURI());
+        if (StringUtils.hasText(token)) {
+            try {
+                if (jwtTokenProvider.validateToken(token)) {
+                    Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.debug("Set Authentication to SecurityContext for '{}', uri: {}",
+                            authentication.getName(), request.getRequestURI());
+                }
+            } catch (BusinessException e) {
+                log.warn("JWT validation failed: {}", e.getMessage());
+                setErrorResponse(response, e);
+                return;
+            }
         }
-      } catch (BusinessException e) {
-        log.warn("JWT validation failed: {}", e.getMessage());
-        setErrorResponse(response, e);
-        return;
-      }
+
+        filterChain.doFilter(request, response);
     }
 
-    filterChain.doFilter(request, response);
-  }
-
-  private String resolveToken(HttpServletRequest request) {
-    String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-      return bearerToken.substring(BEARER_PREFIX.length());
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(BEARER_PREFIX.length());
+        }
+        return null;
     }
-    return null;
-  }
 
-  private void setErrorResponse(HttpServletResponse response, BusinessException e)
-      throws IOException {
-    response.setStatus(e.getErrorCode().getHttpStatus().value());
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    response.setCharacterEncoding("UTF-8");
+    private void setErrorResponse(HttpServletResponse response, BusinessException e)
+            throws IOException {
+        response.setStatus(e.getErrorCode().getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
 
-    BaseResponse<Void> errorResponse = BaseResponse.error(
-        e.getErrorCode().getCode(),
-        e.getMessage()
-    );
+        BaseResponse<Void> errorResponse = BaseResponse.error(
+                e.getErrorCode().getCode(),
+                e.getMessage()
+        );
 
-    response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-  }
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+    }
 }

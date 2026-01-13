@@ -24,108 +24,109 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-  @Value("${jwt.secret}")
-  private String secretKey;
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-  @Value("${jwt.access-token-validity}")
-  private long accessTokenValidity;
+    @Value("${jwt.access-token-validity}")
+    private long accessTokenValidity;
 
-  @Value("${jwt.refresh-token-validity}")
-  private long refreshTokenValidity;
+    @Value("${jwt.refresh-token-validity}")
+    private long refreshTokenValidity;
 
-  private SecretKey key;
+    private SecretKey key;
 
-  @PostConstruct
-  protected void init() {
-    this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-  }
-
-  public String createAccessToken(Long memberId, String email, Role role) {
-    Date now = new Date();
-    Date validity = new Date(now.getTime() + accessTokenValidity);
-
-    return Jwts.builder()
-        .subject(String.valueOf(memberId))
-        .claim("email", email)
-        .claim("role", role.name())
-        .claim("type", "access")
-        .issuedAt(now)
-        .expiration(validity)
-        .signWith(key)
-        .compact();
-  }
-
-  public String createRefreshToken(Long memberId) {
-    Date now = new Date();
-    Date validity = new Date(now.getTime() + refreshTokenValidity);
-
-    return Jwts.builder()
-        .subject(String.valueOf(memberId))
-        .claim("type", "refresh")
-        .issuedAt(now)
-        .expiration(validity)
-        .signWith(key)
-        .compact();
-  }
-
-  public Authentication getAuthentication(String token) {
-    Claims claims = parseClaims(token);
-
-    Long memberId = Long.parseLong(claims.getSubject());
-    String email = claims.get("email", String.class);
-    Role role = Role.valueOf(claims.get("role", String.class));
-
-    LoginMember loginMember = LoginMember.builder()
-        .id(memberId)
-        .email(email)
-        .role(role)
-        .build();
-
-    return new UsernamePasswordAuthenticationToken(loginMember, "", loginMember.getAuthorities());
-  }
-
-  public boolean validateToken(String token) {
-    try {
-      Jwts.parser()
-          .verifyWith(key)
-          .build()
-          .parseSignedClaims(token);
-      return true;
-    } catch (ExpiredJwtException e) {
-      log.warn("Expired JWT token: {}", e.getMessage());
-      throw new BusinessException(ErrorCode.EXPIRED_TOKEN);
-    } catch (JwtException | IllegalArgumentException e) {
-      log.warn("Invalid JWT token: {}", e.getMessage());
-      throw new BusinessException(ErrorCode.INVALID_TOKEN);
+    @PostConstruct
+    protected void init() {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
-  }
 
-  public boolean isTokenValid(String token) {
-    try {
-      Jwts.parser()
-          .verifyWith(key)
-          .build()
-          .parseSignedClaims(token);
-      return true;
-    } catch (Exception e) {
-      return false;
+    public String createAccessToken(Long memberId, String email, Role role) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + accessTokenValidity);
+
+        return Jwts.builder()
+                .subject(String.valueOf(memberId))
+                .claim("email", email)
+                .claim("role", role.name())
+                .claim("type", "access")
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(key)
+                .compact();
     }
-  }
 
-  private Claims parseClaims(String token) {
-    try {
-      return Jwts.parser()
-          .verifyWith(key)
-          .build()
-          .parseSignedClaims(token)
-          .getPayload();
-    } catch (ExpiredJwtException e) {
-      return e.getClaims();
+    public String createRefreshToken(Long memberId) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenValidity);
+
+        return Jwts.builder()
+                .subject(String.valueOf(memberId))
+                .claim("type", "refresh")
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(key)
+                .compact();
     }
-  }
 
-  public Long getMemberIdFromToken(String token) {
-    Claims claims = parseClaims(token);
-    return Long.parseLong(claims.getSubject());
-  }
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
+
+        Long memberId = Long.parseLong(claims.getSubject());
+        String email = claims.get("email", String.class);
+        Role role = Role.valueOf(claims.get("role", String.class));
+
+        LoginMember loginMember = LoginMember.builder()
+                .id(memberId)
+                .email(email)
+                .role(role)
+                .build();
+
+        return new UsernamePasswordAuthenticationToken(loginMember, "",
+                loginMember.getAuthorities());
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            log.warn("Expired JWT token: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.EXPIRED_TOKEN);
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Invalid JWT token: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public Long getMemberIdFromToken(String token) {
+        Claims claims = parseClaims(token);
+        return Long.parseLong(claims.getSubject());
+    }
 }

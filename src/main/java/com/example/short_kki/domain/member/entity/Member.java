@@ -20,54 +20,54 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  @Column(nullable = false)
-  private String name;
+    @Column(nullable = false)
+    private String name;
 
-  @Column(name = "oauth_id", nullable = false)
-  private String oauthId;
+    @Column(name = "oauth_id", nullable = false)
+    private String oauthId;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "oauth_provider", nullable = false)
-  private OAuthProvider oauthProvider;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "oauth_provider", nullable = false)
+    private OAuthProvider oauthProvider;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
-  @Builder
-  private Member(String email, String name, String oauthId, OAuthProvider oauthProvider,
-      Role role) {
-    this.email = email;
-    this.name = name;
-    this.oauthId = oauthId;
-    this.oauthProvider = oauthProvider;
-    this.role = role;
-  }
+    @Builder
+    private Member(String email, String name, String oauthId, OAuthProvider oauthProvider,
+            Role role) {
+        this.email = email;
+        this.name = name;
+        this.oauthId = oauthId;
+        this.oauthProvider = oauthProvider;
+        this.role = role;
+    }
 
-  public void updateName(String name) {
-    this.name = name;
-  }
+    public static Member create(String email, String name, String oauthId,
+            OAuthProvider oauthProvider) {
+        return Member.builder()
+                .email(email)
+                .name(name)
+                .oauthId(oauthId)
+                .oauthProvider(oauthProvider)
+                .role(Role.USER)
+                .build();
+    }
 
-  public void updateOAuthInfo(String oauthId, OAuthProvider oauthProvider) {
-    this.oauthId = oauthId;
-    this.oauthProvider = oauthProvider;
-  }
+    public void updateName(String name) {
+        this.name = name;
+    }
 
-  public static Member create(String email, String name, String oauthId,
-      OAuthProvider oauthProvider) {
-    return Member.builder()
-        .email(email)
-        .name(name)
-        .oauthId(oauthId)
-        .oauthProvider(oauthProvider)
-        .role(Role.USER)
-        .build();
-  }
+    public void updateOAuthInfo(String oauthId, OAuthProvider oauthProvider) {
+        this.oauthId = oauthId;
+        this.oauthProvider = oauthProvider;
+    }
 }

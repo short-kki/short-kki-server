@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-  private final AuthService authService;
+    private final AuthService authService;
 
-  @PostMapping("/{provider}")
-  public ResponseEntity<BaseResponse<LoginResponse>> login(
-      @PathVariable String provider,
-      @Valid @RequestBody LoginRequest request
-  ) {
-    LoginResponse response = authService.login(provider, request);
-    return ResponseEntity.ok(BaseResponse.success("로그인에 성공했습니다.", response));
-  }
+    @PostMapping("/{provider}")
+    public ResponseEntity<BaseResponse<LoginResponse>> login(
+            @PathVariable String provider,
+            @Valid @RequestBody LoginRequest request
+    ) {
+        LoginResponse response = authService.login(provider, request);
+        return ResponseEntity.ok(BaseResponse.success("로그인에 성공했습니다.", response));
+    }
 }

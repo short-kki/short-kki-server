@@ -18,93 +18,93 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
-  private final JPAQueryFactory queryFactory;
-  private final QMember member = QMember.member;
+    private final JPAQueryFactory queryFactory;
+    private final QMember member = QMember.member;
 
-  @Override
-  public List<Member> searchByName(String name) {
-    return queryFactory
-        .selectFrom(member)
-        .where(containsName(name))
-        .orderBy(member.name.asc())
-        .fetch();
-  }
-
-  @Override
-  public List<Member> findWithDynamicCond(String name, String email, OAuthProvider oauthProvider,
-      Role role) {
-    BooleanBuilder builder = new BooleanBuilder();
-
-    if (StringUtils.hasText(name)) {
-      builder.and(containsName(name));
-    }
-    if (StringUtils.hasText(email)) {
-      builder.and(containsEmail(email));
-    }
-    if (oauthProvider != null) {
-      builder.and(eqOAuthProvider(oauthProvider));
-    }
-    if (role != null) {
-      builder.and(eqRole(role));
+    @Override
+    public List<Member> searchByName(String name) {
+        return queryFactory
+                .selectFrom(member)
+                .where(containsName(name))
+                .orderBy(member.name.asc())
+                .fetch();
     }
 
-    return queryFactory
-        .selectFrom(member)
-        .where(builder)
-        .orderBy(member.id.desc())
-        .fetch();
-  }
+    @Override
+    public List<Member> findWithDynamicCond(String name, String email, OAuthProvider oauthProvider,
+            Role role) {
+        BooleanBuilder builder = new BooleanBuilder();
 
-  @Override
-  public Optional<Member> findByEmailWithProvider(String email, OAuthProvider oauthProvider) {
-    Member result = queryFactory
-        .selectFrom(member)
-        .where(
-            eqEmail(email),
-            eqOAuthProvider(oauthProvider)
-        )
-        .fetchOne();
+        if (StringUtils.hasText(name)) {
+            builder.and(containsName(name));
+        }
+        if (StringUtils.hasText(email)) {
+            builder.and(containsEmail(email));
+        }
+        if (oauthProvider != null) {
+            builder.and(eqOAuthProvider(oauthProvider));
+        }
+        if (role != null) {
+            builder.and(eqRole(role));
+        }
 
-    return Optional.ofNullable(result);
-  }
+        return queryFactory
+                .selectFrom(member)
+                .where(builder)
+                .orderBy(member.id.desc())
+                .fetch();
+    }
 
-  @Override
-  public List<Member> findAllByRole(Role role) {
-    return queryFactory
-        .selectFrom(member)
-        .where(eqRole(role))
-        .orderBy(member.id.asc())
-        .fetch();
-  }
+    @Override
+    public Optional<Member> findByEmailWithProvider(String email, OAuthProvider oauthProvider) {
+        Member result = queryFactory
+                .selectFrom(member)
+                .where(
+                        eqEmail(email),
+                        eqOAuthProvider(oauthProvider)
+                )
+                .fetchOne();
 
-  @Override
-  public long countByOAuthProvider(OAuthProvider oauthProvider) {
-    Long count = queryFactory
-        .select(member.count())
-        .from(member)
-        .where(eqOAuthProvider(oauthProvider))
-        .fetchOne();
+        return Optional.ofNullable(result);
+    }
 
-    return count != null ? count : 0L;
-  }
+    @Override
+    public List<Member> findAllByRole(Role role) {
+        return queryFactory
+                .selectFrom(member)
+                .where(eqRole(role))
+                .orderBy(member.id.asc())
+                .fetch();
+    }
 
-  private BooleanExpression containsName(String name) {
-    return StringUtils.hasText(name) ? member.name.containsIgnoreCase(name) : null;
-  }
+    @Override
+    public long countByOAuthProvider(OAuthProvider oauthProvider) {
+        Long count = queryFactory
+                .select(member.count())
+                .from(member)
+                .where(eqOAuthProvider(oauthProvider))
+                .fetchOne();
 
-  private BooleanExpression containsEmail(String email) {
-    return StringUtils.hasText(email) ? member.email.containsIgnoreCase(email) : null;
-  }
+        return count != null ? count : 0L;
+    }
 
-  private BooleanExpression eqEmail(String email) {
-    return StringUtils.hasText(email) ? member.email.eq(email) : null;
-  }
+    private BooleanExpression containsName(String name) {
+        return StringUtils.hasText(name) ? member.name.containsIgnoreCase(name) : null;
+    }
 
-  private BooleanExpression eqOAuthProvider(OAuthProvider oauthProvider) {
-    return oauthProvider != null ? member.oauthProvider.eq(oauthProvider) : null;
-  }
+    private BooleanExpression containsEmail(String email) {
+        return StringUtils.hasText(email) ? member.email.containsIgnoreCase(email) : null;
+    }
 
-  private BooleanExpression eqRole(Role role) {
-    return role != null ? member.role.eq(role) : null;
-  }
+    private BooleanExpression eqEmail(String email) {
+        return StringUtils.hasText(email) ? member.email.eq(email) : null;
+    }
+
+    private BooleanExpression eqOAuthProvider(OAuthProvider oauthProvider) {
+        return oauthProvider != null ? member.oauthProvider.eq(oauthProvider) : null;
+    }
+
+    private BooleanExpression eqRole(Role role) {
+        return role != null ? member.role.eq(role) : null;
+    }
 }
