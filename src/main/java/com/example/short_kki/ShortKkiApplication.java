@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShortKkiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ShortKkiApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(ShortKkiApplication.class, args);
+  }
 
 }

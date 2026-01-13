@@ -16,19 +16,19 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException {
-        log.error("OAuth2 authentication failed: {}", exception.getMessage());
+  @Override
+  public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException exception) throws IOException {
+    log.error("OAuth2 authentication failed: {}", exception.getMessage());
 
-        String errorMessage = URLEncoder.encode(exception.getMessage(), StandardCharsets.UTF_8);
+    String errorMessage = URLEncoder.encode(exception.getMessage(), StandardCharsets.UTF_8);
 
-        String targetUrl = UriComponentsBuilder.fromUriString("/login")
-                .queryParam("error", "true")
-                .queryParam("message", errorMessage)
-                .build()
-                .toUriString();
+    String targetUrl = UriComponentsBuilder.fromUriString("/login")
+        .queryParam("error", "true")
+        .queryParam("message", errorMessage)
+        .build()
+        .toUriString();
 
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
-    }
+    getRedirectStrategy().sendRedirect(request, response, targetUrl);
+  }
 }

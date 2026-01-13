@@ -19,61 +19,62 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    @Override
-    @Transactional
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
+  @Override
+  @Transactional
+  public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+    String registrationId = userRequest.getClientRegistration().getRegistrationId();
+    Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuth2UserInfo userInfo = OAuth2UserInfo.of(registrationId, attributes);
-        log.info("OAuth2 Login attempt - provider: {}, email: {}", userInfo.getProvider(), userInfo.getEmail());
+    OAuth2UserInfo userInfo = OAuth2UserInfo.of(registrationId, attributes);
+    log.info("OAuth2 Login attempt - provider: {}, email: {}", userInfo.getProvider(),
+        userInfo.getEmail());
 
-        Member member = getOrCreateMember(userInfo);
+    Member member = getOrCreateMember(userInfo);
 
-        return LoginMember.of(member, attributes);
+    return LoginMember.of(member, attributes);
+  }
+
+  private Member getOrCreateMember(OAuth2UserInfo userInfo) {
+    return memberRepository.findByEmail(userInfo.getEmail())
+        .map(existingMember -> updateMemberIfNeeded(existingMember, userInfo))
+        .orElseGet(() -> createNewMember(userInfo));
+  }
+
+  private Member updateMemberIfNeeded(Member member, OAuth2UserInfo userInfo) {
+    boolean needsUpdate = false;
+
+    if (!member.getName().equals(userInfo.getName())) {
+      member.updateName(userInfo.getName());
+      needsUpdate = true;
     }
 
-    private Member getOrCreateMember(OAuth2UserInfo userInfo) {
-        return memberRepository.findByEmail(userInfo.getEmail())
-                .map(existingMember -> updateMemberIfNeeded(existingMember, userInfo))
-                .orElseGet(() -> createNewMember(userInfo));
+    if (member.getOauthId() == null || !member.getOauthId().equals(userInfo.getOauthId())) {
+      member.updateOAuthInfo(userInfo.getOauthId(), userInfo.getProvider());
+      needsUpdate = true;
     }
 
-    private Member updateMemberIfNeeded(Member member, OAuth2UserInfo userInfo) {
-        boolean needsUpdate = false;
-
-        if (!member.getName().equals(userInfo.getName())) {
-            member.updateName(userInfo.getName());
-            needsUpdate = true;
-        }
-
-        if (member.getOauthId() == null || !member.getOauthId().equals(userInfo.getOauthId())) {
-            member.updateOAuthInfo(userInfo.getOauthId(), userInfo.getProvider());
-            needsUpdate = true;
-        }
-
-        if (needsUpdate) {
-            log.info("Updated existing member: {}", member.getEmail());
-        }
-
-        return member;
+    if (needsUpdate) {
+      log.info("Updated existing member: {}", member.getEmail());
     }
 
-    private Member createNewMember(OAuth2UserInfo userInfo) {
-        Member newMember = Member.create(
-                userInfo.getEmail(),
-                userInfo.getName(),
-                userInfo.getOauthId(),
-                userInfo.getProvider()
-        );
+    return member;
+  }
 
-        Member savedMember = memberRepository.save(newMember);
-        log.info("Created new member via OAuth2: {}", savedMember.getEmail());
+  private Member createNewMember(OAuth2UserInfo userInfo) {
+    Member newMember = Member.create(
+        userInfo.getEmail(),
+        userInfo.getName(),
+        userInfo.getOauthId(),
+        userInfo.getProvider()
+    );
 
-        return savedMember;
-    }
+    Member savedMember = memberRepository.save(newMember);
+    log.info("Created new member via OAuth2: {}", savedMember.getEmail());
+
+    return savedMember;
+  }
 }

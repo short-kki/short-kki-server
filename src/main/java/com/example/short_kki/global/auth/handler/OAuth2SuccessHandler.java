@@ -19,32 +19,33 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtTokenProvider jwtTokenProvider;
+  private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${app.oauth2.redirect-uri}")
-    private String redirectUri;
+  @Value("${app.oauth2.redirect-uri}")
+  private String redirectUri;
 
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
-        LoginMember loginMember = (LoginMember) authentication.getPrincipal();
+  @Override
+  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+      Authentication authentication) throws IOException {
+    LoginMember loginMember = (LoginMember) authentication.getPrincipal();
 
-        String accessToken = jwtTokenProvider.createAccessToken(
-                loginMember.getId(),
-                loginMember.getEmail(),
-                loginMember.getRole()
-        );
+    String accessToken = jwtTokenProvider.createAccessToken(
+        loginMember.getId(),
+        loginMember.getEmail(),
+        loginMember.getRole()
+    );
 
-        String refreshToken = jwtTokenProvider.createRefreshToken(loginMember.getId());
+    String refreshToken = jwtTokenProvider.createRefreshToken(loginMember.getId());
 
-        log.info("OAuth2 login success - memberId: {}, email: {}", loginMember.getId(), loginMember.getEmail());
+    log.info("OAuth2 login success - memberId: {}, email: {}", loginMember.getId(),
+        loginMember.getEmail());
 
-        String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
-                .queryParam("accessToken", accessToken)
-                .queryParam("refreshToken", refreshToken)
-                .build()
-                .toUriString();
+    String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
+        .queryParam("accessToken", accessToken)
+        .queryParam("refreshToken", refreshToken)
+        .build()
+        .toUriString();
 
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
-    }
+    getRedirectStrategy().sendRedirect(request, response, targetUrl);
+  }
 }

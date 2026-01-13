@@ -9,13 +9,14 @@ import java.util.Optional;
 
 public interface MemberRepositoryCustom {
 
-    List<Member> searchByName(String name);
+  List<Member> searchByName(String name);
 
-    List<Member> findWithDynamicCond(String name, String email, OAuthProvider oauthProvider, Role role);
+  List<Member> findWithDynamicCond(String name, String email, OAuthProvider oauthProvider,
+      Role role);
 
-    Optional<Member> findByEmailWithProvider(String email, OAuthProvider oauthProvider);
+  Optional<Member> findByEmailWithProvider(String email, OAuthProvider oauthProvider);
 
-    List<Member> findAllByRole(Role role);
+  List<Member> findAllByRole(Role role);
 
-    long countByOAuthProvider(OAuthProvider oauthProvider);
+  long countByOAuthProvider(OAuthProvider oauthProvider);
 }
