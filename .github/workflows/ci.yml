@@ -26,7 +26,7 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -h localhost -u root"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -65,12 +65,12 @@ jobs:
 
           GOOGLE_CLIENT_ID: "test-google-id"
           GOOGLE_CLIENT_SECRET: "test-google-secret"
-          GOOGLE_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/google"
+          GOOGLE_REDIRECT_URI: "http://localhost:3000/login/oauth2/code/google"
 
           KAKAO_CLIENT_ID: "test-kakao-id"
           KAKAO_CLIENT_SECRET: "test-kakao-secret"
-          KAKAO_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/kakao"
+          KAKAO_REDIRECT_URI: "http://localhost:3000/login/oauth2/code/kakao"
 
           NAVER_CLIENT_ID: "test-naver-id"
           NAVER_CLIENT_SECRET: "test-naver-secret"
-          NAVER_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/naver"
+          NAVER_REDIRECT_URI: "http://localhost:3000/login/oauth2/code/naver"
