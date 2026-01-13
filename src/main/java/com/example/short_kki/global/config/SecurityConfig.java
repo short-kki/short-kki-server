@@ -1,9 +1,6 @@
 package com.example.short_kki.global.config;
 
 import com.example.short_kki.global.auth.filter.JwtAuthenticationFilter;
-import com.example.short_kki.global.auth.handler.OAuth2FailureHandler;
-import com.example.short_kki.global.auth.handler.OAuth2SuccessHandler;
-import com.example.short_kki.global.auth.oauth.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,18 +26,13 @@ import java.util.List;
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
-  private final CustomOAuth2UserService customOAuth2UserService;
-  private final OAuth2SuccessHandler oAuth2SuccessHandler;
-  private final OAuth2FailureHandler oAuth2FailureHandler;
 
   private static final String[] PUBLIC_ENDPOINTS = {
       "/",
       "/error",
       "/favicon.ico",
       "/actuator/health",
-      "/api/v1/auth/**",
-      "/login/**",
-      "/oauth2/**"
+      "/api/auth/**"
   };
 
   @Bean
@@ -56,13 +48,6 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
             .anyRequest().authenticated()
-        )
-        .oauth2Login(oauth2 -> oauth2
-            .userInfoEndpoint(userInfo ->
-                userInfo.userService(customOAuth2UserService)
-            )
-            .successHandler(oAuth2SuccessHandler)
-            .failureHandler(oAuth2FailureHandler)
         )
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
