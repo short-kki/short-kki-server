@@ -106,11 +106,11 @@ public class Recipe extends BaseEntity {
     }
 
     /**
-     * 수동 입력용 정적 팩토리 메서드
-     * 출처 정보 없이 사용자가 직접 레시피를 작성할 때 사용
+     * 수동 입력용 정적 팩토리 메서드 출처 정보 없이 사용자가 직접 레시피를 작성할 때 사용
      */
     public static Recipe createManual(String title, String description, Integer servingSize,
-            Integer cookingTime, CuisineType cuisineType, MealType mealType, Difficulty difficulty) {
+            Integer cookingTime, CuisineType cuisineType, MealType mealType,
+            Difficulty difficulty) {
         return Recipe.builder()
                 .title(title)
                 .description(description)
@@ -120,13 +120,13 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.USER_CREATED)
+                .sourcePlatform(SourcePlatform.NONE)
                 .status(RecipeStatus.DRAFT)
                 .build();
     }
 
     /**
-     * 링크 가져오기용 정적 팩토리 메서드
-     * 외부 URL에서 레시피를 파싱해서 가져올 때 사용
+     * 링크 가져오기용 정적 팩토리 메서드 외부 URL에서 레시피를 파싱해서 가져올 때 사용
      */
     public static Recipe createFromLink(String title, String description, Integer servingSize,
             Integer cookingTime, CuisineType cuisineType, MealType mealType, Difficulty difficulty,
