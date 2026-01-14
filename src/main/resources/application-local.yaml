@@ -1,0 +1,34 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: root
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+jwt:
+  secret: local-local-local-local-local-local-local-local-32chars
+  access-token-validity: 3600000
+  refresh-token-validity: 604800000
+
+oauth2:
+  provider:
+    google:
+      client-id: local-google-client-id
+      client-secret: local-google-client-secret
+      redirect-uri: http://localhost:8080/login/oauth2/code/google
+    kakao:
+      client-id: local-kakao-client-id
+      client-secret: local-kakao-client-secret
+      redirect-uri: http://localhost:3000/oauth/callback
+    naver:
+      client-id: local-naver-client-id
+      client-secret: local-naver-client-secret
+      redirect-uri: http://localhost:3000/oauth/callback
