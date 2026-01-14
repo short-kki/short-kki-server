@@ -26,7 +26,7 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }}"
+          --health-cmd="mysqladmin ping -h localhost -u root -proot"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -54,7 +54,7 @@ jobs:
         # 스프링 부트에게 "dev 프로필 써라" 명령
         run: ./gradlew build -Dspring.profiles.active=dev
         env:
-          # DB 연결 정보 
+          # DB 연결 정보
           DB_USERNAME: root
           DB_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
           TZ: Asia/Seoul
