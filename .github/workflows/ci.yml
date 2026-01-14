@@ -1,6 +1,6 @@
 name: CI
 
-# 언제 실행할지 (develop 브랜치 건드리면 실행)
+# 언제 실행할지
 on:
   push:
     branches: [ "develop", "feature/**" ]
@@ -15,18 +15,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # 1. 테스트를 위한 가상 DB 실행 (서비스 컨테이너)
+    # 1. MYSQL 서비스 실행
     services:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: short_kki
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE_NAME }}
           TZ: Asia/Seoul
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -u root"
+          --health-cmd="mysqladmin ping -h localhost -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -49,28 +49,27 @@ jobs:
         run: chmod +x gradlew
 
       # 5. 빌드 및 테스트 (여기가 핵심!)
-      # application.yml의 빈 변수들을 여기서 채워줍니다.
+      # application-dev.yml의 빈 변수들을 여기서 채워줍니다.
       - name: Build with Gradle
-        run: ./gradlew build
+        # 스프링 부트에게 "dev 프로필 써라" 명령
+        run: ./gradlew build -Dspring.profiles.active=dev
         env:
-          # DB 연결 정보 (위의 services 설정과 맞춤)
+          # DB 연결 정보 
           DB_USERNAME: root
-          DB_PASSWORD: root
+          DB_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
           TZ: Asia/Seoul
 
-          # [중요] CI 단계에서는 "형식"만 맞으면 됩니다.
-          # 실제 로그인을 할 게 아니므로 가짜(Dummy) 값을 넣어서
-          # 스프링 부트가 켜질 때 에러만 안 나게 하면 됩니다.
-          JWT_SECRET: "test-secret-key-must-be-very-very-long-for-security"
 
-          GOOGLE_CLIENT_ID: "test-google-id"
-          GOOGLE_CLIENT_SECRET: "test-google-secret"
-          GOOGLE_REDIRECT_URI: "http://localhost:3000/login/oauth2/code/google"
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-          KAKAO_CLIENT_ID: "test-kakao-id"
-          KAKAO_CLIENT_SECRET: "test-kakao-secret"
-          KAKAO_REDIRECT_URI: "http://localhost:3000/login/oauth2/code/kakao"
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/google"
 
-          NAVER_CLIENT_ID: "test-naver-id"
-          NAVER_CLIENT_SECRET: "test-naver-secret"
-          NAVER_REDIRECT_URI: "http://localhost:3000/login/oauth2/code/naver"
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/kakao"
+
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          NAVER_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/naver"
