@@ -68,11 +68,9 @@ dependencies {
 // test
 tasks.named('test') {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport
 }
 
 tasks.named('jacocoTestReport') {
-    dependsOn(tasks.named('test'))
     reports {
         html.required = true
         xml.required = true
