@@ -11,6 +11,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   build:
@@ -37,19 +38,15 @@ jobs:
       - name: Gradle Build
         run: ./gradlew build --no-daemon --stacktrace
 
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/test
-            **/build/test-results/test
+      - name: Generate JaCoCo report
+        run: ./gradlew jacocoTestReport --no-daemon --stacktrace
 
-      - name: Upload JaCoCo reports
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Add coverage to PR
+        if: github.event_name == 'pull_request' && success()
+        uses: madrapps/jacoco-report@v1.7.2
         with:
-          name: jacoco-reports
-          path: |
-            **/build/reports/jacoco/test
+          paths: |
+            **/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "JaCoCo Coverage"
+          update-comment: true
