@@ -1,10 +1,14 @@
 spring:
+  config:
+    activate:
+      on-profile: test
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     open-in-view: false
 
   flyway:
@@ -13,3 +17,23 @@ spring:
   test:
     database:
       replace: none
+
+jwt:
+  secret: test__only__short-kki__jwt-secret__32chars_min
+  access-token-validity: 3600000
+  refresh-token-validity: 604800000
+
+oauth2:
+  provider:
+    google:
+      client-id: test-google-client-id
+      client-secret: test-google-client-secret
+      redirect-uri: http://localhost/test/oauth/google
+    kakao:
+      client-id: test-kakao-client-id
+      client-secret: test-kakao-client-secret
+      redirect-uri: http://localhost/test/oauth/kakao
+    naver:
+      client-id: test-naver-client-id
+      client-secret: test-naver-client-secret
+      redirect-uri: http://localhost/test/oauth/naver

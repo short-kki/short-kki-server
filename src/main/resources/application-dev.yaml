@@ -2,7 +2,7 @@ spring:
   config:
     activate:
       on-profile: dev
-    import: optional:classpath:application-secret.properties
+    import: classpath:application-secret.properties   # TODO: 파일 복사로 바꾸기
 
   datasource:
     url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
