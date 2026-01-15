@@ -16,7 +16,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
 
     env:
