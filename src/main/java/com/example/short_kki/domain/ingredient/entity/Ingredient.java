@@ -7,10 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ingredient")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ingredient {
 
@@ -22,5 +25,18 @@ public class Ingredient {
     private String name;
 
     @Column(nullable = false, length = 50)
-    private String amount;
+    private String unit;
+
+    @Builder
+    private Ingredient(String name, String unit) {
+        this.name = name;
+        this.unit = unit;
+    }
+
+    public static Ingredient create(String name, String unit) {
+        return Ingredient.builder()
+                .name(name)
+                .unit(unit)
+                .build();
+    }
 }

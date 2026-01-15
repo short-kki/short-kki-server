@@ -10,10 +10,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "recipe_step")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeStep {
 
@@ -27,20 +29,23 @@ public class RecipeStep {
     private Recipe recipe;
 
 
-    private Integer sequence;
+    @Column(name = "step_order")
+    private Integer stepOrder;
 
     @Column(length = 200)
     private String description;
 
     @Builder
-    private RecipeStep(Integer sequence, String description) {
-        this.sequence = sequence;
+    private RecipeStep(Recipe recipe, Integer stepOrder, String description) {
+        this.recipe = recipe;
+        this.stepOrder = stepOrder;
         this.description = description;
     }
 
-    public static RecipeStep create(Integer sequence, String description) {
+    public static RecipeStep create(Recipe recipe, Integer stepOrder, String description) {
         return RecipeStep.builder()
-                .sequence(sequence)
+                .recipe(recipe)
+                .stepOrder(stepOrder)
                 .description(description)
                 .build();
     }
