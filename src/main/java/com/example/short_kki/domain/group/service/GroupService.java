@@ -88,7 +88,7 @@ public class GroupService {
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        List<Feed> feeds = feedRepository.findAllByGroupOrderByCreatedAtDesc(group);
+        List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
         return feeds.stream()
                 .map(FeedResponse::from)
                 .toList();
