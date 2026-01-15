@@ -48,14 +48,16 @@ public class GroupService {
     @Transactional
     public void updateGroup(Long memberId, Long groupId, UpdateGroupRequest request) {
         Group group = findGroupById(groupId);
-        validateAdminRole(memberId, group);
+        MemberGroup memberGroup = findMemberGroup(memberId, group);
+        validateAdminRole(memberGroup);
         group.updateGroupInfo(request.name(), request.description(), request.thumbnailImgUrl());
     }
 
     @Transactional
     public void deleteGroup(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateAdminRole(memberId, group);
+        MemberGroup memberGroup = findMemberGroup(memberId, group);
+        validateAdminRole(memberGroup);
         groupRepository.delete(group);
     }
 
@@ -67,8 +69,7 @@ public class GroupService {
     }
 
     public List<GroupListResponse> getMyGroups(Long memberId) {
-        Member member = findMemberById(memberId);
-        List<MemberGroup> memberGroups = memberGroupRepository.findAllByMemberWithGroup(member);
+        List<MemberGroup> memberGroups = memberGroupRepository.findAllByMemberIdWithGroup(memberId);
         return memberGroups.stream()
                 .map(mg -> GroupListResponse.of(mg.getGroup(), mg.getRole()))
                 .toList();
@@ -112,23 +113,27 @@ public class GroupService {
     @Transactional
     public void deleteShoppingList(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateAdminRole(memberId, group);
-
+        MemberGroup memberGroup = findMemberGroup(memberId, group);
+        validateAdminRole(memberGroup);
         // TODO: 장보기 테이블 구현 후 삭제 로직 추가
     }
 
     @Transactional
     public GroupResponse joinGroup(Long memberId, JoinGroupRequest request) {
-        Member member = findMemberById(memberId);
         Group group = groupRepository.findByCode(request.inviteCode())
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_INVALID_INVITE_CODE));
-        if (memberGroupRepository.existsByMemberAndGroup(member, group)) {
-            throw new BusinessException(ErrorCode.GROUP_ALREADY_JOINED);
-        }
+        existMemberGroupByMemberIdAndGroup(memberId, group);
+        Member member = findMemberById(memberId);
         MemberGroup memberGroup = MemberGroup.createMember(member, group);
         memberGroupRepository.save(memberGroup);
         long memberCount = memberGroupRepository.countByGroup(group);
         return GroupResponse.of(group, memberCount);
+    }
+
+    private void existMemberGroupByMemberIdAndGroup(Long memberId, Group group) {
+        if (memberGroupRepository.existsByMemberIdAndGroup(memberId, group)) {
+            throw new BusinessException(ErrorCode.GROUP_ALREADY_JOINED);
+        }
     }
 
     private Group findGroupById(Long groupId) {
@@ -141,24 +146,25 @@ public class GroupService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private void validateAdminRole(Long memberId, Group group) {
-        Member member = findMemberById(memberId);
-        MemberGroup memberGroup = memberGroupRepository.findByMemberAndGroup(member, group)
+    private MemberGroup findMemberGroup(Long memberId, Group group) {
+        return memberGroupRepository.findByMemberIdAndGroup(memberId, group)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_NOT_MEMBER));
+    }
+
+    private void validateAdminRole(MemberGroup memberGroup) {
         if (!memberGroup.isAdmin()) {
             throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
         }
     }
 
     private void validateGroupMember(Long memberId, Group group) {
-        Member member = findMemberById(memberId);
-        if (!memberGroupRepository.existsByMemberAndGroup(member, group)) {
+        if (!memberGroupRepository.existsByMemberIdAndGroup(memberId, group)) {
             throw new BusinessException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 
-    // TODO : 초대 코드 생성 관련 고민 더 하기
     private String generateInviteCode() {
+        // TODO : 초대 코드 생성 관련 고민 더 하기
         String code;
         do {
             code = CodeGenerator.generateEventCode();

@@ -3,7 +3,6 @@ package com.example.short_kki.domain.group.repository;
 import com.example.short_kki.domain.group.entity.Group;
 import com.example.short_kki.domain.group.entity.MemberGroup;
 import com.example.short_kki.domain.group.entity.QMemberGroup;
-import com.example.short_kki.domain.member.entity.Member;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,11 +18,11 @@ public class MemberGroupRepositoryImpl implements MemberGroupRepositoryCustom {
     private final QMemberGroup memberGroup = QMemberGroup.memberGroup;
 
     @Override
-    public Optional<MemberGroup> findByMemberAndGroup(Member member, Group group) {
+    public Optional<MemberGroup> findByMemberIdAndGroup(Long memberId, Group group) {
         MemberGroup result = queryFactory
                 .selectFrom(memberGroup)
                 .where(
-                        memberGroup.member.eq(member),
+                        memberGroup.member.id.eq(memberId),
                         memberGroup.group.eq(group)
                 )
                 .fetchOne();
@@ -31,12 +30,12 @@ public class MemberGroupRepositoryImpl implements MemberGroupRepositoryCustom {
     }
 
     @Override
-    public boolean existsByMemberAndGroup(Member member, Group group) {
+    public boolean existsByMemberIdAndGroup(Long memberId, Group group) {
         Integer result = queryFactory
                 .selectOne()
                 .from(memberGroup)
                 .where(
-                        memberGroup.member.eq(member),
+                        memberGroup.member.id.eq(memberId),
                         memberGroup.group.eq(group)
                 )
                 .fetchFirst();
@@ -44,11 +43,11 @@ public class MemberGroupRepositoryImpl implements MemberGroupRepositoryCustom {
     }
 
     @Override
-    public List<MemberGroup> findAllByMemberWithGroup(Member member) {
+    public List<MemberGroup> findAllByMemberIdWithGroup(Long memberId) {
         return queryFactory
                 .selectFrom(memberGroup)
                 .join(memberGroup.group).fetchJoin()
-                .where(memberGroup.member.eq(member))
+                .where(memberGroup.member.id.eq(memberId))
                 .fetch();
     }
 
