@@ -30,6 +30,7 @@ public record RecipeResponse(
         RecipeStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
+    
     public static RecipeResponse from(Recipe recipe) {
         return new RecipeResponse(
                 recipe.getId(),

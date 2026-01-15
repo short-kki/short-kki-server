@@ -93,7 +93,9 @@ public record RecipeCreateRequest(
     // -- 재료 정보 --
     public record IngredientInfo(
             @NotBlank(message = "재료명은 필수입니다") String name,
-            String amount
+            @NotNull(message = "단위는 필수입니다") String unit, // 단위 (g, 개, 큰술 등)
+            Integer amount
+
     ) {
 
     }
@@ -101,7 +103,6 @@ public record RecipeCreateRequest(
     // -- 조리 단계 --
     public record StepInfo(
             @NotNull(message = "순서 번호는 필수입니다") @Positive Integer stepOrder,
-
             @NotBlank(message = "단계 설명은 필수입니다") String description
 
     ) {
