@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.9'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.example'
@@ -64,11 +65,22 @@ dependencies {
     testImplementation "org.testcontainers:mysql"
 }
 
+// test
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
-// QueryDSL Q클래스 생성 경로 설정
+tasks.named('jacocoTestReport') {
+    dependsOn(tasks.named('test'))
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+    }
+}
+
+// QueryDSL path
 def querydslSrcDir = 'src/main/generated'
 
 sourceSets {
