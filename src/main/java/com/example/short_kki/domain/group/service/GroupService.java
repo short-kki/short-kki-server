@@ -16,6 +16,7 @@ import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.repository.MemberRepository;
 import com.example.short_kki.global.exception.BusinessException;
 import com.example.short_kki.global.exception.ErrorCode;
+import com.example.short_kki.global.utils.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,23 +36,20 @@ public class GroupService {
     private final FeedRepository feedRepository;
 
     @Transactional
-    public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
+    public void createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
         Group group = Group.create(request.name(), request.description(), request.thumbnailImgUrl(),
                 generateInviteCode());
         groupRepository.save(group);
         MemberGroup memberGroup = MemberGroup.createAdmin(member, group);
         memberGroupRepository.save(memberGroup);
-        return GroupResponse.of(group, 1L);
     }
 
     @Transactional
-    public GroupResponse updateGroup(Long memberId, Long groupId, UpdateGroupRequest request) {
+    public void updateGroup(Long memberId, Long groupId, UpdateGroupRequest request) {
         Group group = findGroupById(groupId);
         validateAdminRole(memberId, group);
         group.updateGroupInfo(request.name(), request.description(), request.thumbnailImgUrl());
-        long memberCount = memberGroupRepository.countByGroup(group);
-        return GroupResponse.of(group, memberCount);
     }
 
     @Transactional
@@ -95,13 +93,12 @@ public class GroupService {
     }
 
     @Transactional
-    public FeedResponse createFeed(Long memberId, Long groupId, CreateFeedRequest request) {
+    public void createFeed(Long memberId, Long groupId, CreateFeedRequest request) {
         Member member = findMemberById(memberId);
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
         Feed feed = Feed.create(group, member, request.content());
         feedRepository.save(feed);
-        return FeedResponse.from(feed);
     }
 
     public List<Object> getShoppingList(Long memberId, Long groupId) {
@@ -148,7 +145,6 @@ public class GroupService {
         Member member = findMemberById(memberId);
         MemberGroup memberGroup = memberGroupRepository.findByMemberAndGroup(member, group)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_NOT_MEMBER));
-
         if (!memberGroup.isAdmin()) {
             throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
         }
@@ -163,6 +159,10 @@ public class GroupService {
 
     // TODO : 초대 코드 생성 관련 고민 더 하기
     private String generateInviteCode() {
-        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String code;
+        do {
+            code = CodeGenerator.generateEventCode();
+        } while (groupRepository.existsByCode(code));
+        return code;
     }
 }

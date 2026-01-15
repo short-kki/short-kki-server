@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface GroupRepository extends JpaRepository<Group, Long>, GroupRepositoryCustom {
 
     Optional<Group> findByCode(String code);
+
+    boolean existsByCode(String code);
 }

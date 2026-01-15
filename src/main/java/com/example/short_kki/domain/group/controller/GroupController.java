@@ -26,22 +26,22 @@ public class GroupController {
     private final GroupService groupService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<GroupResponse>> createGroup(
+    public ResponseEntity<BaseResponse<Void>> createGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody CreateGroupRequest request
     ) {
-        GroupResponse response = groupService.createGroup(loginMember.getId(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
+        groupService.createGroup(loginMember.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
 
     @PutMapping("/{groupId}")
-    public ResponseEntity<BaseResponse<GroupResponse>> updateGroup(
+    public ResponseEntity<BaseResponse<Void>> updateGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
             @Valid @RequestBody UpdateGroupRequest request
     ) {
-        GroupResponse response = groupService.updateGroup(loginMember.getId(), groupId, request);
-        return ResponseEntity.ok(BaseResponse.success(response));
+        groupService.updateGroup(loginMember.getId(), groupId, request);
+        return ResponseEntity.ok(BaseResponse.success());
     }
 
     @DeleteMapping("/{groupId}")
@@ -90,13 +90,13 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/feeds")
-    public ResponseEntity<BaseResponse<FeedResponse>> createFeed(
+    public ResponseEntity<BaseResponse<Void>> createFeed(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
             @Valid @RequestBody CreateFeedRequest request
     ) {
-        FeedResponse response = groupService.createFeed(loginMember.getId(), groupId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
+        groupService.createFeed(loginMember.getId(), groupId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
 
     @GetMapping("/{groupId}/shopping-list")
