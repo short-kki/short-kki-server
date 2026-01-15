@@ -1,11 +1,10 @@
 package com.example.short_kki.domain.group.entity;
 
-import com.example.short_kki.domain.feed.entity.Feed;
-import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.global.entity.BaseEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,30 +32,38 @@ public class Group extends BaseEntity {
 
     private String thumbnailImgUrl;
 
+    @Enumerated(EnumType.STRING)
+    private GroupType groupType;
+
     @Column(nullable = false, unique = true)
     private String code;
 
     @Builder
-    private Group(String name, String description, String thumbnailImgUrl, String code) {
+    private Group(String name, String description, String thumbnailImgUrl, GroupType groupType,
+            String code) {
         this.name = name;
         this.description = description;
         this.thumbnailImgUrl = thumbnailImgUrl;
+        this.groupType = groupType;
         this.code = code;
     }
 
     public static Group create(String name, String description, String thumbnailImgUrl,
-            String code) {
+            GroupType groupType, String code) {
         return Group.builder()
                 .name(name)
                 .description(description)
                 .thumbnailImgUrl(thumbnailImgUrl)
+                .groupType(groupType)
                 .code(code)
                 .build();
     }
 
-    public void updateGroupInfo(String name, String description, String thumbnailImgUrl) {
+    public void updateGroupInfo(String name, String description, String thumbnailImgUrl,
+            GroupType groupType) {
         this.name = name;
         this.description = description;
         this.thumbnailImgUrl = thumbnailImgUrl;
+        this.groupType = groupType;
     }
 }

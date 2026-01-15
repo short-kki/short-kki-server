@@ -1,6 +1,7 @@
 package com.example.short_kki.domain.group.dto.response;
 
 import com.example.short_kki.domain.group.entity.Group;
+import com.example.short_kki.domain.group.entity.GroupType;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +10,7 @@ public record GroupResponse(
         String name,
         String description,
         String thumbnailImgUrl,
+        GroupType groupType,
         String code,
         long memberCount,
         LocalDateTime createdAt
@@ -19,6 +21,7 @@ public record GroupResponse(
                 group.getName(),
                 group.getDescription(),
                 group.getThumbnailImgUrl(),
+                group.getGroupType(),
                 group.getCode(),
                 memberCount,
                 group.getCreatedAt()

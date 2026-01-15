@@ -38,8 +38,13 @@ public class GroupService {
     @Transactional
     public void createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
-        Group group = Group.create(request.name(), request.description(), request.thumbnailImgUrl(),
-                generateInviteCode());
+        Group group = Group.create(
+                request.name(),
+                request.description(),
+                request.thumbnailImgUrl(),
+                request.groupType(),
+                generateInviteCode()
+        );
         groupRepository.save(group);
         MemberGroup memberGroup = MemberGroup.createAdmin(member, group);
         memberGroupRepository.save(memberGroup);
@@ -50,7 +55,12 @@ public class GroupService {
         Group group = findGroupById(groupId);
         MemberGroup memberGroup = findMemberGroup(memberId, group);
         validateAdminRole(memberGroup);
-        group.updateGroupInfo(request.name(), request.description(), request.thumbnailImgUrl());
+        group.updateGroupInfo(
+                request.name(),
+                request.description(),
+                request.thumbnailImgUrl(),
+                request.groupType()
+        );
     }
 
     @Transactional
