@@ -3,7 +3,6 @@ package com.example.short_kki.domain.recipe.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-// 수정 필요
 @Getter
 @RequiredArgsConstructor
 

@@ -60,40 +60,53 @@ public record RecipeCreateRequest(
 
     // -- 기본 정보 --
     public record BasicInfo(
-            @NotBlank(message = "제목은 필수입니다") @Size(max = 100, message = "제목은 100자 이하여야 합니다") String title,
+            @NotBlank(message = "제목은 필수입니다")
+            @Size(max = 100, message = "제목은 100자 이하여야 합니다")
+            String title,
 
-            @Size(max = 500, message = "설명은 500자 이하여야 합니다") String description,
+            @Size(max = 500, message = "설명은 500자 이하여야 합니다")
+            String description,
 
-            @NotNull(message = "1인분 기준 양은 필수입니다") @Positive(message = "1인분 기준 양은 양수여야 합니다") Integer servingSize,
+            @NotNull(message = "1인분 기준 양은 필수입니다")
+            @Positive(message = "1인분 기준 양은 양수여야 합니다") Integer servingSize,
 
-            @NotNull(message = "조리 시간은 필수입니다") @Positive(message = "조리 시간은 양수여야 합니다") Integer cookingTime) {
+            @NotNull(message = "조리 시간은 필수입니다")
+            @Positive(message = "조리 시간은 양수여야 합니다") Integer cookingTime) {
 
     }
 
     // -- 카테고리 정보 --
     public record CategoryInfo(
-            @NotNull(message = "요리 종류는 필수입니다") CuisineType cuisineType,
+            @NotNull(message = "요리 종류는 필수입니다")
+            CuisineType cuisineType,
 
-            @NotNull(message = "식사 유형은 필수입니다") MealType mealType,
+            @NotNull(message = "식사 유형은 필수입니다")
+            MealType mealType,
 
-            @NotNull(message = "난이도는 필수입니다") Difficulty difficulty) {
+            @NotNull(message = "난이도는 필수입니다")
+            Difficulty difficulty) {
 
     }
 
     // -- 출처 정보 (링크 가져오기 시에만 사용) --
     public record SourceInfo(
-            @NotBlank(message = "출처 URL은 필수입니다") String sourceUrl,
+            @NotBlank(message = "출처 URL은 필수입니다")
+            String sourceUrl,
 
-            @NotNull(message = "출처 플랫폼은 필수입니다") SourcePlatform sourcePlatform,
+            @NotNull(message = "출처 플랫폼은 필수입니다")
+            SourcePlatform sourcePlatform,
 
-            @NotNull(message = "출처 컨텐츠 유형은 필수입니다") SourceContentType sourceContentType) {
+            @NotNull(message = "출처 컨텐츠 유형은 필수입니다")
+            SourceContentType sourceContentType) {
 
     }
 
     // -- 재료 정보 --
     public record IngredientInfo(
-            @NotBlank(message = "재료명은 필수입니다") String name,
-            @NotNull(message = "단위는 필수입니다") String unit, // 단위 (g, 개, 큰술 등)
+            @NotBlank(message = "재료명은 필수입니다")
+            String name,
+            @NotNull(message = "단위는 필수입니다")
+            String unit, // 단위 (g, 개, 큰술 등)
             Integer amount
 
     ) {
@@ -102,8 +115,10 @@ public record RecipeCreateRequest(
 
     // -- 조리 단계 --
     public record StepInfo(
-            @NotNull(message = "순서 번호는 필수입니다") @Positive Integer stepOrder,
-            @NotBlank(message = "단계 설명은 필수입니다") String description
+            @NotNull(message = "순서 번호는 필수입니다")
+            @Positive Integer stepOrder,
+            @NotBlank(message = "단계 설명은 필수입니다")
+            String description
 
     ) {
 
