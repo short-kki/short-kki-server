@@ -1,4 +1,4 @@
-package com.example.short_kki.domain.group.dto.request;
+package com.example.short_kki.domain.feed.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

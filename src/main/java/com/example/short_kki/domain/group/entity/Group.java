@@ -1,6 +1,8 @@
 package com.example.short_kki.domain.group.entity;
 
 import com.example.short_kki.global.entity.BaseEntity;
+import com.example.short_kki.global.exception.BadRequestException;
+import com.example.short_kki.global.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,7 +27,7 @@ public class Group extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "그룹 이름을 생성해주세요")
+    @NotNull(message = "그룹 이름은 필수이며 비어있을 수 없습니다.")
     @Column(nullable = false)
     private String name;
 
@@ -37,6 +39,7 @@ public class Group extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GroupType groupType = GroupType.FRIENDS;
 
+    @NotNull(message = "그룹 코드를 생성해야 합니다.")
     @Column(nullable = false, unique = true)
     private String code;
 
@@ -64,7 +67,7 @@ public class Group extends BaseEntity {
     public void updateGroupInfo(String name, String description, String thumbnailImgUrl,
             GroupType groupType) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("그룹 이름은 필수이며 비어있을 수 없습니다.");
+            throw new BadRequestException(ErrorCode.GROUP_NAME_EMPTY);
         }
         this.name = name;
         if (description != null) {
@@ -73,6 +76,8 @@ public class Group extends BaseEntity {
         if (thumbnailImgUrl != null) {
             this.thumbnailImgUrl = thumbnailImgUrl;
         }
-        this.groupType = groupType;
+        if (groupType != null) {
+            this.groupType = groupType;
+        }
     }
 }

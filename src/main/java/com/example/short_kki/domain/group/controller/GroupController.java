@@ -1,7 +1,5 @@
 package com.example.short_kki.domain.group.controller;
 
-import com.example.short_kki.domain.feed.dto.response.FeedResponse;
-import com.example.short_kki.domain.group.dto.request.CreateFeedRequest;
 import com.example.short_kki.domain.group.dto.request.CreateGroupRequest;
 import com.example.short_kki.domain.group.dto.request.JoinGroupRequest;
 import com.example.short_kki.domain.group.dto.request.UpdateGroupRequest;
@@ -78,25 +76,6 @@ public class GroupController {
         List<GroupMemberResponse> response = groupService.getGroupMembers(loginMember.getId(),
                 groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    @GetMapping("/{groupId}/feeds")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> getGroupFeeds(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        List<FeedResponse> response = groupService.getGroupFeeds(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    @PostMapping("/{groupId}/feeds")
-    public ResponseEntity<BaseResponse<Void>> createFeed(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId,
-            @Valid @RequestBody CreateFeedRequest request
-    ) {
-        groupService.createFeed(loginMember.getId(), groupId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
 
     @GetMapping("/{groupId}/shopping-list")

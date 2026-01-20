@@ -4,6 +4,7 @@ import com.example.short_kki.domain.group.entity.Group;
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,10 @@ public class Feed extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    // TODO : 좋아요 테이블을 만들어야 할까
+    @Positive(message = "좋아요는 0 미만의 숫자를 가질 수 없습니다.")
+    private Long likes = 0L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)

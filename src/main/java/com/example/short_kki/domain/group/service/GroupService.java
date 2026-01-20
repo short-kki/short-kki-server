@@ -1,9 +1,5 @@
 package com.example.short_kki.domain.group.service;
 
-import com.example.short_kki.domain.feed.dto.response.FeedResponse;
-import com.example.short_kki.domain.feed.entity.Feed;
-import com.example.short_kki.domain.feed.repository.FeedRepository;
-import com.example.short_kki.domain.group.dto.request.CreateFeedRequest;
 import com.example.short_kki.domain.group.dto.request.CreateGroupRequest;
 import com.example.short_kki.domain.group.dto.request.JoinGroupRequest;
 import com.example.short_kki.domain.group.dto.request.UpdateGroupRequest;
@@ -34,7 +30,6 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final MemberGroupRepository memberGroupRepository;
     private final MemberRepository memberRepository;
-    private final FeedRepository feedRepository;
 
     @Transactional
     public void createGroup(Long memberId, CreateGroupRequest request) {
@@ -93,24 +88,6 @@ public class GroupService {
         return memberGroups.stream()
                 .map(GroupMemberResponse::from)
                 .toList();
-    }
-
-    public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
-        List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
-        return feeds.stream()
-                .map(FeedResponse::from)
-                .toList();
-    }
-
-    @Transactional
-    public void createFeed(Long memberId, Long groupId, CreateFeedRequest request) {
-        Member member = findMemberById(memberId);
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
-        Feed feed = Feed.create(group, member, request.content());
-        feedRepository.save(feed);
     }
 
     public List<Object> getShoppingList(Long memberId, Long groupId) {

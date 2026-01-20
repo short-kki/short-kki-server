@@ -32,7 +32,9 @@ public enum ErrorCode {
     GROUP_ADMIN_REQUIRED(HttpStatus.FORBIDDEN, "GROUP_003", "그룹 관리자 권한이 필요합니다."),
     GROUP_ALREADY_JOINED(HttpStatus.CONFLICT, "GROUP_004", "이미 가입된 그룹입니다."),
     GROUP_INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "GROUP_005", "유효하지 않은 초대 코드입니다."),
-    GROUP_NOT_MEMBER(HttpStatus.FORBIDDEN, "GROUP_006", "그룹 멤버가 아닙니다.");
+    GROUP_NOT_MEMBER(HttpStatus.FORBIDDEN, "GROUP_006", "그룹 멤버가 아닙니다."),
+    GROUP_NAME_EMPTY(HttpStatus.BAD_REQUEST, "GROUP_007", "그룹 이름은 비어있을 수 없습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
