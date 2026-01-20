@@ -7,8 +7,6 @@ import com.example.short_kki.domain.recipe.constant.RecipeStatus;
 import com.example.short_kki.domain.recipe.constant.SourceContentType;
 import com.example.short_kki.domain.recipe.constant.SourcePlatform;
 import com.example.short_kki.domain.recipe.constant.SourceType;
-import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest.IngredientInfo;
-import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest.StepInfo;
 import com.example.short_kki.domain.recipe.entity.Recipe;
 import com.example.short_kki.domain.recipe.entity.RecipeIngredient;
 import com.example.short_kki.domain.recipe.entity.RecipeStep;
@@ -40,6 +38,7 @@ public record RecipeResponse(
 
     public static RecipeResponse toDto(Recipe recipe, List<RecipeStep> steps,
             List<RecipeIngredient> ingredients) {
+
         List<StepInfo> stepInfos = steps.stream()
                 .map(s -> new StepInfo(s.getStepOrder(), s.getDescription()))
                 .toList();
@@ -48,8 +47,7 @@ public record RecipeResponse(
                 .map(i -> new IngredientInfo(
                         i.getIngredient().getName(),
                         i.getIngredient().getUnit(),
-                        i.getAmount()
-                ))
+                        i.getAmount()))
                 .toList();
 
         return new RecipeResponse(
@@ -70,8 +68,6 @@ public record RecipeResponse(
                 recipe.getCreatedAt(),
                 recipe.getUpdatedAt(),
                 stepInfos,
-                ingredientInfos
-        );
+                ingredientInfos);
     }
 }
-

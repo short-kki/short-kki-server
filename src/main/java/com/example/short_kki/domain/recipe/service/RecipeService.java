@@ -3,8 +3,6 @@ package com.example.short_kki.domain.recipe.service;
 import com.example.short_kki.domain.ingredient.entity.Ingredient;
 import com.example.short_kki.domain.ingredient.repository.IngredientRepository;
 import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest;
-import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest.IngredientInfo;
-import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest.StepInfo;
 import com.example.short_kki.domain.recipe.dto.RecipeResponse;
 import com.example.short_kki.domain.recipe.entity.Recipe;
 import com.example.short_kki.domain.recipe.entity.RecipeIngredient;

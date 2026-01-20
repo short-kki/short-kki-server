@@ -134,4 +134,18 @@ public class Recipe extends BaseEntity {
                 .status(RecipeStatus.DRAFT)
                 .build();
     }
+
+    // --- 편의 메서드: RecipeSource 필드 접근 (null-safe) ---
+
+    public String getSourceUrl() {
+        return recipeSource != null ? recipeSource.getUrl() : null;
+    }
+
+    public SourcePlatform getSourcePlatform() {
+        return recipeSource != null ? recipeSource.getPlatform() : null;
+    }
+
+    public SourceContentType getSourceContentType() {
+        return recipeSource != null ? recipeSource.getContentType() : null;
+    }
 }
