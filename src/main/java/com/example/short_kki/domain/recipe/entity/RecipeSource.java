@@ -2,7 +2,6 @@ package com.example.short_kki.domain.recipe.entity;
 
 import com.example.short_kki.domain.recipe.constant.SourceContentType;
 import com.example.short_kki.domain.recipe.constant.SourcePlatform;
-import com.example.short_kki.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -29,6 +28,9 @@ public record RecipeSource(
         }
         if (platform == null) {
             throw new IllegalArgumentException("출처 플랫폼은 필수입니다.");
+        }
+        if (contentType == null) {
+            throw new IllegalArgumentException("출처 컨텐츠 유형은 필수입니다.");
         }
     }
 
