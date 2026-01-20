@@ -15,7 +15,8 @@ public record GroupResponse(
         long memberCount,
         LocalDateTime createdAt
 ) {
-    public static GroupResponse of(Group group, long memberCount) {
+
+    public static GroupResponse from(Group group, long memberCount) {
         return new GroupResponse(
                 group.getId(),
                 group.getName(),

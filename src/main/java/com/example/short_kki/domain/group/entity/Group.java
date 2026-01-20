@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class Group extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "그룹 이름을 생성해주세요")
     @Column(nullable = false)
     private String name;
 
@@ -33,7 +35,7 @@ public class Group extends BaseEntity {
     private String thumbnailImgUrl;
 
     @Enumerated(EnumType.STRING)
-    private GroupType groupType;
+    private GroupType groupType = GroupType.FRIENDS;
 
     @Column(nullable = false, unique = true)
     private String code;
@@ -61,9 +63,16 @@ public class Group extends BaseEntity {
 
     public void updateGroupInfo(String name, String description, String thumbnailImgUrl,
             GroupType groupType) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("그룹 이름은 필수이며 비어있을 수 없습니다.");
+        }
         this.name = name;
-        this.description = description;
-        this.thumbnailImgUrl = thumbnailImgUrl;
+        if (description != null) {
+            this.description = description;
+        }
+        if (thumbnailImgUrl != null) {
+            this.thumbnailImgUrl = thumbnailImgUrl;
+        }
         this.groupType = groupType;
     }
 }

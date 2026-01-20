@@ -15,7 +15,8 @@ public record GroupListResponse(
         GroupRole myRole,
         LocalDateTime createdAt
 ) {
-    public static GroupListResponse of(Group group, GroupRole myRole) {
+
+    public static GroupListResponse from(Group group, GroupRole myRole) {
         return new GroupListResponse(
                 group.getId(),
                 group.getName(),

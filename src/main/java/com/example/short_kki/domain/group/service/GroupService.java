@@ -16,6 +16,7 @@ import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.repository.MemberRepository;
 import com.example.short_kki.global.exception.BusinessException;
 import com.example.short_kki.global.exception.ErrorCode;
+import com.example.short_kki.global.exception.NotFoundException;
 import com.example.short_kki.global.utils.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class GroupService {
     public void updateGroup(Long memberId, Long groupId, UpdateGroupRequest request) {
         Group group = findGroupById(groupId);
         MemberGroup memberGroup = findMemberGroup(memberId, group);
-        validateAdminRole(memberGroup);
+        memberGroup.isAdmin();
         group.updateGroupInfo(
                 request.name(),
                 request.description(),
@@ -67,7 +68,7 @@ public class GroupService {
     public void deleteGroup(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         MemberGroup memberGroup = findMemberGroup(memberId, group);
-        validateAdminRole(memberGroup);
+        memberGroup.isAdmin();
         groupRepository.delete(group);
     }
 
@@ -75,13 +76,13 @@ public class GroupService {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
         long memberCount = memberGroupRepository.countByGroup(group);
-        return GroupResponse.of(group, memberCount);
+        return GroupResponse.from(group, memberCount);
     }
 
     public List<GroupListResponse> getMyGroups(Long memberId) {
         List<MemberGroup> memberGroups = memberGroupRepository.findAllByMemberIdWithGroup(memberId);
         return memberGroups.stream()
-                .map(mg -> GroupListResponse.of(mg.getGroup(), mg.getRole()))
+                .map(mg -> GroupListResponse.from(mg.getGroup(), mg.getRole()))
                 .toList();
     }
 
@@ -124,20 +125,24 @@ public class GroupService {
     public void deleteShoppingList(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         MemberGroup memberGroup = findMemberGroup(memberId, group);
-        validateAdminRole(memberGroup);
+        memberGroup.isAdmin();
         // TODO: 장보기 테이블 구현 후 삭제 로직 추가
     }
 
     @Transactional
     public GroupResponse joinGroup(Long memberId, JoinGroupRequest request) {
-        Group group = groupRepository.findByCode(request.inviteCode())
-                .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_INVALID_INVITE_CODE));
+        Group group = findGroupByInviteCode(request.inviteCode());
         existMemberGroupByMemberIdAndGroup(memberId, group);
         Member member = findMemberById(memberId);
         MemberGroup memberGroup = MemberGroup.createMember(member, group);
         memberGroupRepository.save(memberGroup);
         long memberCount = memberGroupRepository.countByGroup(group);
-        return GroupResponse.of(group, memberCount);
+        return GroupResponse.from(group, memberCount);
+    }
+
+    private Group findGroupByInviteCode(String inviteCode) {
+        return groupRepository.findByCode(inviteCode)
+                .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_INVALID_INVITE_CODE));
     }
 
     private void existMemberGroupByMemberIdAndGroup(Long memberId, Group group) {
@@ -148,28 +153,22 @@ public class GroupService {
 
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(groupId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_FOUND));
     }
 
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private MemberGroup findMemberGroup(Long memberId, Group group) {
         return memberGroupRepository.findByMemberIdAndGroup(memberId, group)
-                .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_NOT_MEMBER));
-    }
-
-    private void validateAdminRole(MemberGroup memberGroup) {
-        if (!memberGroup.isAdmin()) {
-            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
-        }
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_MEMBER));
     }
 
     private void validateGroupMember(Long memberId, Group group) {
         if (!memberGroupRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new BusinessException(ErrorCode.GROUP_NOT_MEMBER);
+            throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 

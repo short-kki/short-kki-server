@@ -2,6 +2,8 @@ package com.example.short_kki.domain.group.entity;
 
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.global.entity.BaseEntity;
+import com.example.short_kki.global.exception.BusinessException;
+import com.example.short_kki.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,6 +20,10 @@ public class MemberGroup extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GroupRole role;
+
     // TODO : Member 쪽 단방향 매핑
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -26,10 +32,6 @@ public class MemberGroup extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private GroupRole role;
 
     @Builder
     private MemberGroup(Member member, Group group, GroupRole role) {
@@ -54,7 +56,9 @@ public class MemberGroup extends BaseEntity {
                 .build();
     }
 
-    public boolean isAdmin() {
-        return this.role == GroupRole.ADMIN;
+    public void isAdmin() {
+        if (this.role != GroupRole.ADMIN) {
+            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
+        }
     }
 }
