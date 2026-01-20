@@ -6,13 +6,12 @@ import com.example.short_kki.domain.recipe.service.RecipeService;
 import com.example.short_kki.global.response.BaseResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/recipes")
+@RequestMapping("/api/vi/recipes")
 @RequiredArgsConstructor
 public class RecipeController {
 

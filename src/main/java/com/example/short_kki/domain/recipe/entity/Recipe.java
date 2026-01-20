@@ -9,6 +9,7 @@ import com.example.short_kki.domain.recipe.constant.SourcePlatform;
 import com.example.short_kki.domain.recipe.constant.SourceType;
 import com.example.short_kki.global.entity.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -65,16 +66,8 @@ public class Recipe extends BaseEntity {
     @Column(length = 50)
     private SourceType sourceType;
 
-    @Column
-    private String sourceUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private SourcePlatform sourcePlatform;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private SourceContentType sourceContentType;
+    @Embedded
+    private RecipeSource recipeSource;
 
     // -- 기타 --
     @Enumerated(EnumType.STRING)
@@ -87,8 +80,8 @@ public class Recipe extends BaseEntity {
     @Builder
     private Recipe(String title, String description, Integer servingSize, Integer cookingTime,
             CuisineType cuisineType, MealType mealType, Difficulty difficulty,
-            SourceType sourceType, String sourceUrl, SourcePlatform sourcePlatform,
-            SourceContentType sourceContentType, RecipeStatus status) {
+            SourceType sourceType, RecipeSource recipeSource, RecipeStatus status,
+            Integer bookmarkCount, Boolean isDeleted) {
         this.title = title;
         this.description = description;
         this.servingSize = servingSize;
@@ -97,12 +90,10 @@ public class Recipe extends BaseEntity {
         this.mealType = mealType;
         this.difficulty = difficulty;
         this.sourceType = sourceType;
-        this.sourceUrl = sourceUrl;
-        this.sourcePlatform = sourcePlatform;
-        this.sourceContentType = sourceContentType;
+        this.recipeSource = recipeSource;
         this.status = status;
-        this.bookmarkCount = 0;
-        this.isDeleted = false;
+        this.bookmarkCount = bookmarkCount;
+        this.isDeleted = isDeleted;
     }
 
     /**
@@ -120,7 +111,6 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.USER_CREATED)
-                .sourcePlatform(SourcePlatform.NONE)
                 .status(RecipeStatus.DRAFT)
                 .build();
     }
@@ -130,7 +120,7 @@ public class Recipe extends BaseEntity {
      */
     public static Recipe createFromLink(String title, String description, Integer servingSize,
             Integer cookingTime, CuisineType cuisineType, MealType mealType, Difficulty difficulty,
-            String sourceUrl, SourcePlatform sourcePlatform, SourceContentType sourceContentType) {
+            RecipeSource recipeSource) {
         return Recipe.builder()
                 .title(title)
                 .description(description)
@@ -140,9 +130,7 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.IMPORTED)
-                .sourceUrl(sourceUrl)
-                .sourcePlatform(sourcePlatform)
-                .sourceContentType(sourceContentType)
+                .recipeSource(recipeSource)
                 .status(RecipeStatus.DRAFT)
                 .build();
     }
