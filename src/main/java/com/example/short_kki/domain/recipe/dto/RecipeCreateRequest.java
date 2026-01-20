@@ -13,15 +13,26 @@ import java.util.List;
  * 레시피 생성 요청 DTO (통합) - 수동 입력 / 링크 가져오기 모두 이 DTO 하나로 처리 태그는 추후
  */
 public record RecipeCreateRequest(
-        @Valid @NotNull(message = "기본 정보는 필수입니다") BasicInfo basicInfo,
+        @Valid
+        @NotNull(message = "기본 정보는 필수입니다")
+        BasicInfo basicInfo,
 
-        @Valid @NotNull(message = "카테고리 정보는 필수입니다") CategoryInfo categoryInfo,
+        @Valid
+        @NotNull(message = "카테고리 정보는 필수입니다")
+        CategoryInfo categoryInfo,
 
-        @Valid SourceInfo sourceInfo,
+        @Valid
+        SourceInfo sourceInfo,
 
-        @Valid List<IngredientInfo> ingredients,
+        @Valid
+        @NotNull(message = "재료는 필수입니다.")
+        @Size(min = 1, message = "재료는 최소 1개이상이어야합니다.")
+        List<IngredientInfo> ingredients,
 
-        @Valid List<StepInfo> steps) {
+        @Valid
+        @NotNull(message = "조리 순서는 필수입니다.")
+        @Size(min = 1, message = "조리 순서는 최소 1개 이상이어야합니다.")
+        List<StepInfo> steps) {
 
     /**
      * Recipe 엔티티로 변환 sourceInfo 유무에 따라 수동/링크 가져오기 분기

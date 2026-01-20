@@ -33,41 +33,49 @@ public class RecipeService {
      */
     @Transactional
     public RecipeResponse create(RecipeCreateRequest request) {
+        validateRecipeRequest(request);
+
         // TODO: 로그인 연동 후 작성자 세팅
         Recipe recipe = request.toEntity();
         Recipe saved = recipeRepository.save(recipe);
 
-        List<RecipeStep> savedSteps = new ArrayList<>();
-        if (request.steps() != null) {
-            request.steps().forEach(stepInfo -> {
-                RecipeStep step = RecipeStep.create(saved, stepInfo.stepOrder(),
-                        stepInfo.description());
-
-                recipeStepRepository.save(step);
-                savedSteps.add(step);
-            });
+        List<RecipeStep> steps = new ArrayList<>();
+        for (int i = 0; i < request.steps().size(); i++) {
+            RecipeStep step = RecipeStep.create(
+                    saved,
+                    i + 1,
+                    request.steps().get(i).description());
+            steps.add(step);
         }
+        List<RecipeStep> savedSteps = recipeStepRepository.saveAll(steps);
 
-        List<RecipeIngredient> savedIngredients = new ArrayList<>();
-        if (request.ingredients() != null) {
-
-            request.ingredients().forEach(ingredientInfo -> {
-                Ingredient ingredient = ingredientRepository.findByName(ingredientInfo.name())
-                        .orElseGet(() -> {
-                            Ingredient newIngredient = Ingredient.create(ingredientInfo.name(),
-                                    ingredientInfo.unit());
-                            return ingredientRepository.save(newIngredient);
-                        });
-
-                RecipeIngredient newRecipeIngredient = RecipeIngredient.create(ingredient, saved,
-                        ingredientInfo.amount());
-                recipeIngredientRepository.save(newRecipeIngredient);
-                savedIngredients.add(newRecipeIngredient);
-            });
-
-        }
+        List<RecipeIngredient> recipeIngredients = request.ingredients().stream()
+                .map(ingredientInfo -> {
+                    Ingredient ingredient = ingredientRepository.findByName(ingredientInfo.name())
+                            .orElseGet(() -> {
+                                Ingredient newIngredient = Ingredient.create(ingredientInfo.name(),
+                                        ingredientInfo.unit());
+                                return ingredientRepository.save(newIngredient);
+                            });
+                    return RecipeIngredient.create(ingredient, saved, ingredientInfo.amount());
+                })
+                .toList();
+        List<RecipeIngredient> savedIngredients = recipeIngredientRepository.saveAll(
+                recipeIngredients);
 
         return RecipeResponse.toDto(saved, savedSteps, savedIngredients);
+    }
+
+    /**
+     * 비즈니스 규칙 검증
+     */
+    private void validateRecipeRequest(RecipeCreateRequest request) {
+        if (request.ingredients() == null || request.ingredients().isEmpty()) {
+            throw new BusinessException(ErrorCode.INGREDIENT_REQUIRED);
+        }
+        if (request.steps() == null || request.steps().isEmpty()) {
+            throw new BusinessException(ErrorCode.STEP_REQUIRED);
+        }
     }
 
     /**
