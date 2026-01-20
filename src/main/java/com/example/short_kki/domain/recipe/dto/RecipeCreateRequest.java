@@ -37,23 +37,23 @@ public record RecipeCreateRequest(
                     categoryInfo.cuisineType(),
                     categoryInfo.mealType(),
                     categoryInfo.difficulty());
-        } else {
-            RecipeSource recipeSource = new RecipeSource(
-                    sourceInfo.sourceUrl(),
-                    sourceInfo.sourcePlatform(),
-                    sourceInfo.sourceContentType());
-
-            // 링크 가져오기
-            return Recipe.createFromLink(
-                    basicInfo.title(),
-                    basicInfo.description(),
-                    basicInfo.servingSize(),
-                    basicInfo.cookingTime(),
-                    categoryInfo.cuisineType(),
-                    categoryInfo.mealType(),
-                    categoryInfo.difficulty(),
-                    recipeSource);
         }
+        // 링크 가져오기
+        RecipeSource recipeSource = new RecipeSource(
+                sourceInfo.sourceUrl(),
+                sourceInfo.sourcePlatform(),
+                sourceInfo.sourceContentType());
+
+        return Recipe.createFromLink(
+                basicInfo.title(),
+                basicInfo.description(),
+                basicInfo.servingSize(),
+                basicInfo.cookingTime(),
+                categoryInfo.cuisineType(),
+                categoryInfo.mealType(),
+                categoryInfo.difficulty(),
+                recipeSource);
+
     }
 
 }
