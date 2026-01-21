@@ -2,6 +2,7 @@ package com.example.short_kki.global.exception;
 
 import com.example.short_kki.global.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
@@ -77,6 +78,16 @@ public class GlobalExceptionHandler {
                 .status(ErrorCode.ACCESS_DENIED.getHttpStatus())
                 .body(BaseResponse.error(ErrorCode.ACCESS_DENIED.getCode(),
                         ErrorCode.ACCESS_DENIED.getMessage()));
+    }
+
+    // todo : 도메인 예외 처리 관련 논의 필요
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<BaseResponse<Void>> handleIllegalArgument(IllegalArgumentException e) {
+        log.error("IllegalArgumentException: {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(BaseResponse.error(ErrorCode.INVALID_INPUT_VALUE.getCode(),
+                        e.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)

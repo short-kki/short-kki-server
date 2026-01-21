@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "member_group")
-public class MemberGroup extends BaseEntity {
+@Table(name = "group_member")
+public class GroupMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,31 +34,29 @@ public class MemberGroup extends BaseEntity {
     private Group group;
 
     @Builder
-    private MemberGroup(Member member, Group group, GroupRole role) {
+    private GroupMember(Member member, Group group, GroupRole role) {
         this.member = member;
         this.group = group;
         this.role = role;
     }
 
-    public static MemberGroup createAdmin(Member member, Group group) {
-        return MemberGroup.builder()
+    public static GroupMember createAdmin(Member member, Group group) {
+        return GroupMember.builder()
                 .member(member)
                 .group(group)
                 .role(GroupRole.ADMIN)
                 .build();
     }
 
-    public static MemberGroup createMember(Member member, Group group) {
-        return MemberGroup.builder()
+    public static GroupMember createMember(Member member, Group group) {
+        return GroupMember.builder()
                 .member(member)
                 .group(group)
                 .role(GroupRole.MEMBER)
                 .build();
     }
 
-    public void isAdmin() {
-        if (this.role != GroupRole.ADMIN) {
-            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
-        }
+    public boolean checkIsAdmin() {
+        return role == GroupRole.ADMIN;
     }
 }

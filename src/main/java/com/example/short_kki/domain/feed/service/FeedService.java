@@ -6,7 +6,7 @@ import com.example.short_kki.domain.feed.entity.Feed;
 import com.example.short_kki.domain.feed.repository.FeedRepository;
 import com.example.short_kki.domain.group.entity.Group;
 import com.example.short_kki.domain.group.repository.GroupRepository;
-import com.example.short_kki.domain.group.repository.MemberGroupRepository;
+import com.example.short_kki.domain.group.repository.GroupMemberRepository;
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.repository.MemberRepository;
 import com.example.short_kki.global.exception.ErrorCode;
@@ -24,7 +24,7 @@ public class FeedService {
 
     private final FeedRepository feedRepository;
     private final GroupRepository groupRepository;
-    private final MemberGroupRepository memberGroupRepository;
+    private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
 
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
@@ -41,7 +41,7 @@ public class FeedService {
         Member member = findMemberById(memberId);
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        Feed feed = Feed.create(group, member, request.content());
+        Feed feed = Feed.create(group, member, request.content(), request.feedType());
         feedRepository.save(feed);
     }
 
@@ -56,7 +56,7 @@ public class FeedService {
     }
 
     private void validateGroupMember(Long memberId, Group group) {
-        if (!memberGroupRepository.existsByMemberIdAndGroup(memberId, group)) {
+        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
             throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }

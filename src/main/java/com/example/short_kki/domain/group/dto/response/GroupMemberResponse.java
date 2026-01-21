@@ -1,7 +1,7 @@
 package com.example.short_kki.domain.group.dto.response;
 
+import com.example.short_kki.domain.group.entity.GroupMember;
 import com.example.short_kki.domain.group.entity.GroupRole;
-import com.example.short_kki.domain.group.entity.MemberGroup;
 
 import java.time.LocalDateTime;
 
@@ -12,13 +12,14 @@ public record GroupMemberResponse(
         GroupRole role,
         LocalDateTime joinedAt
 ) {
-    public static GroupMemberResponse from(MemberGroup memberGroup) {
+
+    public static GroupMemberResponse from(GroupMember groupMember) {
         return new GroupMemberResponse(
-                memberGroup.getMember().getId(),
-                memberGroup.getMember().getName(),
-                memberGroup.getMember().getEmail(),
-                memberGroup.getRole(),
-                memberGroup.getCreatedAt()
+                groupMember.getMember().getId(),
+                groupMember.getMember().getName(),
+                groupMember.getMember().getEmail(),
+                groupMember.getRole(),
+                groupMember.getCreatedAt()
         );
     }
 }

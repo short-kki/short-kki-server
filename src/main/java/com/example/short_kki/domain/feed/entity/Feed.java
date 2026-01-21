@@ -23,6 +23,10 @@ public class Feed extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private FeedType feedType;
+
     // TODO : 좋아요 테이블을 만들어야 할까
     @Positive(message = "좋아요는 0 미만의 숫자를 가질 수 없습니다.")
     private Long likes = 0L;
@@ -36,17 +40,19 @@ public class Feed extends BaseEntity {
     private Member member;
 
     @Builder
-    private Feed(Group group, Member member, String content) {
+    private Feed(Group group, Member member, String content, FeedType feedType) {
         this.group = group;
         this.member = member;
         this.content = content;
+        this.feedType = feedType;
     }
 
-    public static Feed create(Group group, Member member, String content) {
+    public static Feed create(Group group, Member member, String content, FeedType feedType) {
         return Feed.builder()
                 .group(group)
                 .member(member)
                 .content(content)
+                .feedType(feedType)
                 .build();
     }
 

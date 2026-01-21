@@ -88,7 +88,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<Void>> deleteShoppingList(
+    public ResponseEntity<BaseResponse<Void>> clearShoppingList(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId
     ) {

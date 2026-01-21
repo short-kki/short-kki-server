@@ -5,9 +5,9 @@ import com.example.short_kki.domain.group.dto.request.JoinGroupRequest;
 import com.example.short_kki.domain.group.dto.request.UpdateGroupRequest;
 import com.example.short_kki.domain.group.dto.response.*;
 import com.example.short_kki.domain.group.entity.Group;
-import com.example.short_kki.domain.group.entity.MemberGroup;
+import com.example.short_kki.domain.group.entity.GroupMember;
 import com.example.short_kki.domain.group.repository.GroupRepository;
-import com.example.short_kki.domain.group.repository.MemberGroupRepository;
+import com.example.short_kki.domain.group.repository.GroupMemberRepository;
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.repository.MemberRepository;
 import com.example.short_kki.global.exception.BusinessException;
@@ -28,8 +28,14 @@ import java.util.UUID;
 public class GroupService {
 
     private final GroupRepository groupRepository;
-    private final MemberGroupRepository memberGroupRepository;
+    private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
+
+    private static void validateGroupMemberAdmin(GroupMember groupMember) {
+        if (!groupMember.checkIsAdmin()) {
+            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
+        }
+    }
 
     @Transactional
     public void createGroup(Long memberId, CreateGroupRequest request) {
@@ -42,15 +48,15 @@ public class GroupService {
                 generateInviteCode()
         );
         groupRepository.save(group);
-        MemberGroup memberGroup = MemberGroup.createAdmin(member, group);
-        memberGroupRepository.save(memberGroup);
+        GroupMember groupMember = GroupMember.createAdmin(member, group);
+        groupMemberRepository.save(groupMember);
     }
 
     @Transactional
     public void updateGroup(Long memberId, Long groupId, UpdateGroupRequest request) {
         Group group = findGroupById(groupId);
-        MemberGroup memberGroup = findMemberGroup(memberId, group);
-        memberGroup.isAdmin();
+        GroupMember groupMember = findGroupMember(memberId, group);
+        validateGroupMemberAdmin(groupMember);
         group.updateGroupInfo(
                 request.name(),
                 request.description(),
@@ -62,30 +68,30 @@ public class GroupService {
     @Transactional
     public void deleteGroup(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        MemberGroup memberGroup = findMemberGroup(memberId, group);
-        memberGroup.isAdmin();
+        GroupMember groupMember = findGroupMember(memberId, group);
+        validateGroupMemberAdmin(groupMember);
         groupRepository.delete(group);
     }
 
     public GroupResponse getGroup(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        long memberCount = memberGroupRepository.countByGroup(group);
+        long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
     }
 
     public List<GroupListResponse> getMyGroups(Long memberId) {
-        List<MemberGroup> memberGroups = memberGroupRepository.findAllByMemberIdWithGroup(memberId);
-        return memberGroups.stream()
-                .map(mg -> GroupListResponse.from(mg.getGroup(), mg.getRole()))
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByMemberIdWithGroup(memberId);
+        return groupMembers.stream()
+                .map(gm -> GroupListResponse.from(gm.getGroup(), gm.getRole()))
                 .toList();
     }
 
     public List<GroupMemberResponse> getGroupMembers(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        List<MemberGroup> memberGroups = memberGroupRepository.findAllByGroupWithMember(group);
-        return memberGroups.stream()
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByGroupWithMember(group);
+        return groupMembers.stream()
                 .map(GroupMemberResponse::from)
                 .toList();
     }
@@ -101,19 +107,19 @@ public class GroupService {
     @Transactional
     public void deleteShoppingList(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        MemberGroup memberGroup = findMemberGroup(memberId, group);
-        memberGroup.isAdmin();
+        GroupMember groupMember = findGroupMember(memberId, group);
+        validateGroupMemberAdmin(groupMember);
         // TODO: 장보기 테이블 구현 후 삭제 로직 추가
     }
 
     @Transactional
     public GroupResponse joinGroup(Long memberId, JoinGroupRequest request) {
         Group group = findGroupByInviteCode(request.inviteCode());
-        existMemberGroupByMemberIdAndGroup(memberId, group);
+        existGroupMemberByMemberIdAndGroup(memberId, group);
         Member member = findMemberById(memberId);
-        MemberGroup memberGroup = MemberGroup.createMember(member, group);
-        memberGroupRepository.save(memberGroup);
-        long memberCount = memberGroupRepository.countByGroup(group);
+        GroupMember groupMember = GroupMember.createMember(member, group);
+        groupMemberRepository.save(groupMember);
+        long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
     }
 
@@ -122,8 +128,8 @@ public class GroupService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_INVALID_INVITE_CODE));
     }
 
-    private void existMemberGroupByMemberIdAndGroup(Long memberId, Group group) {
-        if (memberGroupRepository.existsByMemberIdAndGroup(memberId, group)) {
+    private void existGroupMemberByMemberIdAndGroup(Long memberId, Group group) {
+        if (groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
             throw new BusinessException(ErrorCode.GROUP_ALREADY_JOINED);
         }
     }
@@ -138,23 +144,25 @@ public class GroupService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private MemberGroup findMemberGroup(Long memberId, Group group) {
-        return memberGroupRepository.findByMemberIdAndGroup(memberId, group)
+    private GroupMember findGroupMember(Long memberId, Group group) {
+        return groupMemberRepository.findByMemberIdAndGroup(memberId, group)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_MEMBER));
     }
 
     private void validateGroupMember(Long memberId, Group group) {
-        if (!memberGroupRepository.existsByMemberIdAndGroup(memberId, group)) {
+        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
             throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 
     private String generateInviteCode() {
-        // TODO : 초대 코드 생성 관련 고민 더 하기
-        String code;
-        do {
-            code = CodeGenerator.generateEventCode();
-        } while (groupRepository.existsByCode(code));
-        return code;
+        int maxAttempts = 10;
+        for (int i = 0; i < maxAttempts; i++) {
+            String code = CodeGenerator.generateEventCode();
+            if (!groupRepository.existsByCode(code)) {
+                return code;
+            }
+        }
+        throw new BusinessException(ErrorCode.GROUP_INVITE_CODE_GENERATION_FAILED);
     }
 }

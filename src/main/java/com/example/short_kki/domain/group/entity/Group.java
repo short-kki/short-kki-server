@@ -67,7 +67,7 @@ public class Group extends BaseEntity {
     public void updateGroupInfo(String name, String description, String thumbnailImgUrl,
             GroupType groupType) {
         if (name == null || name.isBlank()) {
-            throw new BadRequestException(ErrorCode.GROUP_NAME_EMPTY);
+            throw new IllegalArgumentException("그룹 이름은 필수입니다.");
         }
         this.name = name;
         if (description != null) {
