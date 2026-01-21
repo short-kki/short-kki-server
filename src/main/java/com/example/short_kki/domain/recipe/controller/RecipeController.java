@@ -2,6 +2,7 @@ package com.example.short_kki.domain.recipe.controller;
 
 import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest;
 import com.example.short_kki.domain.recipe.dto.RecipeResponse;
+import com.example.short_kki.domain.recipe.dto.RecipeUpdateRequest;
 import com.example.short_kki.domain.recipe.service.RecipeService;
 import com.example.short_kki.global.response.BaseResponse;
 import jakarta.validation.Valid;
@@ -18,17 +19,17 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     /**
-     * 레시피 생성 POST /api/recipes
+     * 레시피 생성 POST /api/v1/recipes
      */
     @PostMapping
-    public ResponseEntity<BaseResponse<RecipeResponse>> create(
+    public ResponseEntity<BaseResponse<Void>> create(
             @Valid @RequestBody RecipeCreateRequest request) {
         RecipeResponse response = recipeService.create(request);
-        return ResponseEntity.ok(BaseResponse.success("레시피가 생성되었습니다.", response));
+        return ResponseEntity.ok(BaseResponse.success("레시피가 생성되었습니다."));
     }
 
     /**
-     * 레시피 단건 조회 GET /api/recipes/{id}
+     * 레시피 단건 조회 GET /api/v1/recipes/{id}
      */
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeResponse>> findById(@PathVariable Long id) {
@@ -37,7 +38,7 @@ public class RecipeController {
     }
 
     /**
-     * 레시피 전체 조회 GET /api/recipes
+     * 레시피 전체 조회 GET /api/v1/recipes
      */
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeResponse>>> findAll() {
@@ -47,11 +48,18 @@ public class RecipeController {
     }
 
     /**
-     * 레시피 삭제 DELETE /api/recipes/{id}
+     * 레시피 삭제 DELETE /api/v1/recipes/{id}
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long id) {
         recipeService.delete(id);
         return ResponseEntity.ok(BaseResponse.success("레시피가 삭제되었습니다."));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> update(@PathVariable Long id,
+            @Valid @RequestBody RecipeUpdateRequest request) {
+        recipeService.update(id, request);
+        return ResponseEntity.ok(BaseResponse.success("레시피가 수정되었습니다."));
     }
 }

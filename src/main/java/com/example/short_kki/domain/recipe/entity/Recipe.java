@@ -7,6 +7,8 @@ import com.example.short_kki.domain.recipe.constant.RecipeStatus;
 import com.example.short_kki.domain.recipe.constant.SourceContentType;
 import com.example.short_kki.domain.recipe.constant.SourcePlatform;
 import com.example.short_kki.domain.recipe.constant.SourceType;
+import com.example.short_kki.domain.recipe.dto.BasicInfo;
+import com.example.short_kki.domain.recipe.dto.CategoryInfo;
 import com.example.short_kki.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -135,6 +137,18 @@ public class Recipe extends BaseEntity {
                 .build();
     }
 
+    /**
+     * 레시피 기본 정보 수정 - 수동 입력(USER_CREATED) 레시피만 수정 가능
+     */
+    public void update(BasicInfo basicInfo, CategoryInfo categoryInfo) {
+        this.title = basicInfo.title();
+        this.description = basicInfo.description();
+        this.servingSize = basicInfo.servingSize();
+        this.cookingTime = basicInfo.cookingTime();
+        this.cuisineType = categoryInfo.cuisineType();
+        this.mealType = categoryInfo.mealType();
+        this.difficulty = categoryInfo.difficulty();
+    }
     // --- 편의 메서드: RecipeSource 필드 접근 (null-safe) ---
 
     public String getSourceUrl() {
