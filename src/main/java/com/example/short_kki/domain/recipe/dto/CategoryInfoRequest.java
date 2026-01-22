@@ -10,5 +10,7 @@ public record CategoryInfoRequest(
 
         @NotNull(message = "식사 유형은 필수입니다") MealType mealType,
 
-        @NotNull(message = "난이도는 필수입니다") Difficulty difficulty) {
+        @NotNull(message = "난이도는 필수입니다") Difficulty difficulty
+) {
+
 }
