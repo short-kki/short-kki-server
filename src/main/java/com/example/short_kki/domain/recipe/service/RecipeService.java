@@ -3,11 +3,11 @@ package com.example.short_kki.domain.recipe.service;
 import com.example.short_kki.domain.ingredient.entity.Ingredient;
 import com.example.short_kki.domain.ingredient.repository.IngredientRepository;
 import com.example.short_kki.domain.recipe.constant.SourceType;
-import com.example.short_kki.domain.recipe.dto.IngredientInfo;
+import com.example.short_kki.domain.recipe.dto.IngredientRequest;
 import com.example.short_kki.domain.recipe.dto.RecipeCreateRequest;
 import com.example.short_kki.domain.recipe.dto.RecipeResponse;
 import com.example.short_kki.domain.recipe.dto.RecipeUpdateRequest;
-import com.example.short_kki.domain.recipe.dto.StepInfo;
+import com.example.short_kki.domain.recipe.dto.StepRequest;
 import com.example.short_kki.domain.recipe.entity.Recipe;
 import com.example.short_kki.domain.recipe.entity.RecipeIngredient;
 import com.example.short_kki.domain.recipe.entity.RecipeStep;
@@ -17,10 +17,10 @@ import com.example.short_kki.domain.recipe.repository.RecipeStepRepository;
 import com.example.short_kki.global.exception.BusinessException;
 import com.example.short_kki.global.exception.ErrorCode;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +32,6 @@ public class RecipeService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final IngredientRepository ingredientRepository;
 
-    /**
-     * 레시피 생성
-     */
     @Transactional
     public RecipeResponse create(RecipeCreateRequest request) {
         validateRecipeRequest(request);
@@ -49,9 +46,6 @@ public class RecipeService {
         return RecipeResponse.toDto(saved, savedSteps, savedIngredients);
     }
 
-    /**
-     * 레시피 수정 - 수동 입력(USER_CREATED) 레시피만 수정 가능
-     */
     @Transactional
     public void update(Long id, RecipeUpdateRequest request) {
         Recipe recipe = recipeRepository.findById(id)
@@ -68,9 +62,6 @@ public class RecipeService {
         createIngredients(recipe, request.ingredients());
     }
 
-    /**
-     * 레시피 단건 조회
-     */
     public RecipeResponse findById(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
@@ -82,11 +73,8 @@ public class RecipeService {
         return RecipeResponse.toDto(recipe, steps, ingredients);
     }
 
-    /**
-     * 레시피 전체 조회
-     * TODO: N+1 문제 해결 (Fetch Join 고려)
-     * TODO: 페이지네이션 추가
-     */
+    // TODO: N+1 문제 해결 (Fetch Join 고려)
+    // TODO: 페이지네이션 추가
     public List<RecipeResponse> findAll() {
         List<Recipe> recipes = recipeRepository.findAll();
 
@@ -100,12 +88,8 @@ public class RecipeService {
                 .toList();
     }
 
-    /**
-     * 레시피 삭제
-     */
     @Transactional
     public void delete(Long id) {
-        // TODO : 작성자 권한 확인
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
@@ -117,19 +101,17 @@ public class RecipeService {
         recipeRepository.delete(recipe);
     }
 
-    // --- Private Helper Methods ---
-
-    private List<RecipeStep> createSteps(Recipe recipe, List<StepInfo> stepInfos) {
+    private List<RecipeStep> createSteps(Recipe recipe, List<StepRequest> stepRequests) {
         List<RecipeStep> steps = new ArrayList<>();
-        for (int i = 0; i < stepInfos.size(); i++) {
-            steps.add(RecipeStep.create(recipe, i + 1, stepInfos.get(i).description()));
+        for (int i = 0; i < stepRequests.size(); i++) {
+            steps.add(RecipeStep.create(recipe, i + 1, stepRequests.get(i).description()));
         }
         return recipeStepRepository.saveAll(steps);
     }
 
     private List<RecipeIngredient> createIngredients(Recipe recipe,
-            List<IngredientInfo> ingredientInfos) {
-        List<RecipeIngredient> recipeIngredients = ingredientInfos.stream()
+            List<IngredientRequest> ingredientRequests) {
+        List<RecipeIngredient> recipeIngredients = ingredientRequests.stream()
                 .map(info -> {
                     Ingredient ingredient = ingredientRepository.findByName(info.name())
                             .orElseGet(() -> ingredientRepository.save(
@@ -154,5 +136,4 @@ public class RecipeService {
             throw new BusinessException(ErrorCode.IMPORTED_RECIPE_NOT_MODIFIABLE);
         }
     }
-
 }

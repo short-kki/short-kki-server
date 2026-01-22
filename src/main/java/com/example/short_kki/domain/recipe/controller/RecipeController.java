@@ -12,15 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/vi/recipes")
+@RequestMapping("/api/v1/recipes")
 @RequiredArgsConstructor
 public class RecipeController {
 
     private final RecipeService recipeService;
 
-    /**
-     * 레시피 생성 POST /api/v1/recipes
-     */
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> create(
             @Valid @RequestBody RecipeCreateRequest request) {
@@ -28,18 +25,12 @@ public class RecipeController {
         return ResponseEntity.ok(BaseResponse.success("레시피가 생성되었습니다."));
     }
 
-    /**
-     * 레시피 단건 조회 GET /api/v1/recipes/{id}
-     */
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeResponse>> findById(@PathVariable Long id) {
         RecipeResponse response = recipeService.findById(id);
         return ResponseEntity.ok(BaseResponse.success("레시피가 조회되었습니다.", response));
     }
 
-    /**
-     * 레시피 전체 조회 GET /api/v1/recipes
-     */
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeResponse>>> findAll() {
         // TODO : 페이지네이션
@@ -47,9 +38,6 @@ public class RecipeController {
         return ResponseEntity.ok(BaseResponse.success("레시피 목록이 조회되었습니다.", responses));
     }
 
-    /**
-     * 레시피 삭제 DELETE /api/v1/recipes/{id}
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long id) {
         recipeService.delete(id);
@@ -62,4 +50,8 @@ public class RecipeController {
         recipeService.update(id, request);
         return ResponseEntity.ok(BaseResponse.success("레시피가 수정되었습니다."));
     }
+    // TODO : 외부 레시피 파싱
+    // TODO : 장볼거리 추가
+    // TODO : 태그, 이미 추가
+    // TODO : 외부 레시피 생성 로직 분리
 }

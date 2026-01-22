@@ -2,6 +2,7 @@ package com.example.short_kki.domain.recipe.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,8 +24,8 @@ public class RecipeStep {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // -- 설정 고려하지 않고 나중에 테스트해서 변경 예정
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 

@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-
 public enum CuisineType {
+
     KOREAN("한식"),
     WESTERN("양식"),
     JAPANESE("일식"),

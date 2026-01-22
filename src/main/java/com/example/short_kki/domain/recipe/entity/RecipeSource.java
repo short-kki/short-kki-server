@@ -11,10 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 레시피 출처 정보 Value Object
- * QueryDSL 호환성을 위해 class로 구현 (record 대신)
- */
+
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

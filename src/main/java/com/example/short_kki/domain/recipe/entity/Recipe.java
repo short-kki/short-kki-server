@@ -3,12 +3,11 @@ package com.example.short_kki.domain.recipe.entity;
 import com.example.short_kki.domain.recipe.constant.CuisineType;
 import com.example.short_kki.domain.recipe.constant.Difficulty;
 import com.example.short_kki.domain.recipe.constant.MealType;
-import com.example.short_kki.domain.recipe.constant.RecipeStatus;
 import com.example.short_kki.domain.recipe.constant.SourceContentType;
 import com.example.short_kki.domain.recipe.constant.SourcePlatform;
 import com.example.short_kki.domain.recipe.constant.SourceType;
-import com.example.short_kki.domain.recipe.dto.BasicInfo;
-import com.example.short_kki.domain.recipe.dto.CategoryInfo;
+import com.example.short_kki.domain.recipe.dto.BasicInfoRequest;
+import com.example.short_kki.domain.recipe.dto.CategoryInfoRequest;
 import com.example.short_kki.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -50,7 +49,6 @@ public class Recipe extends BaseEntity {
     @ColumnDefault("0")
     private Integer bookmarkCount = 0;
 
-    // -- 카테고리 --
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private CuisineType cuisineType;
@@ -63,7 +61,6 @@ public class Recipe extends BaseEntity {
     @Column(nullable = false, length = 50)
     private Difficulty difficulty;
 
-    // -- 출처 --
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private SourceType sourceType;
@@ -71,18 +68,14 @@ public class Recipe extends BaseEntity {
     @Embedded
     private RecipeSource recipeSource;
 
-    // -- 기타 --
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private RecipeStatus status;
-
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
     @Builder
-    private Recipe(String title, String description, Integer servingSize, Integer cookingTime,
+    private Recipe(
+            String title, String description, Integer servingSize, Integer cookingTime,
             CuisineType cuisineType, MealType mealType, Difficulty difficulty,
-            SourceType sourceType, RecipeSource recipeSource, RecipeStatus status,
+            SourceType sourceType, RecipeSource recipeSource,
             Integer bookmarkCount, Boolean isDeleted) {
         this.title = title;
         this.description = description;
@@ -93,14 +86,10 @@ public class Recipe extends BaseEntity {
         this.difficulty = difficulty;
         this.sourceType = sourceType;
         this.recipeSource = recipeSource;
-        this.status = status;
         this.bookmarkCount = bookmarkCount;
         this.isDeleted = isDeleted;
     }
 
-    /**
-     * 수동 입력용 정적 팩토리 메서드 출처 정보 없이 사용자가 직접 레시피를 작성할 때 사용
-     */
     public static Recipe createManual(String title, String description, Integer servingSize,
             Integer cookingTime, CuisineType cuisineType, MealType mealType,
             Difficulty difficulty) {
@@ -113,14 +102,11 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.USER_CREATED)
-                .status(RecipeStatus.DRAFT)
                 .build();
     }
 
-    /**
-     * 링크 가져오기용 정적 팩토리 메서드 외부 URL에서 레시피를 파싱해서 가져올 때 사용
-     */
-    public static Recipe createFromLink(String title, String description, Integer servingSize,
+    public static Recipe createFromLink(
+            String title, String description, Integer servingSize,
             Integer cookingTime, CuisineType cuisineType, MealType mealType, Difficulty difficulty,
             RecipeSource recipeSource) {
         return Recipe.builder()
@@ -133,14 +119,11 @@ public class Recipe extends BaseEntity {
                 .difficulty(difficulty)
                 .sourceType(SourceType.IMPORTED)
                 .recipeSource(recipeSource)
-                .status(RecipeStatus.DRAFT)
                 .build();
     }
 
-    /**
-     * 레시피 기본 정보 수정 - 수동 입력(USER_CREATED) 레시피만 수정 가능
-     */
-    public void update(BasicInfo basicInfo, CategoryInfo categoryInfo) {
+    public void update(
+            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo) {
         this.title = basicInfo.title();
         this.description = basicInfo.description();
         this.servingSize = basicInfo.servingSize();
@@ -149,7 +132,6 @@ public class Recipe extends BaseEntity {
         this.mealType = categoryInfo.mealType();
         this.difficulty = categoryInfo.difficulty();
     }
-    // --- 편의 메서드: RecipeSource 필드 접근 (null-safe) ---
 
     public String getSourceUrl() {
         return recipeSource != null ? recipeSource.getUrl() : null;
