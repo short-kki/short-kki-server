@@ -1,4 +1,4 @@
-package com.example.short_kki.global.exception;
+package com.example.short_kki.global.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
