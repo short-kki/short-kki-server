@@ -33,8 +33,7 @@ public class SecurityConfig {
             "/actuator/health",
             "/api/auth/**",
             "/h2-console/**",
-            "/api/dev/tokens",
-            "/api/v1/files/**"
+            "/api/dev/tokens"
     };
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
