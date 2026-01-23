@@ -32,8 +32,8 @@ public class SecurityConfig {
             "/favicon.ico",
             "/actuator/health",
             "/api/auth/**",
-            "/api/dev/**",
             "/h2-console/**",
+            "/api/dev/tokens",
             "/api/v1/files/**"
     };
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
