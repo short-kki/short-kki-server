@@ -1,7 +1,7 @@
 package com.example.short_kki.global.auth.filter;
 
 import com.example.short_kki.global.auth.jwt.JwtTokenProvider;
-import com.example.short_kki.global.exception.BusinessException;
+import com.example.short_kki.global.error.exception.BusinessException;
 import com.example.short_kki.global.response.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -31,9 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+    ) throws ServletException, IOException {
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token)) {
@@ -41,8 +41,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtTokenProvider.validateToken(token)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.debug("Set Authentication to SecurityContext for '{}', uri: {}",
-                            authentication.getName(), request.getRequestURI());
+                    // TODO: 멤버 존재 검증
+                    log.debug(
+                            "Set Authentication to SecurityContext for '{}', uri: {}",
+                            authentication.getName(), request.getRequestURI()
+                    );
                 }
             } catch (BusinessException e) {
                 log.warn("JWT validation failed: {}", e.getMessage());
