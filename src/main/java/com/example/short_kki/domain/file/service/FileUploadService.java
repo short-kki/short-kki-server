@@ -13,6 +13,7 @@ import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.service.MemberQueryService;
 import com.example.short_kki.global.error.exception.AccessDeniedException;
 import com.example.short_kki.global.error.exception.BadRequestException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,7 @@ public class FileUploadService {
         FileMetadata file = fileMetadataService.getById(fileId);
         Member member = memberQueryService.getById(memberId);
 
-        if (file.getUploaderId() != member.getId()) {
+        if (!Objects.equals(file.getUploaderId(), member.getId())) {
             throw new AccessDeniedException("파일 업로더 id와 요청자 id가 다릅니다.");
         }
 
