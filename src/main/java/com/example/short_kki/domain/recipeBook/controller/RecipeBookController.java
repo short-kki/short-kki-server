@@ -1,0 +1,72 @@
+package com.example.short_kki.domain.recipeBook.controller;
+
+import com.example.short_kki.domain.recipeBook.dto.RecipeBookCreateRequest;
+import com.example.short_kki.domain.recipeBook.dto.RecipeBookResponse;
+import com.example.short_kki.domain.recipeBook.dto.RecipeBookUpdateRequest;
+import com.example.short_kki.domain.recipeBook.service.RecipeBookService;
+import com.example.short_kki.global.auth.dto.LoginMember;
+import com.example.short_kki.global.response.BaseResponse;
+import jakarta.validation.Valid;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/recipe-books")
+@RequiredArgsConstructor
+public class RecipeBookController {
+
+    private final RecipeBookService recipeBookService;
+
+    @PostMapping
+    public ResponseEntity<BaseResponse<Void>> create(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @Valid @RequestBody RecipeBookCreateRequest request) {
+        RecipeBookResponse response = recipeBookService.create(loginMember.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+    }
+
+    @GetMapping
+    public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
+            @AuthenticationPrincipal LoginMember loginMember
+    ) {
+        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(loginMember.getId());
+        return ResponseEntity.ok(BaseResponse.success(responses));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(@PathVariable Long id) {
+        RecipeBookResponse response = recipeBookService.findById(id);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> updateTitle(
+            @PathVariable Long id,
+            @Valid @RequestBody RecipeBookUpdateRequest request) {
+        recipeBookService.updateTitle(id, request);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> delete(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id) {
+        recipeBookService.delete(loginMember.getId(), id);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    // TODO: 레시피북에 레시피 추가 (POST /api/v1/recipe-books/{id}/recipes)
+    // TODO: 레시피북에서 레시피 삭제 (DELETE /api/v1/recipe-books/{id}/recipes/{recipeId})
+    // TODO: 레시피북 순서 변경 (PATCH /api/v1/recipe-books/order)
+}

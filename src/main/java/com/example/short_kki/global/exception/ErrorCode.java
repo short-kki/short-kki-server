@@ -33,6 +33,10 @@ public enum ErrorCode {
     IMPORTED_RECIPE_NOT_MODIFIABLE(HttpStatus.FORBIDDEN, "RECIPE_004",
             "외부에서 가져온 레시피는 수정하거나 삭제할 수 없습니다."),
 
+    // RecipeBook
+    RECIPE_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_BOOK_001", "레시피북을 찾을 수 없습니다."),
+    CANNOT_DELETE_DEFAULT_RECIPE_BOOK(HttpStatus.BAD_REQUEST, "RECIPE_BOOK_002",
+            "기본 레시피북은 삭제할 수 없습니다."),
     // Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "GROUP_001", "그룹을 찾을 수 없습니다."),
     GROUP_ACCESS_DENIED(HttpStatus.FORBIDDEN, "GROUP_002", "그룹에 대한 접근 권한이 없습니다."),
