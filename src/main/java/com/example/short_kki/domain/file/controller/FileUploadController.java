@@ -24,7 +24,7 @@ public class FileUploadController {
     private final FileUploadService fileUploadService;
 
     @PostMapping("/uploads")
-    public ResponseEntity<BaseResponse<FileUploadResponse>> createUploadUrl(
+    public ResponseEntity<BaseResponse<FileUploadResponse>> markUploaded(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody FileUploadRequest request
     ) {
@@ -33,7 +33,7 @@ public class FileUploadController {
     }
 
     @PatchMapping("/uploads/{fileId}")
-    public ResponseEntity<BaseResponse<Void>> createUploadUrl(
+    public ResponseEntity<BaseResponse<Void>> markUploaded(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long fileId
     ) {
