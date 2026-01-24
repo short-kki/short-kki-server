@@ -3,6 +3,7 @@ package com.example.short_kki.domain.auth.controller;
 import com.example.short_kki.domain.auth.dto.LoginRequest;
 import com.example.short_kki.domain.auth.dto.LoginResponse;
 import com.example.short_kki.domain.auth.service.AuthService;
+import com.example.short_kki.domain.member.entity.OAuthProvider;
 import com.example.short_kki.global.response.BaseResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/{provider}")
     public ResponseEntity<BaseResponse<LoginResponse>> login(
-            @PathVariable String provider,
+            @PathVariable OAuthProvider provider,
             @Valid @RequestBody LoginRequest request
     ) {
         LoginResponse response = authService.login(provider, request);

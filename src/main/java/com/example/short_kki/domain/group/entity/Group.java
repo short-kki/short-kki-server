@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user_groups")
+@Table(name = "member_group")
 public class Group extends BaseEntity {
 
     @Id

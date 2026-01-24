@@ -2,6 +2,7 @@ package com.example.short_kki.domain.auth.service;
 
 import com.example.short_kki.domain.auth.dto.LoginRequest;
 import com.example.short_kki.domain.auth.dto.LoginResponse;
+import com.example.short_kki.domain.auth.entity.Platform;
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.entity.OAuthProvider;
 import com.example.short_kki.domain.member.repository.MemberRepository;
@@ -32,15 +33,14 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public LoginResponse login(String providerName, LoginRequest request) {
+    public LoginResponse login(OAuthProvider provider, LoginRequest request) {
         log.info("OAuth login request - provider: {}, platform: {}, hasCode: {}, hasCodeVerifier: {}",
-                providerName,
+                provider,
                 request.getPlatform(),
                 request.getCode() != null && !request.getCode().isBlank(),
                 request.getCodeVerifier() != null && !request.getCodeVerifier().isBlank());
 
-        OAuthProvider provider = parseProvider(providerName);
-        String configKey = resolveProviderConfigKey(providerName, request.getPlatform());
+        String configKey = resolveProviderConfigKey(provider, request.getPlatform());
         OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(configKey);
 
         String oauthAccessToken = getAccessToken(request.getCode(), request.getCodeVerifier(),
@@ -73,20 +73,11 @@ public class AuthService {
                 .build();
     }
 
-    private OAuthProvider parseProvider(String providerName) {
-        try {
-            return OAuthProvider.valueOf(providerName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED,
-                    "지원하지 않는 OAuth 제공자입니다: " + providerName);
+    private String resolveProviderConfigKey(OAuthProvider provider, Platform platform) {
+        if (provider == OAuthProvider.GOOGLE && platform != null) {
+            return "google-" + platform.name().toLowerCase();
         }
-    }
-
-    private String resolveProviderConfigKey(String providerName, String platform) {
-        if ("google".equalsIgnoreCase(providerName) && platform != null && !platform.isBlank()) {
-            return "google-" + platform.toLowerCase();
-        }
-        return providerName.toLowerCase();
+        return provider.name().toLowerCase();
     }
 
     @SuppressWarnings("unchecked")
