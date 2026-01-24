@@ -22,6 +22,10 @@ public enum FileTargetType {
     private final String prefix;
 
     public boolean isAllowedContentType(String contentType) {
-        return allowedContentTypes.contains(contentType);
+        if (contentType == null) {
+            return false;
+        }
+
+        return allowedContentTypes.contains(contentType.toLowerCase());
     }
 }
