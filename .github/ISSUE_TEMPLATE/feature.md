@@ -1,3 +1,12 @@
+---
+name: feature
+about: 기능 요청 및 구현할 기능 설명
+title: "[feat]"
+labels: ''
+assignees: ''
+
+---
+
 ## 📌 개요
 *무엇을 위한 이슈인지 간단히 설명*
 
