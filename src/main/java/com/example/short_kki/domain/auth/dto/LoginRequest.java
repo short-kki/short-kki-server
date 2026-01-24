@@ -10,4 +10,8 @@ public class LoginRequest {
 
     @NotBlank(message = "Authorization code는 필수입니다.")
     private String code;
+
+    private String codeVerifier;
+
+    private String platform; // ios, android
 }

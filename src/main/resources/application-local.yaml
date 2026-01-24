@@ -27,10 +27,12 @@ jwt:
 
 oauth2:
   provider:
-    google:
-      client-id: local-google-client-id
-      client-secret: local-google-client-secret
-      redirect-uri: http://localhost:8080/login/oauth2/code/google
+    google-ios:
+      client-id: local-google-ios-client-id
+      redirect-uri: com.googleusercontent.apps.local://
+    google-android:
+      client-id: local-google-android-client-id
+      redirect-uri: shortkki://oauth/google
     kakao:
       client-id: local-kakao-client-id
       client-secret: local-kakao-client-secret

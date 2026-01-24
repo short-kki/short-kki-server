@@ -33,10 +33,18 @@ public class AuthService {
 
     @Transactional
     public LoginResponse login(String providerName, LoginRequest request) {
-        OAuthProvider provider = parseProvider(providerName);
-        OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(providerName);
+        log.info("OAuth login request - provider: {}, platform: {}, hasCode: {}, hasCodeVerifier: {}",
+                providerName,
+                request.getPlatform(),
+                request.getCode() != null && !request.getCode().isBlank(),
+                request.getCodeVerifier() != null && !request.getCodeVerifier().isBlank());
 
-        String oauthAccessToken = getAccessToken(request.getCode(), providerConfig);
+        OAuthProvider provider = parseProvider(providerName);
+        String configKey = resolveProviderConfigKey(providerName, request.getPlatform());
+        OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(configKey);
+
+        String oauthAccessToken = getAccessToken(request.getCode(), request.getCodeVerifier(),
+                providerConfig, provider);
         Map<String, Object> userInfo = getUserInfo(oauthAccessToken, providerConfig, provider);
 
         String oauthId = extractOAuthId(userInfo, provider);
@@ -74,14 +82,38 @@ public class AuthService {
         }
     }
 
+    private String resolveProviderConfigKey(String providerName, String platform) {
+        if ("google".equalsIgnoreCase(providerName) && platform != null && !platform.isBlank()) {
+            return "google-" + platform.toLowerCase();
+        }
+        return providerName.toLowerCase();
+    }
+
     @SuppressWarnings("unchecked")
-    private String getAccessToken(String code, OAuth2Properties.Provider providerConfig) {
+    private String getAccessToken(String code, String codeVerifier,
+            OAuth2Properties.Provider providerConfig, OAuthProvider provider) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", providerConfig.getClientId());
-        params.add("client_secret", providerConfig.getClientSecret());
         params.add("redirect_uri", providerConfig.getRedirectUri());
         params.add("code", code);
+
+        if (provider == OAuthProvider.GOOGLE) {
+            if (codeVerifier != null && !codeVerifier.isBlank()) {
+                params.add("code_verifier", codeVerifier);
+            }
+            log.info("Google OAuth request - clientId: {}, redirectUri: {}, hasCodeVerifier: {}",
+                    providerConfig.getClientId(),
+                    providerConfig.getRedirectUri(),
+                    codeVerifier != null && !codeVerifier.isBlank());
+        } else {
+            params.add("client_secret", providerConfig.getClientSecret());
+            log.info("{} OAuth request - clientId: {}, redirectUri: {}, tokenUri: {}",
+                    provider,
+                    providerConfig.getClientId(),
+                    providerConfig.getRedirectUri(),
+                    providerConfig.getTokenUri());
+        }
 
         try {
             Map<String, Object> response = restClient.post()
