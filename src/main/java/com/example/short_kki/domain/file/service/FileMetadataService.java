@@ -6,8 +6,9 @@ import com.example.short_kki.domain.file.entity.FileTargetType;
 import com.example.short_kki.domain.file.entity.FileVisibility;
 import com.example.short_kki.domain.file.entity.UploaderType;
 import com.example.short_kki.domain.file.repository.FileMetadataRepository;
-import com.example.short_kki.domain.file.util.FileNameUtil;
+import com.example.short_kki.domain.file.util.FileKeyUtil;
 import com.example.short_kki.global.error.exception.NotFoundException;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,12 @@ public class FileMetadataService {
     }
 
     public FileMetadata createFileMetadata(
-            String filename, long size, FileTargetType targetType,
-            UploaderType uploaderType, Long uploaderId, FileVisibility visibility
+            String filename, long size, UploaderType uploaderType, Long uploaderId,
+            FileTargetType targetType, FileVisibility visibility
     ) {
-        String key = generateKey(visibility, filename);
-        String extension = FileNameUtil.extractSafeExtension(filename);
+        String prefix = generatePrefix(LocalDate.now(), targetType, visibility);
+        String key = FileKeyUtil.generateKey(prefix, filename);
+        String extension = FileKeyUtil.extractSafeExtension(filename);
 
         FileMetadata fileMetadata = FileMetadata.createPending(
                 key,
@@ -46,11 +48,16 @@ public class FileMetadataService {
         return fileMetadataRepository.save(fileMetadata);
     }
 
-    private String generateKey(FileVisibility visibility, String filename) {
-        String prefix = (visibility == FileVisibility.PUBLIC)
+    private String generatePrefix(LocalDate today, FileTargetType targetType, FileVisibility visibility) {
+        String root = (visibility == FileVisibility.PUBLIC)
                 ? fileProps.publicPrefix()
                 : fileProps.privatePrefix();
-        return FileNameUtil.generate(prefix, filename);
+
+        return FileKeyUtil.joinPrefix(
+                root,
+                targetType.getPrefix(),
+                String.valueOf(today.getYear()),
+                String.valueOf(today.getMonthValue())
+        );
     }
 }
-

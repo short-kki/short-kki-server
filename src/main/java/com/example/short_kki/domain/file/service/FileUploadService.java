@@ -37,7 +37,7 @@ public class FileUploadService {
 
         validateFile(visibility, contentType, contentLength, targetType);
         FileMetadata fileMetadata = fileMetadataService.createFileMetadata(
-                filename, contentLength, targetType, UploaderType.MEMBER, uploaderId, visibility
+                filename, contentLength, UploaderType.MEMBER, uploaderId, targetType, visibility
         );
 
         UploadUrlDto result = fileUploadPort.createUploadUrl(fileMetadata.getObjectKey(), contentType, fileProps.expireSeconds());

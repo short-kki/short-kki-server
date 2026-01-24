@@ -40,9 +40,9 @@ public class DevService {
         FileMetadata fileMetadata = fileMetadataService.createFileMetadata(
                 request.filename(),
                 request.contentLength(),
-                request.targetType(),
                 UploaderType.MEMBER,
                 memberId,
+                request.targetType(),
                 request.visibility()
         );
 
