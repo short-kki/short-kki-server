@@ -102,6 +102,8 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.USER_CREATED)
+                .isDeleted(false)
+                .bookmarkCount(0)
                 .build();
     }
 

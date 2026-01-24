@@ -11,21 +11,20 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 public class RecipeSource {
 
-    @Column(nullable = false)
+    @Column(name = "url")
     private String url;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "platform", length = 50)
     @Enumerated(EnumType.STRING)
     private SourcePlatform platform;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "content_type", length = 50)
     @Enumerated(EnumType.STRING)
     private SourceContentType contentType;
 

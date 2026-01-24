@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecipeBookRepository extends JpaRepository<RecipeBook, Long>,
-        MemberRepositoryCustom {
+        RecipeBookRepositoryCustom {
 
     List<RecipeBook> findAllByMemberIdOrderBySortOrder(Long memberId);
 
