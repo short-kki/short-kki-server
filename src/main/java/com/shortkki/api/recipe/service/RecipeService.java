@@ -1,22 +1,20 @@
 package com.shortkki.api.recipe.service;
 
-import com.shortkki.api.ingredient.entity.Ingredient;
-import com.shortkki.api.ingredient.repository.IngredientRepository;
 import com.shortkki.api.recipe.constant.SourceType;
-import com.shortkki.api.recipe.dto.IngredientRequest;
+import com.shortkki.api.recipe.dto.BasicInfoRequest;
+import com.shortkki.api.recipe.dto.CategoryInfoRequest;
 import com.shortkki.api.recipe.dto.RecipeCreateRequest;
 import com.shortkki.api.recipe.dto.RecipeResponse;
 import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
-import com.shortkki.api.recipe.dto.StepRequest;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
-import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
-import com.shortkki.api.recipe.repository.RecipeStepRepository;
-import com.shortkki.global.error.exception.BusinessException;
+import com.shortkki.api.source.domain.SourceContent;
+import com.shortkki.api.source.service.SourceContentService;
 import com.shortkki.global.error.ErrorCode;
-import java.util.ArrayList;
+import com.shortkki.global.error.exception.BadRequestException;
+import com.shortkki.global.error.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,29 +22,35 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
-    private final RecipeStepRepository recipeStepRepository;
-    private final RecipeIngredientRepository recipeIngredientRepository;
-    private final IngredientRepository ingredientRepository;
+    private final RecipeStepService recipeStepService;
+    private final RecipeIngredientService recipeIngredientService;
+    private final SourceContentService sourceContentService;
 
-    @Transactional
     public RecipeResponse create(RecipeCreateRequest request) {
         validateRecipeRequest(request);
 
-        // TODO: 로그인 연동 후 작성자 세팅
-        Recipe recipe = request.toEntity();
-        Recipe saved = recipeRepository.save(recipe);
+        BasicInfoRequest basicInfo = request.basicInfo();
+        CategoryInfoRequest categoryInfo = request.categoryInfo();
+        SourceType sourceType = request.sourceType();
 
-        List<RecipeStep> savedSteps = createSteps(saved, request.steps());
-        List<RecipeIngredient> savedIngredients = createIngredients(saved, request.ingredients());
+        SourceContent sourceContent = null;
+        if (sourceType == SourceType.IMPORTED) {
+            sourceContent = sourceContentService.resolveSourceContent(request.sourceUrl());
+        }
+
+        // TODO: 로그인 연동 후 작성자 세팅
+        Recipe saved = createRecipe(basicInfo, categoryInfo, sourceType, sourceContent);
+
+        List<RecipeStep> savedSteps = recipeStepService.createSteps(saved, request.steps());
+        List<RecipeIngredient> savedIngredients = recipeIngredientService.createIngredients(saved, request.ingredients());
 
         return RecipeResponse.toDto(saved, savedSteps, savedIngredients);
     }
 
-    @Transactional
     public void update(Long id, RecipeUpdateRequest request) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
@@ -55,71 +59,49 @@ public class RecipeService {
 
         recipe.update(request.basicInfo(), request.categoryInfo());
 
-        recipeStepRepository.deleteByRecipeId(id);
-        recipeIngredientRepository.deleteByRecipeId(id);
+        recipeStepService.deleteByRecipeId(id);
+        recipeIngredientService.deleteByRecipeId(id);
 
-        createSteps(recipe, request.steps());
-        createIngredients(recipe, request.ingredients());
+        recipeStepService.createSteps(recipe, request.steps());
+        recipeIngredientService.createIngredients(recipe, request.ingredients());
     }
 
-    public RecipeResponse findById(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
-
-        List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
-        List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(
-                recipe.getId());
-
-        return RecipeResponse.toDto(recipe, steps, ingredients);
-    }
-
-    // TODO: N+1 문제 해결 (Fetch Join 고려)
-    // TODO: 페이지네이션 추가
-    public List<RecipeResponse> findAll() {
-        List<Recipe> recipes = recipeRepository.findAll();
-
-        return recipes.stream()
-                .map(recipe -> {
-                    List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
-                    List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(
-                            recipe.getId());
-                    return RecipeResponse.toDto(recipe, steps, ingredients);
-                })
-                .toList();
-    }
-
-    @Transactional
     public void delete(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
         validateUserCreated(recipe);
 
-        recipeStepRepository.deleteByRecipeId(id);
-        recipeIngredientRepository.deleteByRecipeId(id);
-
+        recipeStepService.deleteByRecipeId(id);
+        recipeIngredientService.deleteByRecipeId(id);
         recipeRepository.delete(recipe);
     }
 
-    private List<RecipeStep> createSteps(Recipe recipe, List<StepRequest> stepRequests) {
-        List<RecipeStep> steps = new ArrayList<>();
-        for (int i = 0; i < stepRequests.size(); i++) {
-            steps.add(RecipeStep.create(recipe, i + 1, stepRequests.get(i).description()));
-        }
-        return recipeStepRepository.saveAll(steps);
-    }
-
-    private List<RecipeIngredient> createIngredients(Recipe recipe,
-            List<IngredientRequest> ingredientRequests) {
-        List<RecipeIngredient> recipeIngredients = ingredientRequests.stream()
-                .map(info -> {
-                    Ingredient ingredient = ingredientRepository.findByName(info.name())
-                            .orElseGet(() -> ingredientRepository.save(
-                                    Ingredient.create(info.name(), info.unit())));
-                    return RecipeIngredient.create(ingredient, recipe, info.amount());
-                })
-                .toList();
-        return recipeIngredientRepository.saveAll(recipeIngredients);
+    private Recipe createRecipe(
+            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo,
+            SourceType sourceType, SourceContent sourceContent
+    ) {
+        return switch (sourceType) {
+            case USER_CREATED -> Recipe.createManual(
+                    basicInfo.title(),
+                    basicInfo.description(),
+                    basicInfo.servingSize(),
+                    basicInfo.cookingTime(),
+                    categoryInfo.cuisineType(),
+                    categoryInfo.mealType(),
+                    categoryInfo.difficulty()
+            );
+            case IMPORTED -> Recipe.createImported(
+                    basicInfo.title(),
+                    basicInfo.description(),
+                    basicInfo.servingSize(),
+                    basicInfo.cookingTime(),
+                    categoryInfo.cuisineType(),
+                    categoryInfo.mealType(),
+                    categoryInfo.difficulty(),
+                    sourceContent
+            );
+        };
     }
 
     private void validateRecipeRequest(RecipeCreateRequest request) {
@@ -129,6 +111,13 @@ public class RecipeService {
         if (request.steps() == null || request.steps().isEmpty()) {
             throw new BusinessException(ErrorCode.STEP_REQUIRED);
         }
+        if (request.sourceType() == SourceType.IMPORTED && isBlankUrl(request.sourceUrl())) {
+            throw new BadRequestException(ErrorCode.SOURCE_URL_REQUIRED);
+        }
+    }
+
+    private boolean isBlankUrl(String url) {
+        return url == null || url.isBlank();
     }
 
     private void validateUserCreated(Recipe recipe) {
