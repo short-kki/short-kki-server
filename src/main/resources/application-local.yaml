@@ -6,6 +6,7 @@ spring:
 
   datasource:
     url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
+    # url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -37,10 +38,12 @@ jwt:
 
 oauth2:
   provider:
-    google:
-      client-id: local-google-client-id
-      client-secret: local-google-client-secret
-      redirect-uri: http://localhost:8080/login/oauth2/code/google
+    google-ios:
+      client-id: local-google-ios-client-id
+      redirect-uri: com.googleusercontent.apps.local://
+    google-android:
+      client-id: local-google-android-client-id
+      redirect-uri: shortkki://oauth/google
     kakao:
       client-id: local-kakao-client-id
       client-secret: local-kakao-client-secret

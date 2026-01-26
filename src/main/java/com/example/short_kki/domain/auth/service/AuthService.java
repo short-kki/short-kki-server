@@ -2,6 +2,7 @@ package com.example.short_kki.domain.auth.service;
 
 import com.example.short_kki.domain.auth.dto.LoginRequest;
 import com.example.short_kki.domain.auth.dto.LoginResponse;
+import com.example.short_kki.domain.auth.entity.Platform;
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.entity.OAuthProvider;
 import com.example.short_kki.domain.member.repository.MemberRepository;
@@ -32,11 +33,18 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public LoginResponse login(String providerName, LoginRequest request) {
-        OAuthProvider provider = parseProvider(providerName);
-        OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(providerName);
+    public LoginResponse login(OAuthProvider provider, LoginRequest request) {
+        log.info("OAuth login request - provider: {}, platform: {}, hasCode: {}, hasCodeVerifier: {}",
+                provider,
+                request.getPlatform(),
+                request.getCode() != null && !request.getCode().isBlank(),
+                request.getCodeVerifier() != null && !request.getCodeVerifier().isBlank());
 
-        String oauthAccessToken = getAccessToken(request.getCode(), providerConfig);
+        String configKey = resolveProviderConfigKey(provider, request.getPlatform());
+        OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(configKey);
+
+        String oauthAccessToken = getAccessToken(request.getCode(), request.getCodeVerifier(),
+                providerConfig, provider);
         Map<String, Object> userInfo = getUserInfo(oauthAccessToken, providerConfig, provider);
 
         String oauthId = extractOAuthId(userInfo, provider);
@@ -65,23 +73,41 @@ public class AuthService {
                 .build();
     }
 
-    private OAuthProvider parseProvider(String providerName) {
-        try {
-            return OAuthProvider.valueOf(providerName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED,
-                    "지원하지 않는 OAuth 제공자입니다: " + providerName);
+    private String resolveProviderConfigKey(OAuthProvider provider, Platform platform) {
+        if (provider == OAuthProvider.GOOGLE) {
+            if (platform == null) {
+                throw new BusinessException(ErrorCode.PLATFORM_REQUIRED_FOR_GOOGLE);
+            }
+            return "google-" + platform.name().toLowerCase();
         }
+        return provider.name().toLowerCase();
     }
 
     @SuppressWarnings("unchecked")
-    private String getAccessToken(String code, OAuth2Properties.Provider providerConfig) {
+    private String getAccessToken(String code, String codeVerifier,
+            OAuth2Properties.Provider providerConfig, OAuthProvider provider) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", providerConfig.getClientId());
-        params.add("client_secret", providerConfig.getClientSecret());
         params.add("redirect_uri", providerConfig.getRedirectUri());
         params.add("code", code);
+
+        if (provider == OAuthProvider.GOOGLE) {
+            if (codeVerifier != null && !codeVerifier.isBlank()) {
+                params.add("code_verifier", codeVerifier);
+            }
+            log.info("Google OAuth request - clientId: {}, redirectUri: {}, hasCodeVerifier: {}",
+                    providerConfig.getClientId(),
+                    providerConfig.getRedirectUri(),
+                    codeVerifier != null && !codeVerifier.isBlank());
+        } else {
+            params.add("client_secret", providerConfig.getClientSecret());
+            log.info("{} OAuth request - clientId: {}, redirectUri: {}, tokenUri: {}",
+                    provider,
+                    providerConfig.getClientId(),
+                    providerConfig.getRedirectUri(),
+                    providerConfig.getTokenUri());
+        }
 
         try {
             Map<String, Object> response = restClient.post()
