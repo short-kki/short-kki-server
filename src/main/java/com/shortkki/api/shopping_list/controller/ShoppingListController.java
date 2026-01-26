@@ -1,5 +1,6 @@
 package com.shortkki.api.shopping_list.controller;
 
+import com.shortkki.api.shopping_list.dto.request.AddRecipeIngredientsRequest;
 import com.shortkki.api.shopping_list.dto.request.CreateShoppingListRequest;
 import com.shortkki.api.shopping_list.dto.request.UpdateShoppingListRequest;
 import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
@@ -64,5 +65,16 @@ public class ShoppingListController {
     ) {
         shoppingListService.deleteShoppingList(loginMember.getId(), groupId, shoppingListId);
         return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    // TODO : 장볼거리에 제료를 담고 보여줄 때 레시피 별로 보여줄지?
+    @PostMapping("/recipes")
+    public ResponseEntity<BaseResponse<Void>> addRecipeIngredients(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @Valid @RequestBody AddRecipeIngredientsRequest request
+    ) {
+        shoppingListService.addRecipeIngredients(loginMember.getId(), groupId, request.recipeId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
 }
