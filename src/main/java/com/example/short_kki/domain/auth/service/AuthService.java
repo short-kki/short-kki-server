@@ -74,7 +74,10 @@ public class AuthService {
     }
 
     private String resolveProviderConfigKey(OAuthProvider provider, Platform platform) {
-        if (provider == OAuthProvider.GOOGLE && platform != null) {
+        if (provider == OAuthProvider.GOOGLE) {
+            if (platform == null) {
+                throw new BusinessException(ErrorCode.PLATFORM_REQUIRED_FOR_GOOGLE);
+            }
             return "google-" + platform.name().toLowerCase();
         }
         return provider.name().toLowerCase();
