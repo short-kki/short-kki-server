@@ -15,6 +15,8 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON_004", "지원하지 않는 HTTP 메서드입니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMON_005", "접근 권한이 없습니다."),
     NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "COMMON_006", "존재하지 않는 리소스 입니다."),
+    RESOURCE_CONFLICT(HttpStatus.CONFLICT, "COMMON_007", "요청한 작업을 수행할 수 없는 상태입니다."),
+    NOT_IMPLEMENTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_008", "아직 구현되지 않은 기능입니다."),
 
     // Auth
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH_001", "인증이 필요합니다."),
@@ -42,7 +44,14 @@ public enum ErrorCode {
     GROUP_INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "GROUP_005", "유효하지 않은 초대 코드입니다."),
     GROUP_NOT_MEMBER(HttpStatus.FORBIDDEN, "GROUP_006", "그룹 멤버가 아닙니다."),
     GROUP_NAME_EMPTY(HttpStatus.BAD_REQUEST, "GROUP_007", "그룹 이름은 비어있을 수 없습니다."),
-    GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008", "초대 코드 생성에 실패했습니다.")
+    GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008", "초대 코드 생성에 실패했습니다."),
+
+    // Source
+    UNSUPPORTED_SOURCE_PLATFORM(HttpStatus.BAD_REQUEST, "SOURCE_001", "지원하지 않는 출처 플랫폼입니다."),
+    SOURCE_URL_REQUIRED(HttpStatus.BAD_REQUEST, "SOURCE_002", "출처 URL은 필수입니다."),
+    SOURCE_CONTENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "SOURCE_003", "이미 등록된 외부 컨텐츠입니다."),
+    SOURCE_URL_PLATFORM_MISMATCH(HttpStatus.BAD_REQUEST, "SOURCE_004", "URL이 지정된 플랫폼과 일치하지 않습니다."),
+    SOURCE_INFO_REQUIRED_FOR_IMPORTED(HttpStatus.BAD_REQUEST, "SOURCE_005", "외부 레시피는 출처 정보가 필수입니다.")
     ;
 
     private final HttpStatus httpStatus;
