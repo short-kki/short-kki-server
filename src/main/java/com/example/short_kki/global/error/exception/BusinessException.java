@@ -1,5 +1,6 @@
-package com.example.short_kki.global.exception;
+package com.example.short_kki.global.error.exception;
 
+import com.example.short_kki.global.error.ErrorCode;
 import lombok.Getter;
 
 @Getter

@@ -2,8 +2,6 @@ package com.example.short_kki.domain.group.entity;
 
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.global.entity.BaseEntity;
-import com.example.short_kki.global.exception.BusinessException;
-import com.example.short_kki.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
