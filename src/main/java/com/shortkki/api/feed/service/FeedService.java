@@ -10,6 +10,7 @@ import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class FeedService {
 
     private void validateGroupMember(Long memberId, Group group) {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
+            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 }

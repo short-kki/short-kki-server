@@ -3,7 +3,6 @@ package com.shortkki.api.group.service;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.JoinGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
-import com.shortkki.api.group.dto.response.*;
 import com.shortkki.api.group.dto.response.GroupListResponse;
 import com.shortkki.api.group.dto.response.GroupMemberResponse;
 import com.shortkki.api.group.dto.response.GroupResponse;
@@ -13,6 +12,7 @@ import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -32,12 +31,6 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
-
-    private static void validateGroupMemberAdmin(GroupMember groupMember) {
-        if (!groupMember.checkIsAdmin()) {
-            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
-        }
-    }
 
     @Transactional
     public void createGroup(Long memberId, CreateGroupRequest request) {
@@ -98,22 +91,6 @@ public class GroupService {
                 .toList();
     }
 
-    public List<Object> getShoppingList(Long memberId, Long groupId) {
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
-
-        // TODO: 장보기 테이블 구현 후 실제 데이터 조회 로직 추가
-        return Collections.emptyList();
-    }
-
-    @Transactional
-    public void deleteShoppingList(Long memberId, Long groupId) {
-        Group group = findGroupById(groupId);
-        GroupMember groupMember = findGroupMember(memberId, group);
-        validateGroupMemberAdmin(groupMember);
-        // TODO: 장보기 테이블 구현 후 삭제 로직 추가
-    }
-
     @Transactional
     public GroupResponse joinGroup(Long memberId, JoinGroupRequest request) {
         Group group = findGroupByInviteCode(request.inviteCode());
@@ -148,12 +125,18 @@ public class GroupService {
 
     private GroupMember findGroupMember(Long memberId, Group group) {
         return groupMemberRepository.findByMemberIdAndGroup(memberId, group)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_MEMBER));
+                .orElseThrow(() -> new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER));
+    }
+
+    private void validateGroupMemberAdmin(GroupMember groupMember) {
+        if (!groupMember.checkIsAdmin()) {
+            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
+        }
     }
 
     private void validateGroupMember(Long memberId, Group group) {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
+            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 

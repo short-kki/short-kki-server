@@ -7,6 +7,7 @@ import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
 import com.shortkki.api.shopping_list.entity.ShoppingList;
 import com.shortkki.api.shopping_list.repository.ShoppingListRepository;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +71,7 @@ public class ShoppingListService {
 
     private void validateGroupMember(Long memberId, Group group) {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
+            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 
