@@ -27,17 +27,20 @@ public class ShoppingListController {
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId
     ) {
-        List<ShoppingListResponse> response = shoppingListService.getShoppingList(loginMember.getId(), groupId);
+        List<ShoppingListResponse> response = shoppingListService.getShoppingList(
+                loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
+    // TODO : 그룹별 장바구니는 그룹 생성 시점에 같이 만들어줄까?
     @PostMapping
     public ResponseEntity<BaseResponse<ShoppingListResponse>> createShoppingList(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
             @Valid @RequestBody CreateShoppingListRequest request
     ) {
-        ShoppingListResponse response = shoppingListService.createShoppingList(loginMember.getId(), groupId, request.name());
+        ShoppingListResponse response = shoppingListService.createShoppingList(loginMember.getId(),
+                groupId, request.name());
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
@@ -48,7 +51,8 @@ public class ShoppingListController {
             @PathVariable Long shoppingListId,
             @Valid @RequestBody UpdateShoppingListRequest request
     ) {
-        shoppingListService.updateShoppingList(loginMember.getId(), groupId, shoppingListId, request.name());
+        shoppingListService.updateShoppingList(loginMember.getId(), groupId, shoppingListId,
+                request.name());
         return ResponseEntity.ok(BaseResponse.success());
     }
 

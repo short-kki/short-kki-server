@@ -89,4 +89,21 @@ public class GroupController {
         GroupResponse response = groupService.joinGroup(loginMember.getId(), request);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
+
+    @GetMapping("/invite/{inviteCode}")
+    public ResponseEntity<BaseResponse<GroupPreviewResponse>> getGroupPreview(
+            @PathVariable String inviteCode
+    ) {
+        GroupPreviewResponse response = groupService.getGroupPreviewByInviteCode(inviteCode);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/{groupId}/invite-code")
+    public ResponseEntity<BaseResponse<InviteCodeResponse>> getInviteCode(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId
+    ) {
+        InviteCodeResponse response = groupService.getInviteCode(loginMember.getId(), groupId);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
 }

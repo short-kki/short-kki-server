@@ -5,7 +5,9 @@ import com.shortkki.api.group.dto.request.JoinGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
 import com.shortkki.api.group.dto.response.GroupListResponse;
 import com.shortkki.api.group.dto.response.GroupMemberResponse;
+import com.shortkki.api.group.dto.response.GroupPreviewResponse;
 import com.shortkki.api.group.dto.response.GroupResponse;
+import com.shortkki.api.group.dto.response.InviteCodeResponse;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.entity.GroupMember;
 import com.shortkki.api.group.repository.GroupRepository;
@@ -100,6 +102,19 @@ public class GroupService {
         groupMemberRepository.save(groupMember);
         long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
+    }
+
+    public GroupPreviewResponse getGroupPreviewByInviteCode(String inviteCode) {
+        Group group = findGroupByInviteCode(inviteCode);
+        long memberCount = groupMemberRepository.countByGroup(group);
+        return GroupPreviewResponse.from(group, memberCount);
+    }
+
+    public InviteCodeResponse getInviteCode(Long memberId, Long groupId) {
+        Group group = findGroupById(groupId);
+        GroupMember groupMember = findGroupMember(memberId, group);
+        validateGroupMemberAdmin(groupMember);
+        return InviteCodeResponse.of(group.getCode());
     }
 
     private Group findGroupByInviteCode(String inviteCode) {
