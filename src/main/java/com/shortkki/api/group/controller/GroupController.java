@@ -81,24 +81,6 @@ public class GroupController {
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
-    @GetMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<List<Object>>> getShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        List<Object> response = groupService.getShoppingList(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    @DeleteMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<Void>> clearShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        groupService.deleteShoppingList(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success());
-    }
-
     @PostMapping("/join")
     public ResponseEntity<BaseResponse<GroupResponse>> joinGroup(
             @AuthenticationPrincipal LoginMember loginMember,

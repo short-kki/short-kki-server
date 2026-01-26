@@ -21,7 +21,8 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_002", "유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_003", "만료된 토큰입니다."),
     OAUTH_AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_004", "소셜 로그인 인증에 실패했습니다."),
-    PLATFORM_REQUIRED_FOR_GOOGLE(HttpStatus.BAD_REQUEST, "AUTH_005", "Google 로그인 시 platform은 필수입니다."),
+    PLATFORM_REQUIRED_FOR_GOOGLE(HttpStatus.BAD_REQUEST, "AUTH_005",
+            "Google 로그인 시 platform은 필수입니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_001", "회원을 찾을 수 없습니다."),
@@ -32,7 +33,8 @@ public enum ErrorCode {
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_001", "레시피를 찾을 수 없습니다."),
     INGREDIENT_REQUIRED(HttpStatus.BAD_REQUEST, "RECIPE_002", "재료는 최소 1개 이상이어야 합니다."),
     STEP_REQUIRED(HttpStatus.BAD_REQUEST, "RECIPE_003", "조리 순서는 최소 1개 이상이어야 합니다."),
-    IMPORTED_RECIPE_NOT_MODIFIABLE(HttpStatus.FORBIDDEN, "RECIPE_004", "외부에서 가져온 레시피는 수정하거나 삭제할 수 없습니다."),
+    IMPORTED_RECIPE_NOT_MODIFIABLE(HttpStatus.FORBIDDEN, "RECIPE_004",
+            "외부에서 가져온 레시피는 수정하거나 삭제할 수 없습니다."),
 
     // Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "GROUP_001", "그룹을 찾을 수 없습니다."),
@@ -42,7 +44,12 @@ public enum ErrorCode {
     GROUP_INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "GROUP_005", "유효하지 않은 초대 코드입니다."),
     GROUP_NOT_MEMBER(HttpStatus.FORBIDDEN, "GROUP_006", "그룹 멤버가 아닙니다."),
     GROUP_NAME_EMPTY(HttpStatus.BAD_REQUEST, "GROUP_007", "그룹 이름은 비어있을 수 없습니다."),
-    GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008", "초대 코드 생성에 실패했습니다.")
+    GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008",
+            "초대 코드 생성에 실패했습니다."),
+
+    // ShoppingList
+    SHOPPING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPPING_LIST_001", "장볼거리를 찾을 수 없습니다."),
+    SHOPPING_LIST_NOT_IN_GROUP(HttpStatus.BAD_REQUEST, "SHOPPING_LIST_002", "해당 그룹의 장볼거리가 아닙니다."),
     ;
 
     private final HttpStatus httpStatus;
