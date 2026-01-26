@@ -10,9 +10,9 @@ import com.example.short_kki.domain.group.repository.GroupRepository;
 import com.example.short_kki.domain.group.repository.GroupMemberRepository;
 import com.example.short_kki.domain.member.entity.Member;
 import com.example.short_kki.domain.member.repository.MemberRepository;
-import com.example.short_kki.global.exception.BusinessException;
-import com.example.short_kki.global.exception.ErrorCode;
-import com.example.short_kki.global.exception.NotFoundException;
+import com.example.short_kki.global.error.exception.BusinessException;
+import com.example.short_kki.global.error.ErrorCode;
+import com.example.short_kki.global.error.exception.NotFoundException;
 import com.example.short_kki.global.utils.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

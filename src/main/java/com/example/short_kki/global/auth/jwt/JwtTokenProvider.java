@@ -2,8 +2,8 @@ package com.example.short_kki.global.auth.jwt;
 
 import com.example.short_kki.domain.member.entity.Role;
 import com.example.short_kki.global.auth.dto.LoginMember;
-import com.example.short_kki.global.exception.BusinessException;
-import com.example.short_kki.global.exception.ErrorCode;
+import com.example.short_kki.global.error.exception.BusinessException;
+import com.example.short_kki.global.error.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

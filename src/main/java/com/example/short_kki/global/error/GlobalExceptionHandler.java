@@ -1,8 +1,8 @@
-package com.example.short_kki.global.exception;
+package com.example.short_kki.global.error;
 
+import com.example.short_kki.global.error.exception.BusinessException;
 import com.example.short_kki.global.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
@@ -22,9 +22,10 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<BaseResponse<Void>> handleBusinessException(BusinessException e) {
         log.error("BusinessException: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
+        String message = errorCode.getMessage() + " " + e.getMessage();
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
-                .body(BaseResponse.error(errorCode.getCode(), e.getMessage()));
+                .body(BaseResponse.error(errorCode.getCode(), message));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

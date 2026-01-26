@@ -1,8 +1,6 @@
 package com.example.short_kki.domain.group.entity;
 
 import com.example.short_kki.global.entity.BaseEntity;
-import com.example.short_kki.global.exception.BadRequestException;
-import com.example.short_kki.global.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
