@@ -1,6 +1,6 @@
-package com.example.short_kki.domain.recipeBook.dto;
+package com.shortkki.api.recipeBook.dto;
 
-import com.example.short_kki.domain.recipeBook.entity.RecipeBook;
+import com.shortkki.api.recipeBook.entity.RecipeBook;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +22,8 @@ public record RecipeBookResponse(
                 List.of());
     }
 
-    public static RecipeBookResponse from(RecipeBook recipeBook, List<RecipeSummaryResponse> recipes) {
+    public static RecipeBookResponse from(RecipeBook recipeBook,
+            List<RecipeSummaryResponse> recipes) {
         return new RecipeBookResponse(
                 recipeBook.getId(),
                 recipeBook.getTitle(),

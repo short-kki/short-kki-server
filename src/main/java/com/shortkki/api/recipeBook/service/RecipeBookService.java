@@ -1,19 +1,21 @@
-package com.example.short_kki.domain.recipeBook.service;
+package com.shortkki.api.recipeBook.service;
 
-import com.example.short_kki.domain.member.entity.Member;
-import com.example.short_kki.domain.member.repository.MemberRepository;
-import com.example.short_kki.domain.recipe.entity.Recipe;
-import com.example.short_kki.domain.recipe.repository.RecipeRepository;
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookCreateRequest;
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookResponse;
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookUpdateRequest;
-import com.example.short_kki.domain.recipeBook.dto.RecipeSummaryResponse;
-import com.example.short_kki.domain.recipeBook.entity.RecipeBook;
-import com.example.short_kki.domain.recipeBook.entity.RecipeBookItem;
-import com.example.short_kki.domain.recipeBook.repository.RecipeBookItemRepository;
-import com.example.short_kki.domain.recipeBook.repository.RecipeBookRepository;
-import com.example.short_kki.global.exception.BusinessException;
-import com.example.short_kki.global.exception.ErrorCode;
+
+import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeSummaryResponse;
+import com.shortkki.api.recipeBook.entity.RecipeBook;
+import com.shortkki.api.recipeBook.entity.RecipeBookItem;
+import com.shortkki.api.recipeBook.repository.RecipeBookItemRepository;
+import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
+
+import com.shortkki.api.member.entity.Member;
+import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.recipe.repository.RecipeRepository;
+import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

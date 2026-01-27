@@ -1,6 +1,7 @@
-package com.example.short_kki.domain.recipeBook.dto;
+package com.shortkki.api.recipeBook.dto;
 
-import com.example.short_kki.domain.recipe.entity.Recipe;
+
+import com.shortkki.api.recipe.entity.Recipe;
 
 public record RecipeSummaryResponse(
         Long id,

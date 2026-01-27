@@ -1,12 +1,12 @@
-package com.example.short_kki.domain.recipeBook.controller;
+package com.shortkki.api.recipeBook.controller;
 
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookAddRecipeRequest;
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookCreateRequest;
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookResponse;
-import com.example.short_kki.domain.recipeBook.dto.RecipeBookUpdateRequest;
-import com.example.short_kki.domain.recipeBook.service.RecipeBookService;
-import com.example.short_kki.global.auth.dto.LoginMember;
-import com.example.short_kki.global.response.BaseResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookAddRecipeRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
+import com.shortkki.api.recipeBook.service.RecipeBookService;
+import com.shortkki.global.auth.dto.LoginMember;
+import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

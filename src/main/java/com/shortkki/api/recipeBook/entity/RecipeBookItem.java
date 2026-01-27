@@ -1,8 +1,8 @@
-package com.example.short_kki.domain.recipeBook.entity;
+package com.shortkki.api.recipeBook.entity;
 
 
-import com.example.short_kki.domain.recipe.entity.Recipe;
-import com.example.short_kki.global.entity.BaseEntity;
+import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

@@ -1,8 +1,8 @@
-package com.example.short_kki.domain.recipeBook.entity;
+package com.shortkki.api.recipeBook.entity;
 
-import com.example.short_kki.domain.member.entity.Member;
-import com.example.short_kki.global.entity.BaseEntity;
-import com.fasterxml.classmate.AnnotationOverrides.StdBuilder;
+
+import com.shortkki.api.member.entity.Member;
+import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -46,7 +46,8 @@ public class RecipeBook extends BaseEntity {
     private Integer sortOrder;
 
     @Builder
-    private RecipeBook(Member member, Long groupId, String title, Boolean isDefault, Integer sortOrder) {
+    private RecipeBook(Member member, Long groupId, String title, Boolean isDefault,
+            Integer sortOrder) {
         this.member = member;
         this.groupId = groupId;
         this.title = title;

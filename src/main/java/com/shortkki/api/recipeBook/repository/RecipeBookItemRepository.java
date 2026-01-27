@@ -1,6 +1,6 @@
-package com.example.short_kki.domain.recipeBook.repository;
+package com.shortkki.api.recipeBook.repository;
 
-import com.example.short_kki.domain.recipeBook.entity.RecipeBookItem;
+import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
