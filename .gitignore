@@ -319,3 +319,4 @@ gradle-app.setting
 
 ### secret
 **-secret.properties
+src/main/resources/short-kki-firebase.json
