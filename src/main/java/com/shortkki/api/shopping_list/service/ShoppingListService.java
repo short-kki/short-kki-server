@@ -3,6 +3,8 @@ package com.shortkki.api.shopping_list.service;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
+import com.shortkki.api.ingredient.entity.Ingredient;
+import com.shortkki.api.ingredient.repository.IngredientRepository;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
@@ -29,6 +31,7 @@ public class ShoppingListService {
     private final GroupMemberRepository groupMemberRepository;
     private final RecipeRepository recipeRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
+    private final IngredientRepository ingredientRepository;
 
     public List<ShoppingListResponse> getShoppingList(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
@@ -42,8 +45,22 @@ public class ShoppingListService {
     public ShoppingListResponse createShoppingList(Long memberId, Long groupId, String name) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        ShoppingList shoppingList = ShoppingList.create(name, null, group);
+        Ingredient ingredient = findIngredientByName(name);
+        ShoppingList shoppingList = ShoppingList.create(name, ingredient, group);
         return ShoppingListResponse.from(shoppingListRepository.save(shoppingList));
+    }
+
+    @Transactional
+    public void createShoppingListBulk(Long memberId, Long groupId, List<String> names) {
+        Group group = findGroupById(groupId);
+        validateGroupMember(memberId, group);
+        List<ShoppingList> shoppingLists = names.stream()
+                .map(name -> {
+                    Ingredient ingredient = findIngredientByName(name);
+                    return ShoppingList.create(name, ingredient, group);
+                })
+                .toList();
+        shoppingListRepository.saveAll(shoppingLists);
     }
 
     @Transactional
@@ -92,6 +109,10 @@ public class ShoppingListService {
     private ShoppingList findShoppingListById(Long shoppingListId) {
         return shoppingListRepository.findById(shoppingListId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SHOPPING_LIST_NOT_FOUND));
+    }
+
+    private Ingredient findIngredientByName(String name) {
+        return ingredientRepository.findByName(name).orElse(null);
     }
 
     private void validateGroupMember(Long memberId, Group group) {
