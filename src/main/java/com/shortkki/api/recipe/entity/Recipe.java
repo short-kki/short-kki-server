@@ -40,7 +40,7 @@ public class Recipe extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_content_id")
-    SourceContent sourceContent;
+    private SourceContent sourceContent;
 
     @Column(nullable = false, length = 100)
     private String title;

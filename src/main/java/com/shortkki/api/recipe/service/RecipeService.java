@@ -81,7 +81,7 @@ public class RecipeService {
             BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo,
             SourceType sourceType, SourceContent sourceContent
     ) {
-        return switch (sourceType) {
+        Recipe created = switch (sourceType) {
             case USER_CREATED -> Recipe.createManual(
                     basicInfo.title(),
                     basicInfo.description(),
@@ -102,6 +102,8 @@ public class RecipeService {
                     sourceContent
             );
         };
+
+        return recipeRepository.save(created);
     }
 
     private void validateRecipeRequest(RecipeCreateRequest request) {

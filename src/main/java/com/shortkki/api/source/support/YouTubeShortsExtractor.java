@@ -15,6 +15,9 @@ public class YouTubeShortsExtractor implements ExternalKeyExtractor {
 
     @Override
     public boolean supports(String url) {
+        if (url == null) {
+            throw new IllegalArgumentException("url이 비어있습니다.");
+        }
         return url.contains(SHORTS_PATH);
     }
 
