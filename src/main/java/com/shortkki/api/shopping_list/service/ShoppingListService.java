@@ -8,6 +8,7 @@ import com.shortkki.api.ingredient.repository.IngredientRepository;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
+import com.shortkki.api.shopping_list.dto.request.ShoppingListItemRequest;
 import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
 import com.shortkki.api.shopping_list.entity.ShoppingList;
 import com.shortkki.api.shopping_list.repository.ShoppingListRepository;
@@ -42,34 +43,25 @@ public class ShoppingListService {
     }
 
     @Transactional
-    public ShoppingListResponse createShoppingList(Long memberId, Long groupId, String name) {
+    public ShoppingListResponse createShoppingList(Long memberId, Long groupId, String name, Long ingredientId) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        Ingredient ingredient = findIngredientByName(name);
+        Ingredient ingredient = findIngredient(ingredientId, name);
         ShoppingList shoppingList = ShoppingList.create(name, ingredient, group);
         return ShoppingListResponse.from(shoppingListRepository.save(shoppingList));
     }
 
     @Transactional
-    public void createShoppingListBulk(Long memberId, Long groupId, List<String> names) {
+    public void createShoppingListBulk(Long memberId, Long groupId, List<ShoppingListItemRequest> items) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        List<ShoppingList> shoppingLists = names.stream()
-                .map(name -> {
-                    Ingredient ingredient = findIngredientByName(name);
-                    return ShoppingList.create(name, ingredient, group);
+        List<ShoppingList> shoppingLists = items.stream()
+                .map(item -> {
+                    Ingredient ingredient = findIngredient(item.ingredientId(), item.name());
+                    return ShoppingList.create(item.name(), ingredient, group);
                 })
                 .toList();
         shoppingListRepository.saveAll(shoppingLists);
-    }
-
-    @Transactional
-    public void updateShoppingList(Long memberId, Long groupId, Long shoppingListId, String name) {
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
-        ShoppingList shoppingList = findShoppingListById(shoppingListId);
-        validateShoppingListInGroup(shoppingList, groupId);
-        shoppingList.updateName(name);
     }
 
     @Transactional
@@ -86,13 +78,18 @@ public class ShoppingListService {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
         validateRecipeExists(recipeId);
-        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findByRecipeId(
-                recipeId);
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findByRecipeId(recipeId);
         List<ShoppingList> shoppingLists = recipeIngredients.stream()
-                .map(ri -> ShoppingList.create(ri.getIngredient().getName(), ri.getIngredient(),
-                        group))
+                .map(ri -> ShoppingList.create(ri.getIngredient().getName(), ri.getIngredient(), group))
                 .toList();
         shoppingListRepository.saveAll(shoppingLists);
+    }
+
+    private Ingredient findIngredient(Long ingredientId, String name) {
+        if (ingredientId != null) {
+            return ingredientRepository.findById(ingredientId).orElse(null);
+        }
+        return ingredientRepository.findByName(name).orElse(null);
     }
 
     private void validateRecipeExists(Long recipeId) {
@@ -109,10 +106,6 @@ public class ShoppingListService {
     private ShoppingList findShoppingListById(Long shoppingListId) {
         return shoppingListRepository.findById(shoppingListId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SHOPPING_LIST_NOT_FOUND));
-    }
-
-    private Ingredient findIngredientByName(String name) {
-        return ingredientRepository.findByName(name).orElse(null);
     }
 
     private void validateGroupMember(Long memberId, Group group) {

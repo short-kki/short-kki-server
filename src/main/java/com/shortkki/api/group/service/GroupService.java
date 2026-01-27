@@ -145,7 +145,7 @@ public class GroupService {
 
     private void validateGroupMemberAdmin(GroupMember groupMember) {
         if (!groupMember.checkIsAdmin()) {
-            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
+            throw new AccessDeniedException(ErrorCode.GROUP_ADMIN_REQUIRED);
         }
     }
 

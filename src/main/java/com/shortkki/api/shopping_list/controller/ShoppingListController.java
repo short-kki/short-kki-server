@@ -3,7 +3,6 @@ package com.shortkki.api.shopping_list.controller;
 import com.shortkki.api.shopping_list.dto.request.AddRecipeIngredientsRequest;
 import com.shortkki.api.shopping_list.dto.request.CreateShoppingListBulkRequest;
 import com.shortkki.api.shopping_list.dto.request.CreateShoppingListRequest;
-import com.shortkki.api.shopping_list.dto.request.UpdateShoppingListRequest;
 import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
 import com.shortkki.api.shopping_list.service.ShoppingListService;
 import com.shortkki.global.auth.dto.LoginMember;
@@ -40,8 +39,8 @@ public class ShoppingListController {
             @PathVariable Long groupId,
             @Valid @RequestBody CreateShoppingListRequest request
     ) {
-        ShoppingListResponse response = shoppingListService.createShoppingList(loginMember.getId(),
-                groupId, request.name());
+        ShoppingListResponse response = shoppingListService.createShoppingList(
+                loginMember.getId(), groupId, request.name(), request.ingredientId());
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
@@ -51,20 +50,8 @@ public class ShoppingListController {
             @PathVariable Long groupId,
             @Valid @RequestBody CreateShoppingListBulkRequest request
     ) {
-        shoppingListService.createShoppingListBulk(loginMember.getId(), groupId, request.names());
+        shoppingListService.createShoppingListBulk(loginMember.getId(), groupId, request.items());
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
-    }
-
-    @PatchMapping("/{shoppingListId}")
-    public ResponseEntity<BaseResponse<Void>> updateShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId,
-            @PathVariable Long shoppingListId,
-            @Valid @RequestBody UpdateShoppingListRequest request
-    ) {
-        shoppingListService.updateShoppingList(loginMember.getId(), groupId, shoppingListId,
-                request.name());
-        return ResponseEntity.ok(BaseResponse.success());
     }
 
     @DeleteMapping("/{shoppingListId}")

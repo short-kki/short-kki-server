@@ -2,8 +2,10 @@ package com.shortkki.api.shopping_list.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record UpdateShoppingListRequest(
+public record ShoppingListItemRequest(
         @NotBlank(message = "장볼거리 이름은 필수입니다.")
-        String name
+        String name,
+
+        Long ingredientId
 ) {
 }

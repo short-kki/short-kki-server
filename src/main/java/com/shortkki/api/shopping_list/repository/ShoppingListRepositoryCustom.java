@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface ShoppingListRepositoryCustom {
 
-    List<ShoppingList> findByGroupId(Long groupId);
 }

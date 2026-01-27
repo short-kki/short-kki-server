@@ -15,11 +15,4 @@ public class ShoppingListRepositoryImpl implements ShoppingListRepositoryCustom 
     private final JPAQueryFactory queryFactory;
     private final QShoppingList shoppingList = QShoppingList.shoppingList;
 
-    @Override
-    public List<ShoppingList> findByGroupId(Long groupId) {
-        return queryFactory
-                .selectFrom(shoppingList)
-                .where(shoppingList.group.id.eq(groupId))
-                .fetch();
-    }
 }
