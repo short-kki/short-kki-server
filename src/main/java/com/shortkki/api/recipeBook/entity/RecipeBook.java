@@ -1,6 +1,5 @@
 package com.shortkki.api.recipeBook.entity;
 
-
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -76,5 +75,9 @@ public class RecipeBook extends BaseEntity {
 
     public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void updateSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

@@ -1,8 +1,8 @@
 package com.shortkki.api.recipeBook.service;
 
-
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
 import com.shortkki.api.recipeBook.dto.RecipeSummaryResponse;
@@ -93,6 +93,8 @@ public class RecipeBookService {
         if (recipeBook.getIsDefault()) {
             throw new BusinessException(ErrorCode.CANNOT_DELETE_DEFAULT_RECIPE_BOOK);
         }
+
+        recipeBookItemRepository.deleteAllByRecipeBookId(id);
         recipeBookRepository.delete(recipeBook);
     }
 
@@ -146,11 +148,36 @@ public class RecipeBookService {
 
     @Transactional
     public void deleteAllByMemberId(Long memberId) {
+        List<RecipeBook> recipeBooks = recipeBookRepository.findAllByMemberIdOrderBySortOrder(memberId);
+        for (RecipeBook recipeBook : recipeBooks) {
+            recipeBookItemRepository.deleteAllByRecipeBookId(recipeBook.getId());
+        }
         recipeBookRepository.deleteAllByMemberId(memberId);
     }
 
     @Transactional
     public void deleteByGroupId(Long groupId) {
+        List<RecipeBook> recipeBooks = recipeBookRepository.findAllByGroupId(groupId);
+        for (RecipeBook recipeBook : recipeBooks) {
+            recipeBookItemRepository.deleteAllByRecipeBookId(recipeBook.getId());
+        }
         recipeBookRepository.deleteByGroupId(groupId);
+    }
+
+    @Transactional
+    public void reorder(Long memberId, RecipeBookReorderRequest request) {
+        List<Long> recipeBookIds = request.recipeBookIds();
+
+        for (int i = 0; i < recipeBookIds.size(); i++) {
+            Long recipeBookId = recipeBookIds.get(i);
+            RecipeBook recipeBook = recipeBookRepository.findById(recipeBookId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
+
+            if (!recipeBook.getMember().getId().equals(memberId)) {
+                throw new BusinessException(ErrorCode.ACCESS_DENIED);
+            }
+
+            recipeBook.updateSortOrder(i + 1);
+        }
     }
 }

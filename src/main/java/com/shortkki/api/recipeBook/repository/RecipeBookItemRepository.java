@@ -11,4 +11,6 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
     boolean existsByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
     void deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
+
+    void deleteAllByRecipeBookId(Long recipeBookId);
 }

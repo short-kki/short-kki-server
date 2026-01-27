@@ -4,6 +4,7 @@ package com.shortkki.api.recipeBook.entity;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Table(name = "book_item")
@@ -21,12 +23,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeBookItem extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     RecipeBook recipeBook;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
     Recipe recipe;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

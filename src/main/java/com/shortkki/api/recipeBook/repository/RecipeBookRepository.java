@@ -9,6 +9,8 @@ public interface RecipeBookRepository extends JpaRepository<RecipeBook, Long>,
 
     List<RecipeBook> findAllByMemberIdOrderBySortOrder(Long memberId);
 
+    List<RecipeBook> findAllByGroupId(Long groupId);
+
     void deleteAllByMemberId(Long memberId);
 
     void deleteByGroupId(Long groupId);

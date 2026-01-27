@@ -2,6 +2,7 @@ package com.shortkki.api.recipeBook.controller;
 
 import com.shortkki.api.recipeBook.dto.RecipeBookAddRecipeRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
@@ -58,6 +59,14 @@ public class RecipeBookController {
             @PathVariable Long id,
             @Valid @RequestBody RecipeBookUpdateRequest request) {
         recipeBookService.updateTitle(loginMember.getId(), id, request);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    @PatchMapping("/order")
+    public ResponseEntity<BaseResponse<Void>> reorder(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @Valid @RequestBody RecipeBookReorderRequest request) {
+        recipeBookService.reorder(loginMember.getId(), request);
         return ResponseEntity.ok(BaseResponse.success());
     }
 

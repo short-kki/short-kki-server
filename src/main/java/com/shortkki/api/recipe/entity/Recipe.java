@@ -121,6 +121,8 @@ public class Recipe extends BaseEntity {
                 .difficulty(difficulty)
                 .sourceType(SourceType.IMPORTED)
                 .recipeSource(recipeSource)
+                .isDeleted(false)
+                .bookmarkCount(0)
                 .build();
     }
 
