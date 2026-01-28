@@ -4,6 +4,9 @@ spring:
 
   application:
     name: short-kki
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
 
   jpa:
     hibernate:

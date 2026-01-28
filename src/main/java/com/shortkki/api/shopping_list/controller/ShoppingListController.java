@@ -1,0 +1,53 @@
+package com.shortkki.api.shopping_list.controller;
+
+import com.shortkki.api.shopping_list.dto.request.CreateShoppingListBulkRequest;
+import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
+import com.shortkki.api.shopping_list.service.ShoppingListService;
+import com.shortkki.global.auth.dto.LoginMember;
+import com.shortkki.global.response.BaseResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/groups/{groupId}/shopping-list")
+@RequiredArgsConstructor
+public class ShoppingListController {
+
+    private final ShoppingListService shoppingListService;
+
+    @GetMapping
+    public ResponseEntity<BaseResponse<List<ShoppingListResponse>>> getShoppingList(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId
+    ) {
+        List<ShoppingListResponse> response = shoppingListService.getShoppingList(
+                loginMember.getId(), groupId);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<BaseResponse<Void>> createShoppingListBulk(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @Valid @RequestBody CreateShoppingListBulkRequest request
+    ) {
+        shoppingListService.createShoppingListBulk(loginMember.getId(), groupId, request.items());
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+    }
+
+    @DeleteMapping("/{shoppingListId}")
+    public ResponseEntity<BaseResponse<Void>> deleteShoppingList(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long shoppingListId
+    ) {
+        shoppingListService.deleteShoppingList(loginMember.getId(), groupId, shoppingListId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+}

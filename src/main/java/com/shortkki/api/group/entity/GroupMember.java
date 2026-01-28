@@ -22,7 +22,6 @@ public class GroupMember extends BaseEntity {
     @Column(nullable = false)
     private GroupRole role;
 
-    // TODO : Member 쪽 단방향 매핑
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
