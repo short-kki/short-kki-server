@@ -33,17 +33,6 @@ public class ShoppingListController {
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
-    @PostMapping
-    public ResponseEntity<BaseResponse<ShoppingListResponse>> createShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId,
-            @Valid @RequestBody CreateShoppingListRequest request
-    ) {
-        ShoppingListResponse response = shoppingListService.createShoppingList(
-                loginMember.getId(), groupId, request.name(), request.ingredientId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
-    }
-
     @PostMapping("/bulk")
     public ResponseEntity<BaseResponse<Void>> createShoppingListBulk(
             @AuthenticationPrincipal LoginMember loginMember,

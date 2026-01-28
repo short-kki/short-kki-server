@@ -43,21 +43,14 @@ public class ShoppingListService {
     }
 
     @Transactional
-    public ShoppingListResponse createShoppingList(Long memberId, Long groupId, String name, Long ingredientId) {
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
-        Ingredient ingredient = findIngredient(ingredientId, name);
-        ShoppingList shoppingList = ShoppingList.create(name, ingredient, group);
-        return ShoppingListResponse.from(shoppingListRepository.save(shoppingList));
-    }
-
-    @Transactional
-    public void createShoppingListBulk(Long memberId, Long groupId, List<ShoppingListItemRequest> items) {
+    public void createShoppingListBulk(Long memberId, Long groupId,
+            List<ShoppingListItemRequest> items) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
         List<ShoppingList> shoppingLists = items.stream()
                 .map(item -> {
-                    Ingredient ingredient = findIngredient(item.ingredientId(), item.name());
+                    Ingredient ingredient = findOrCreateIngredient(item.ingredientId(),
+                            item.name(), item.unit());
                     return ShoppingList.create(item.name(), ingredient, group);
                 })
                 .toList();
@@ -78,19 +71,24 @@ public class ShoppingListService {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
         validateRecipeExists(recipeId);
-        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findByRecipeId(recipeId);
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findByRecipeId(
+                recipeId);
         List<ShoppingList> shoppingLists = recipeIngredients.stream()
-                .map(ri -> ShoppingList.create(ri.getIngredient().getName(), ri.getIngredient(), group))
+                .map(ri -> ShoppingList.create(ri.getIngredient().getName(), ri.getIngredient(),
+                        group))
                 .toList();
         shoppingListRepository.saveAll(shoppingLists);
     }
 
-    private Ingredient findIngredient(Long ingredientId, String name) {
+    private Ingredient findOrCreateIngredient(Long ingredientId, String name, String unit) {
         if (ingredientId != null) {
             return ingredientRepository.findById(ingredientId)
                     .orElseThrow(() -> new NotFoundException(ErrorCode.INGREDIENT_NOT_FOUND));
         }
-        return ingredientRepository.findByName(name).orElse(null);
+        // TODO : 없는 재료 추가 시 단위 처리 어떻게 할지. 지금은 하드코딩으로 설정함
+        String effectiveUnit = (unit != null && !unit.isBlank()) ? unit : "개";
+        return ingredientRepository.findByName(name)
+                .orElseGet(() -> ingredientRepository.save(Ingredient.create(name, effectiveUnit)));
     }
 
     private void validateRecipeExists(Long recipeId) {

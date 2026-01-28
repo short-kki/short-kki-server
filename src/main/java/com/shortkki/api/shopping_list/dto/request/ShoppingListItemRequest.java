@@ -6,6 +6,8 @@ public record ShoppingListItemRequest(
         @NotBlank(message = "장볼거리 이름은 필수입니다.")
         String name,
 
-        Long ingredientId
+        Long ingredientId,
+
+        String unit
 ) {
 }
