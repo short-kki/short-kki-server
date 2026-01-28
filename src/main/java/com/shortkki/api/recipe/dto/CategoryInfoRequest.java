@@ -1,8 +1,8 @@
 package com.shortkki.api.recipe.dto;
 
-import com.shortkki.api.recipe.constant.CuisineType;
-import com.shortkki.api.recipe.constant.Difficulty;
-import com.shortkki.api.recipe.constant.MealType;
+import com.shortkki.api.recipe.entity.CuisineType;
+import com.shortkki.api.recipe.entity.Difficulty;
+import com.shortkki.api.recipe.entity.MealType;
 import jakarta.validation.constraints.NotNull;
 
 public record CategoryInfoRequest(

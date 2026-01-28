@@ -1,6 +1,6 @@
 package com.shortkki.api.recipe.dto;
 
-import com.shortkki.api.recipe.constant.SourceType;
+import com.shortkki.api.recipe.entity.SourceType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

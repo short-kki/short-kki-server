@@ -1,6 +1,6 @@
 package com.shortkki.api.recipe.service;
 
-import com.shortkki.api.recipe.constant.SourceType;
+import com.shortkki.api.recipe.entity.SourceType;
 import com.shortkki.api.recipe.dto.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.CategoryInfoRequest;
 import com.shortkki.api.recipe.dto.RecipeCreateRequest;

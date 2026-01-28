@@ -1,4 +1,4 @@
-package com.shortkki.api.recipe.constant;
+package com.shortkki.api.recipe.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

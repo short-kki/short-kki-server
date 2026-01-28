@@ -1,12 +1,8 @@
 package com.shortkki.api.recipe.entity;
 
-import com.shortkki.api.recipe.constant.CuisineType;
-import com.shortkki.api.recipe.constant.Difficulty;
-import com.shortkki.api.recipe.constant.MealType;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
-import com.shortkki.api.recipe.constant.SourceType;
 import com.shortkki.api.recipe.dto.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.CategoryInfoRequest;
 import com.shortkki.global.entity.BaseEntity;
