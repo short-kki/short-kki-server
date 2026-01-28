@@ -1,8 +1,6 @@
 package com.shortkki.api.shopping_list.controller;
 
-import com.shortkki.api.shopping_list.dto.request.AddRecipeIngredientsRequest;
 import com.shortkki.api.shopping_list.dto.request.CreateShoppingListBulkRequest;
-import com.shortkki.api.shopping_list.dto.request.CreateShoppingListRequest;
 import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
 import com.shortkki.api.shopping_list.service.ShoppingListService;
 import com.shortkki.global.auth.dto.LoginMember;
@@ -51,15 +49,5 @@ public class ShoppingListController {
     ) {
         shoppingListService.deleteShoppingList(loginMember.getId(), groupId, shoppingListId);
         return ResponseEntity.ok(BaseResponse.success());
-    }
-
-    @PostMapping("/recipes")
-    public ResponseEntity<BaseResponse<Void>> addRecipeIngredients(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId,
-            @Valid @RequestBody AddRecipeIngredientsRequest request
-    ) {
-        shoppingListService.addRecipeIngredients(loginMember.getId(), groupId, request.recipeId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
 }
