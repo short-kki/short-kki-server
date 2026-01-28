@@ -1,4 +1,4 @@
-package com.shortkki.api.recipe.dto;
+package com.shortkki.api.recipe.dto.response;
 
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;

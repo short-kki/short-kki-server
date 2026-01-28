@@ -1,4 +1,4 @@
-package com.shortkki.api.recipe.dto;
+package com.shortkki.api.recipe.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

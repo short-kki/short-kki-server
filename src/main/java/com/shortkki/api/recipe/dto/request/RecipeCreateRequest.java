@@ -1,4 +1,4 @@
-package com.shortkki.api.recipe.dto;
+package com.shortkki.api.recipe.dto.request;
 
 import com.shortkki.api.recipe.entity.SourceType;
 import jakarta.validation.Valid;

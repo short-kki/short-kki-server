@@ -1,6 +1,6 @@
 package com.shortkki.api.recipe.service;
 
-import com.shortkki.api.recipe.dto.RecipeResponse;
+import com.shortkki.api.recipe.dto.response.RecipeResponse;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;

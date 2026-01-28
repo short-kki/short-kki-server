@@ -1,11 +1,11 @@
 package com.shortkki.api.recipe.service;
 
 import com.shortkki.api.recipe.entity.SourceType;
-import com.shortkki.api.recipe.dto.BasicInfoRequest;
-import com.shortkki.api.recipe.dto.CategoryInfoRequest;
-import com.shortkki.api.recipe.dto.RecipeCreateRequest;
-import com.shortkki.api.recipe.dto.RecipeResponse;
-import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
+import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
+import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
+import com.shortkki.api.recipe.dto.request.RecipeCreateRequest;
+import com.shortkki.api.recipe.dto.response.RecipeResponse;
+import com.shortkki.api.recipe.dto.request.RecipeUpdateRequest;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
@@ -56,6 +56,7 @@ public class RecipeService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
         validateUserCreated(recipe);
+
 
         recipe.update(request.basicInfo(), request.categoryInfo());
 

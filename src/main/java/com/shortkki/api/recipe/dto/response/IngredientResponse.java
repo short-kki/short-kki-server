@@ -1,4 +1,4 @@
-package com.shortkki.api.recipe.dto;
+package com.shortkki.api.recipe.dto.response;
 
 public record IngredientResponse(
         String name,
