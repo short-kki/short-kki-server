@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/recipe-books")
+@RequestMapping("/api/v1/recipebooks")
 @RequiredArgsConstructor
 public class RecipeBookController {
 
@@ -33,7 +33,8 @@ public class RecipeBookController {
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> create(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody RecipeBookCreateRequest request) {
+            @Valid @RequestBody RecipeBookCreateRequest request
+    ) {
         recipeBookService.create(loginMember.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }

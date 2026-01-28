@@ -56,21 +56,25 @@ public class RecipeBook extends BaseEntity {
 
     public static RecipeBook create(Member member, String title, Boolean isDefault,
             Integer sortOrder) {
-        return RecipeBook.builder()
+        RecipeBook recipeBook = RecipeBook.builder()
                 .member(member)
                 .title(title)
                 .isDefault(isDefault)
                 .sortOrder(sortOrder)
                 .build();
+        recipeBook.validateOwnership();
+        return recipeBook;
     }
 
     public static RecipeBook createForGroup(Long groupId, String title) {
-        return RecipeBook.builder()
+        RecipeBook recipeBook = RecipeBook.builder()
                 .groupId(groupId)
                 .title(title)
                 .isDefault(true)
                 .sortOrder(1)
                 .build();
+        recipeBook.validateOwnership();
+        return recipeBook;
     }
 
     public void updateTitle(String title) {
@@ -79,5 +83,31 @@ public class RecipeBook extends BaseEntity {
 
     public void updateSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public void validateOwnership() {
+        if ((member == null && groupId == null) || (member != null && groupId != null)) {
+            throw new IllegalStateException("레시피북은 그룹 또는 사용자 하나에만 소속될수 있다.");
+        }
+    }
+
+    public Long getMemberId() {
+        return (member != null) ? member.getId() : null;
+    }
+
+    public Long getGroupId() {
+        return this.groupId;
+    }
+
+    public boolean isGroupRecipeBook() {
+        return this.groupId != null;
+    }
+
+    public boolean isMemberRecipeBook() {
+        return this.member != null;
+    }
+
+    public boolean isOwnedByMember(Long memberId) {
+        return this.member != null && this.member.getId().equals(memberId);
     }
 }

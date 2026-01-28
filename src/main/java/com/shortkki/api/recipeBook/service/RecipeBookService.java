@@ -13,6 +13,7 @@ import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BusinessException;
@@ -30,15 +31,19 @@ public class RecipeBookService {
     private final RecipeBookItemRepository recipeBookItemRepository;
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final GroupRepository groupRepository;
+    private final RecipeBookQueryService queryService; // QueryService 추가
 
     @Transactional
     public RecipeBookResponse create(Long memberId, RecipeBookCreateRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        List<RecipeBook> existingBooks = recipeBookRepository.findAllByMemberIdOrderBySortOrder(
-                memberId);
-        int nextSortOrder = existingBooks.size() + 1;
+        List<RecipeBook> existingBooks = queryService.findAllByMemberId(memberId);
+        int nextSortOrder = existingBooks.stream()
+                .mapToInt(RecipeBook::getSortOrder)
+                .max()
+                .orElse(0) + 1;
 
         RecipeBook recipeBook = RecipeBook.create(member, request.title(), false, nextSortOrder);
         RecipeBook saved = recipeBookRepository.save(recipeBook);
@@ -47,8 +52,7 @@ public class RecipeBookService {
     }
 
     public List<RecipeBookResponse> findAllByMember(Long memberId) {
-        List<RecipeBook> recipeBooks = recipeBookRepository.findAllByMemberIdOrderBySortOrder(
-                memberId);
+        List<RecipeBook> recipeBooks = queryService.findAllByMemberId(memberId);
         return recipeBooks.stream()
                 .map(RecipeBookResponse::from)
                 .toList();
@@ -58,7 +62,7 @@ public class RecipeBookService {
         RecipeBook recipeBook = recipeBookRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
 
-        if (!recipeBook.getMember().getId().equals(memberId)) {
+        if (!recipeBook.isOwnedByMember(memberId)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
@@ -75,7 +79,7 @@ public class RecipeBookService {
         RecipeBook recipeBook = recipeBookRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
 
-        if (!recipeBook.getMember().getId().equals(memberId)) {
+        if (!recipeBook.isOwnedByMember(memberId)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
@@ -87,7 +91,7 @@ public class RecipeBookService {
         RecipeBook recipeBook = recipeBookRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
 
-        if (!recipeBook.getMember().getId().equals(memberId)) {
+        if (!recipeBook.isOwnedByMember(memberId)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
         if (recipeBook.getIsDefault()) {
@@ -103,7 +107,7 @@ public class RecipeBookService {
         RecipeBook recipeBook = recipeBookRepository.findById(recipeBookId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
 
-        if (!recipeBook.getMember().getId().equals(memberId)) {
+        if (!recipeBook.isOwnedByMember(memberId)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
@@ -123,7 +127,7 @@ public class RecipeBookService {
         RecipeBook recipeBook = recipeBookRepository.findById(recipeBookId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
 
-        if (!recipeBook.getMember().getId().equals(memberId)) {
+        if (!recipeBook.isOwnedByMember(memberId)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
@@ -134,30 +138,43 @@ public class RecipeBookService {
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
     }
 
+
+    // TODO : 회원가입 직후 기본 레시피 북 생성
     @Transactional
     public void createDefaultForMember(Member member) {
         RecipeBook defaultBook = RecipeBook.create(member, "내 레시피북", true, 1);
         recipeBookRepository.save(defaultBook);
     }
 
+    // TODO : 추후 삭제 예정
+    public void createDefaultForMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        createDefaultForMember(member);
+    }
+
     @Transactional
     public void createDefaultForGroup(Long groupId, String groupName) {
+        if (!groupRepository.existsById(groupId)) {
+            throw new BusinessException(ErrorCode.GROUP_NOT_FOUND);
+        }
         RecipeBook defaultBook = RecipeBook.createForGroup(groupId, groupName + " 레시피북");
         recipeBookRepository.save(defaultBook);
     }
 
     @Transactional
     public void deleteAllByMemberId(Long memberId) {
-        List<RecipeBook> recipeBooks = recipeBookRepository.findAllByMemberIdOrderBySortOrder(memberId);
-        for (RecipeBook recipeBook : recipeBooks) {
-            recipeBookItemRepository.deleteAllByRecipeBookId(recipeBook.getId());
-        }
-        recipeBookRepository.deleteAllByMemberId(memberId);
+        List<Long> recipeBookIds = queryService.findAllByMemberId(memberId)
+                .stream()
+                .map(RecipeBook::getId)
+                .toList();
+        recipeBookItemRepository.deleteAllByRecipeBookIdIn(recipeBookIds);
+        recipeBookRepository.deleteAllByMember_Id(memberId);
     }
 
     @Transactional
     public void deleteByGroupId(Long groupId) {
-        List<RecipeBook> recipeBooks = recipeBookRepository.findAllByGroupId(groupId);
+        List<RecipeBook> recipeBooks = queryService.findAllByGroupId(groupId);
         for (RecipeBook recipeBook : recipeBooks) {
             recipeBookItemRepository.deleteAllByRecipeBookId(recipeBook.getId());
         }
@@ -173,7 +190,7 @@ public class RecipeBookService {
             RecipeBook recipeBook = recipeBookRepository.findById(recipeBookId)
                     .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
 
-            if (!recipeBook.getMember().getId().equals(memberId)) {
+            if (!recipeBook.isOwnedByMember(memberId)) {
                 throw new BusinessException(ErrorCode.ACCESS_DENIED);
             }
 

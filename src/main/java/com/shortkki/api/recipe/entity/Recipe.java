@@ -73,10 +73,7 @@ public class Recipe extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private SourceType sourceType;
-
-    @Embedded
-    private RecipeSource recipeSource;
-
+    
     @Column(nullable = false)
     private Boolean isDeleted = false;
 

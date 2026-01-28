@@ -18,18 +18,18 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 
 @Entity
-@Table(name = "book_item")
+@Table(name = "recipe_book_item")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeBookItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
-    RecipeBook recipeBook;
+    private RecipeBook recipeBook;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
-    Recipe recipe;
+    private Recipe recipe;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

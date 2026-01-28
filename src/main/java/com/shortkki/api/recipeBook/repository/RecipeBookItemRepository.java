@@ -3,6 +3,9 @@ package com.shortkki.api.recipeBook.repository;
 import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, Long> {
 
@@ -13,4 +16,8 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
     void deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
     void deleteAllByRecipeBookId(Long recipeBookId);
+
+    @Modifying
+    @Query("DELETE FROM RecipeBookItem r WHERE r.recipeBook.id IN :recipeBookIds")
+    void deleteAllByRecipeBookIdIn(@Param("recipeBookIds") List<Long> recipeBookIds);
 }
