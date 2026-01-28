@@ -44,10 +44,15 @@ public class ShoppingListService {
             List<ShoppingListItemRequest> items) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        Set<Long> existingIngredientIds = shoppingListRepository.findIngredientIdsByGroupId(
-                groupId);
-        List<ShoppingList> shoppingLists = items.stream()
-                .map(item -> findRecipeIngredientById(item.recipeIngredientId()).getIngredient())
+        List<Long> recipeIngredientIds = items.stream()
+                .map(ShoppingListItemRequest::recipeIngredientId)
+                .toList();
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository
+                .findAllByIdsWithIngredient(recipeIngredientIds);
+        Set<Long> existingIngredientIds = shoppingListRepository
+                .findIngredientIdsByGroupId(groupId);
+        List<ShoppingList> shoppingLists = recipeIngredients.stream()
+                .map(RecipeIngredient::getIngredient)
                 .filter(ingredient -> isNewIngredient(existingIngredientIds, ingredient))
                 .map(ingredient -> ShoppingList.create(ingredient.getName(), ingredient, group))
                 .toList();
@@ -75,11 +80,6 @@ public class ShoppingListService {
     private ShoppingList findShoppingListById(Long shoppingListId) {
         return shoppingListRepository.findById(shoppingListId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SHOPPING_LIST_NOT_FOUND));
-    }
-
-    private RecipeIngredient findRecipeIngredientById(Long recipeIngredientId) {
-        return recipeIngredientRepository.findByIdWithIngredient(recipeIngredientId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.INGREDIENT_NOT_FOUND));
     }
 
     private void validateGroupMember(Long memberId, Group group) {
