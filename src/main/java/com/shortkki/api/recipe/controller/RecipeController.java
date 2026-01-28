@@ -3,6 +3,7 @@ package com.shortkki.api.recipe.controller;
 import com.shortkki.api.recipe.dto.RecipeCreateRequest;
 import com.shortkki.api.recipe.dto.RecipeResponse;
 import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
+import com.shortkki.api.recipe.service.RecipeQueryService;
 import com.shortkki.api.recipe.service.RecipeService;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import java.util.List;
 public class RecipeController {
 
     private final RecipeService recipeService;
+    private final RecipeQueryService recipeQueryService;
 
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> create(
@@ -27,14 +29,14 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeResponse>> findById(@PathVariable Long id) {
-        RecipeResponse response = recipeService.findById(id);
+        RecipeResponse response = recipeQueryService.findById(id);
         return ResponseEntity.ok(BaseResponse.success("레시피가 조회되었습니다.", response));
     }
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeResponse>>> findAll() {
         // TODO : 페이지네이션
-        List<RecipeResponse> responses = recipeService.findAll();
+        List<RecipeResponse> responses = recipeQueryService.findAll();
         return ResponseEntity.ok(BaseResponse.success("레시피 목록이 조회되었습니다.", responses));
     }
 
