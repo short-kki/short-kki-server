@@ -1,7 +1,6 @@
 package com.shortkki.api.recipe.dto;
 
-import com.shortkki.api.recipe.entity.Recipe;
-import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.recipe.constant.SourceType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,8 +15,10 @@ public record RecipeCreateRequest(
         @NotNull(message = "카테고리 정보는 필수입니다")
         CategoryInfoRequest categoryInfo,
 
-        @Valid
-        SourceInfoRequest sourceInfo,
+        @NotNull(message = "출처 타입은 필수입니다.")
+        SourceType sourceType,
+
+        String sourceUrl,
 
         @Valid @NotNull(message = "재료는 필수입니다.")
         @Size(min = 1, message = "재료는 최소 1개 이상이어야 합니다.") List<IngredientRequest> ingredients,
@@ -26,31 +27,4 @@ public record RecipeCreateRequest(
         @Size(min = 1, message = "조리 순서는 최소 1개 이상이어야 합니다.") List<StepRequest> steps
 ) {
 
-    public Recipe toEntity() {
-        if (sourceInfo == null) {
-            return Recipe.createManual(
-                    basicInfo.title(),
-                    basicInfo.description(),
-                    basicInfo.servingSize(),
-                    basicInfo.cookingTime(),
-                    categoryInfo.cuisineType(),
-                    categoryInfo.mealType(),
-                    categoryInfo.difficulty());
-        }
-
-        RecipeSource recipeSource = new RecipeSource(
-                sourceInfo.sourceUrl(),
-                sourceInfo.sourcePlatform(),
-                sourceInfo.sourceContentType());
-
-        return Recipe.createFromLink(
-                basicInfo.title(),
-                basicInfo.description(),
-                basicInfo.servingSize(),
-                basicInfo.cookingTime(),
-                categoryInfo.cuisineType(),
-                categoryInfo.mealType(),
-                categoryInfo.difficulty(),
-                recipeSource);
-    }
 }

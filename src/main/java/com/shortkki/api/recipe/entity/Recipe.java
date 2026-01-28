@@ -3,20 +3,25 @@ package com.shortkki.api.recipe.entity;
 import com.shortkki.api.recipe.constant.CuisineType;
 import com.shortkki.api.recipe.constant.Difficulty;
 import com.shortkki.api.recipe.constant.MealType;
-import com.shortkki.api.recipe.constant.SourceContentType;
-import com.shortkki.api.recipe.constant.SourcePlatform;
+import com.shortkki.api.source.domain.SourceContent;
+import com.shortkki.api.source.domain.SourceContentType;
+import com.shortkki.api.source.domain.SourcePlatform;
 import com.shortkki.api.recipe.constant.SourceType;
 import com.shortkki.api.recipe.dto.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.CategoryInfoRequest;
 import com.shortkki.global.entity.BaseEntity;
+import com.shortkki.global.error.exception.InvalidStateException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,6 +38,10 @@ public class Recipe extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_content_id")
+    private SourceContent sourceContent;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -75,8 +84,9 @@ public class Recipe extends BaseEntity {
     private Recipe(
             String title, String description, Integer servingSize, Integer cookingTime,
             CuisineType cuisineType, MealType mealType, Difficulty difficulty,
-            SourceType sourceType, RecipeSource recipeSource,
-            Integer bookmarkCount, Boolean isDeleted) {
+            Integer bookmarkCount,
+            SourceType sourceType, SourceContent sourceContent, Boolean isDeleted
+    ) {
         this.title = title;
         this.description = description;
         this.servingSize = servingSize;
@@ -85,14 +95,15 @@ public class Recipe extends BaseEntity {
         this.mealType = mealType;
         this.difficulty = difficulty;
         this.sourceType = sourceType;
-        this.recipeSource = recipeSource;
+        this.sourceContent = sourceContent;
         this.bookmarkCount = bookmarkCount;
         this.isDeleted = isDeleted;
     }
 
-    public static Recipe createManual(String title, String description, Integer servingSize,
-            Integer cookingTime, CuisineType cuisineType, MealType mealType,
-            Difficulty difficulty) {
+    public static Recipe createManual(
+            String title, String description, Integer servingSize, Integer cookingTime,
+            CuisineType cuisineType, MealType mealType, Difficulty difficulty
+    ) {
         return Recipe.builder()
                 .title(title)
                 .description(description)
@@ -102,15 +113,18 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.USER_CREATED)
-                .isDeleted(false)
-                .bookmarkCount(0)
                 .build();
     }
 
-    public static Recipe createFromLink(
-            String title, String description, Integer servingSize,
-            Integer cookingTime, CuisineType cuisineType, MealType mealType, Difficulty difficulty,
-            RecipeSource recipeSource) {
+    public static Recipe createImported(
+            String title, String description, Integer servingSize, Integer cookingTime,
+            CuisineType cuisineType, MealType mealType, Difficulty difficulty,
+            SourceContent sourceContent
+    ) {
+        if (sourceContent == null) {
+            throw new InvalidStateException("원본 컨텐츠 정보 없이 외부 레시피를 생성할 수 없습니다.");
+        }
+
         return Recipe.builder()
                 .title(title)
                 .description(description)
@@ -120,14 +134,15 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.IMPORTED)
-                .recipeSource(recipeSource)
                 .isDeleted(false)
                 .bookmarkCount(0)
+                .sourceContent(sourceContent)
                 .build();
     }
 
     public void update(
-            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo) {
+            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo
+    ) {
         this.title = basicInfo.title();
         this.description = basicInfo.description();
         this.servingSize = basicInfo.servingSize();
@@ -138,14 +153,14 @@ public class Recipe extends BaseEntity {
     }
 
     public String getSourceUrl() {
-        return recipeSource != null ? recipeSource.getUrl() : null;
+        return SourceType.IMPORTED == sourceType ? sourceContent.getCanonicalUrl() : null;
     }
 
     public SourcePlatform getSourcePlatform() {
-        return recipeSource != null ? recipeSource.getPlatform() : null;
+        return SourceType.IMPORTED == sourceType ? sourceContent.getPlatform() : null;
     }
 
     public SourceContentType getSourceContentType() {
-        return recipeSource != null ? recipeSource.getContentType() : null;
+        return SourceType.IMPORTED == sourceType ? sourceContent.getContentType() : null;
     }
 }
