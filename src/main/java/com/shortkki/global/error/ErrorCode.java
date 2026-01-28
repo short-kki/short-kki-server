@@ -47,6 +47,9 @@ public enum ErrorCode {
     GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008",
             "초대 코드 생성에 실패했습니다."),
 
+    // Ingredient
+    INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "INGREDIENT_001", "재료를 찾을 수 없습니다."),
+
     // ShoppingList
     SHOPPING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPPING_LIST_001", "장볼거리를 찾을 수 없습니다."),
     SHOPPING_LIST_NOT_IN_GROUP(HttpStatus.BAD_REQUEST, "SHOPPING_LIST_002", "해당 그룹의 장볼거리가 아닙니다."),

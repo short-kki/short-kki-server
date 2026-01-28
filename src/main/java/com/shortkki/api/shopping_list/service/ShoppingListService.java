@@ -87,7 +87,8 @@ public class ShoppingListService {
 
     private Ingredient findIngredient(Long ingredientId, String name) {
         if (ingredientId != null) {
-            return ingredientRepository.findById(ingredientId).orElse(null);
+            return ingredientRepository.findById(ingredientId)
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.INGREDIENT_NOT_FOUND));
         }
         return ingredientRepository.findByName(name).orElse(null);
     }
