@@ -29,7 +29,7 @@ public class RecipeBookQueryService {
         return queryFactory
                 .selectFrom(recipeBook)
                 .where(recipeBook.groupId.eq(groupId))
-                .orderBy(recipeBook.sortOrder.asc())
+                .orderBy(recipeBook.title.asc())
                 .fetch();
     }
 }

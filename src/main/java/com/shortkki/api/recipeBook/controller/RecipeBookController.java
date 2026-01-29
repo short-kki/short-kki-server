@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -41,8 +42,16 @@ public class RecipeBookController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
-            @AuthenticationPrincipal LoginMember loginMember) {
-        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(loginMember.getId());
+            @AuthenticationPrincipal LoginMember loginMember,
+            @RequestParam(required = false) Long groupId
+    ) {
+        List<RecipeBookResponse> responses;
+        if (groupId != null) {
+            responses = recipeBookService.findAllByGroup(loginMember.getId(), groupId);
+        } else {
+            responses = recipeBookService.findAllByMember(loginMember.getId());
+        }
+
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 

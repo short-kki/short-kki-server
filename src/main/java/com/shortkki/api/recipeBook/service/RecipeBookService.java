@@ -16,8 +16,11 @@ import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +56,13 @@ public class RecipeBookService {
 
     public List<RecipeBookResponse> findAllByMember(Long memberId) {
         List<RecipeBook> recipeBooks = queryService.findAllByMemberId(memberId);
+        return recipeBooks.stream()
+                .map(RecipeBookResponse::from)
+                .toList();
+    }
+
+    public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId) {
+        List<RecipeBook> recipeBooks = queryService.findAllByGroupId(groupId);
         return recipeBooks.stream()
                 .map(RecipeBookResponse::from)
                 .toList();
@@ -160,30 +170,32 @@ public class RecipeBookService {
         RecipeBook defaultBook = RecipeBook.createForGroup(groupId, groupName + " 레시피북");
         recipeBookRepository.save(defaultBook);
     }
-    
-    @Transactional
-    public void deleteByGroupId(Long groupId) {
-        List<RecipeBook> recipeBooks = queryService.findAllByGroupId(groupId);
-        for (RecipeBook recipeBook : recipeBooks) {
-            recipeBookItemRepository.deleteAllByRecipeBookId(recipeBook.getId());
-        }
-        recipeBookRepository.deleteByGroupId(groupId);
-    }
 
     @Transactional
     public void reorder(Long memberId, RecipeBookReorderRequest request) {
         List<Long> recipeBookIds = request.recipeBookIds();
+        List<RecipeBook> memberRecipeBooks = queryService.findAllByMemberId(memberId);
+
+        validateOrdersSize(recipeBookIds, memberRecipeBooks);
+
+        Map<Long, RecipeBook> recipeBookMap = memberRecipeBooks.stream()
+                .collect(Collectors.toMap(book -> book.getId(), book -> book));
 
         for (int i = 0; i < recipeBookIds.size(); i++) {
-            Long recipeBookId = recipeBookIds.get(i);
-            RecipeBook recipeBook = recipeBookRepository.findById(recipeBookId)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
+            RecipeBook book = recipeBookMap.get(recipeBookIds.get(i));
 
-            if (!recipeBook.isOwnedByMember(memberId)) {
-                throw new BusinessException(ErrorCode.ACCESS_DENIED);
+            if (book == null) {
+                throw new BusinessException(ErrorCode.RECIPE_BOOK_NOT_FOUND);
             }
+            book.updateSortOrder(i + 1);
+        }
 
-            recipeBook.updateSortOrder(i + 1);
+        recipeBookRepository.saveAll(recipeBookMap.values());
+    }
+
+    private void validateOrdersSize(List<Long> requestIds, List<RecipeBook> original) {
+        if (requestIds.size() != original.size()) {
+            throw new BadRequestException("순서 요청이 알맞지 않습니다.");
         }
     }
 }
