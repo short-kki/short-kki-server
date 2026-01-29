@@ -41,7 +41,6 @@ public class RecipeBook extends BaseEntity {
     private Boolean isDefault;
 
     @Column(nullable = false)
-    @ColumnDefault("1")
     private Integer sortOrder;
 
     @Builder
@@ -97,14 +96,6 @@ public class RecipeBook extends BaseEntity {
 
     public Long getGroupId() {
         return this.groupId;
-    }
-
-    public boolean isGroupRecipeBook() {
-        return this.groupId != null;
-    }
-
-    public boolean isMemberRecipeBook() {
-        return this.member != null;
     }
 
     public boolean isOwnedByMember(Long memberId) {

@@ -42,23 +42,28 @@ public class RecipeBookController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @RequestParam(required = false) Long groupId
+            @AuthenticationPrincipal LoginMember loginMember
     ) {
-        List<RecipeBookResponse> responses;
-        if (groupId != null) {
-            responses = recipeBookService.findAllByGroup(loginMember.getId(), groupId);
-        } else {
-            responses = recipeBookService.findAllByMember(loginMember.getId());
-        }
+        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(loginMember.getId());
+        return ResponseEntity.ok(BaseResponse.success(responses));
+    }
 
+    @GetMapping("groups/{groupId}")
+    public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAllByGroup(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId
+    ) {
+        List<RecipeBookResponse> responses = recipeBookService.findAllByGroup(
+                loginMember.getId(), groupId
+        );
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         RecipeBookResponse response = recipeBookService.findById(loginMember.getId(), id);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
@@ -67,7 +72,8 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<Void>> updateTitle(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @Valid @RequestBody RecipeBookUpdateRequest request) {
+            @Valid @RequestBody RecipeBookUpdateRequest request
+    ) {
         recipeBookService.updateTitle(loginMember.getId(), id, request);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -75,7 +81,8 @@ public class RecipeBookController {
     @PatchMapping("/order")
     public ResponseEntity<BaseResponse<Void>> reorder(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody RecipeBookReorderRequest request) {
+            @Valid @RequestBody RecipeBookReorderRequest request
+    ) {
         recipeBookService.reorder(loginMember.getId(), request);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -83,7 +90,8 @@ public class RecipeBookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> delete(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         recipeBookService.delete(loginMember.getId(), id);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -92,7 +100,8 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<Void>> addRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @Valid @RequestBody RecipeBookAddRecipeRequest request) {
+            @Valid @RequestBody RecipeBookAddRecipeRequest request
+    ) {
         recipeBookService.addRecipe(loginMember.getId(), id, request.recipeId());
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
@@ -101,7 +110,8 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<Void>> removeRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @PathVariable Long recipeId) {
+            @PathVariable Long recipeId
+    ) {
         recipeBookService.removeRecipe(loginMember.getId(), id, recipeId);
         return ResponseEntity.ok(BaseResponse.success());
     }

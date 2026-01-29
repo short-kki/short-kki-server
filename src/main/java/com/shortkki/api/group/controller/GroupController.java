@@ -31,7 +31,8 @@ public class GroupController {
     @PostMapping
     public ResponseEntity<BaseResponse<GroupResponse>> createGroup(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody CreateGroupRequest request) {
+            @Valid @RequestBody CreateGroupRequest request
+    ) {
         GroupResponse response = createGroupUseCase.execute(loginMember.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
@@ -40,7 +41,8 @@ public class GroupController {
     public ResponseEntity<BaseResponse<Void>> updateGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
-            @Valid @RequestBody UpdateGroupRequest request) {
+            @Valid @RequestBody UpdateGroupRequest request
+    ) {
         groupService.updateGroup(loginMember.getId(), groupId, request);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -79,24 +81,6 @@ public class GroupController {
         List<GroupMemberResponse> response = groupService.getGroupMembers(loginMember.getId(),
                 groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    @GetMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<List<Object>>> getShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        List<Object> response = groupService.getShoppingList(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    @DeleteMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<Void>> clearShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        groupService.deleteShoppingList(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success());
     }
 
     @PostMapping("/join")
