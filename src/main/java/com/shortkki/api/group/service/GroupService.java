@@ -35,18 +35,19 @@ public class GroupService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void createGroup(Long memberId, CreateGroupRequest request) {
+    public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
         Group group = Group.create(
                 request.name(),
                 request.description(),
                 request.thumbnailImgUrl(),
                 request.groupType(),
-                generateInviteCode()
-        );
-        groupRepository.save(group);
-        GroupMember groupMember = GroupMember.createAdmin(member, group);
+                generateInviteCode());
+        Group savedGroup = groupRepository.save(group);
+        GroupMember groupMember = GroupMember.createAdmin(member, savedGroup);
         groupMemberRepository.save(groupMember);
+
+        return GroupResponse.from(savedGroup, 1L);
     }
 
     @Transactional
@@ -58,8 +59,7 @@ public class GroupService {
                 request.name(),
                 request.description(),
                 request.thumbnailImgUrl(),
-                request.groupType()
-        );
+                request.groupType());
     }
 
     @Transactional

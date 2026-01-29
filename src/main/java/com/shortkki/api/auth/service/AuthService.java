@@ -57,14 +57,14 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(
                 member.getId(),
                 member.getEmail(),
-                member.getRole()
-        );
+                member.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
         log.info("Login success - provider: {}, email: {}, isNewMember: {}", provider, email,
                 isNewMember);
 
         return LoginResponse.builder()
+                .memberId(member.getId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(member.getEmail())

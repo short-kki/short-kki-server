@@ -33,6 +33,8 @@ public class SecurityConfig {
             "/api/auth/**",
             "/api/v1/groups/invite/**",
             // Swagger
+            "/api/dev/**",
+                 // Swagger
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/**"
