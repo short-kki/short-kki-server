@@ -90,6 +90,7 @@ public class RecipeBookService {
     @Transactional
     public void updateTitle(Long memberId, Long id, RecipeBookUpdateRequest request) {
         RecipeBook recipeBook = findRecipeBookById(id);
+        validateNotGroupRecipeBook(recipeBook);
         validateRecipeBookOwnership(recipeBook, memberId);
 
         recipeBook.updateTitle(request.title());
@@ -98,6 +99,7 @@ public class RecipeBookService {
     @Transactional
     public void delete(Long memberId, Long id) {
         RecipeBook recipeBook = findRecipeBookById(id);
+        validateNotGroupRecipeBook(recipeBook);
         validateRecipeBookOwnership(recipeBook, memberId);
         validateNotDefaultRecipeBook(recipeBook);
 
@@ -108,7 +110,7 @@ public class RecipeBookService {
     @Transactional
     public void addRecipe(Long memberId, Long recipeBookId, Long recipeId) {
         RecipeBook recipeBook = findRecipeBookById(recipeBookId);
-        validateRecipeBookOwnership(recipeBook, memberId);
+        validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
 
         Recipe recipe = findRecipeById(recipeId);
         validateRecipeNotInBook(recipeBookId, recipeId);
@@ -120,7 +122,7 @@ public class RecipeBookService {
     @Transactional
     public void removeRecipe(Long memberId, Long recipeBookId, Long recipeId) {
         RecipeBook recipeBook = findRecipeBookById(recipeBookId);
-        validateRecipeBookOwnership(recipeBook, memberId);
+        validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
         validateRecipeInBook(recipeBookId, recipeId);
 
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
@@ -244,6 +246,21 @@ public class RecipeBookService {
     private void validateRecipeInBook(Long recipeBookId, Long recipeId) {
         if (!recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
             throw new NotFoundException(ErrorCode.RECIPE_NOT_IN_BOOK);
+        }
+    }
+
+    private void validateNotGroupRecipeBook(RecipeBook recipeBook) {
+        if (recipeBook.getGroupId() != null) {
+            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        }
+    }
+
+    private void validateRecipeBookAccess(RecipeBook recipeBook, Long memberId) {
+        if (recipeBook.getGroupId() != null) {
+            Group group = findGroupById(recipeBook.getGroupId());
+            validateGroupMember(memberId, group);
+        } else {
+            validateRecipeBookOwnership(recipeBook, memberId);
         }
     }
 }
