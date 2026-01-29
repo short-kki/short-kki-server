@@ -5,10 +5,12 @@ spring:
     import: classpath:application-secret.properties
 
   datasource:
-    url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
-    # url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    driver-class-name: org.h2.Driver
-    username: sa
+#    url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
+    url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    username: sa
+    username: root
     password:
 
   jpa:
@@ -22,7 +24,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: always  # h2 실행 시 never로 수정
 
   flyway:
     enabled: false
@@ -59,3 +61,10 @@ aws:
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    try-it-out-enabled: true
+    filter: true
