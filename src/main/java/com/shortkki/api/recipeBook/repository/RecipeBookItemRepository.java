@@ -16,8 +16,4 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
     void deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
     void deleteAllByRecipeBookId(Long recipeBookId);
-
-    @Modifying
-    @Query("DELETE FROM RecipeBookItem r WHERE r.recipeBook.id IN :recipeBookIds")
-    void deleteAllByRecipeBookIdIn(@Param("recipeBookIds") List<Long> recipeBookIds);
 }

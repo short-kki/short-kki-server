@@ -6,7 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RecipeBookRepository extends JpaRepository<RecipeBook, Long>,
         RecipeBookRepositoryCustom {
 
-    void deleteAllByMember_Id(Long memberId);
-
     void deleteByGroupId(Long groupId);
 }

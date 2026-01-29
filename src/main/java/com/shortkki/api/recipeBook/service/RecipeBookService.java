@@ -138,15 +138,13 @@ public class RecipeBookService {
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
     }
 
-
-    // TODO : 회원가입 직후 기본 레시피 북 생성
     @Transactional
     public void createDefaultForMember(Member member) {
         RecipeBook defaultBook = RecipeBook.create(member, "내 레시피북", true, 1);
         recipeBookRepository.save(defaultBook);
     }
 
-    // TODO : 추후 삭제 예정
+
     @Transactional
     public void createDefaultForMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -162,17 +160,7 @@ public class RecipeBookService {
         RecipeBook defaultBook = RecipeBook.createForGroup(groupId, groupName + " 레시피북");
         recipeBookRepository.save(defaultBook);
     }
-
-    @Transactional
-    public void deleteAllByMemberId(Long memberId) {
-        List<Long> recipeBookIds = queryService.findAllByMemberId(memberId)
-                .stream()
-                .map(RecipeBook::getId)
-                .toList();
-        recipeBookItemRepository.deleteAllByRecipeBookIdIn(recipeBookIds);
-        recipeBookRepository.deleteAllByMember_Id(memberId);
-    }
-
+    
     @Transactional
     public void deleteByGroupId(Long groupId) {
         List<RecipeBook> recipeBooks = queryService.findAllByGroupId(groupId);
