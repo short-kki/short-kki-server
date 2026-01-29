@@ -121,8 +121,7 @@ public class GroupService {
     public InviteCodeResponse getOrGenerateInviteCode(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         validateGroupMember(memberId, group);
-        InviteLink inviteLink = inviteLinkRepository.findValidLinkByGroup(group)
-                .orElseGet(() -> createInviteLink(group));
+        InviteLink inviteLink = getOrCreateValidInviteLink(group);
         return InviteCodeResponse.from(inviteLink);
     }
 
@@ -201,5 +200,10 @@ public class GroupService {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
+    }
+
+    private InviteLink getOrCreateValidInviteLink(Group group) {
+        return inviteLinkRepository.findValidLinkByGroup(group)
+                .orElseGet(() -> createInviteLink(group));
     }
 }
