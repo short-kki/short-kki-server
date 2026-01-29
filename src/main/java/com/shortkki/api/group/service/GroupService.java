@@ -47,10 +47,9 @@ public class GroupService {
                 request.thumbnailImgUrl(),
                 request.groupType()
         );
-        groupRepository.save(group);
+        Group savedGroup = groupRepository.save(group);
         GroupMember groupMember = GroupMember.createAdmin(member, group);
         groupMemberRepository.save(groupMember);
-
         return GroupResponse.from(savedGroup, 1L);
     }
 
