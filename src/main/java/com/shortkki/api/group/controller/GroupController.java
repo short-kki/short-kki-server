@@ -48,7 +48,8 @@ public class GroupController {
     @DeleteMapping("/{groupId}")
     public ResponseEntity<BaseResponse<Void>> deleteGroup(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId) {
+            @PathVariable Long groupId
+    ) {
         groupService.deleteGroup(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -56,14 +57,16 @@ public class GroupController {
     @GetMapping("/{groupId}")
     public ResponseEntity<BaseResponse<GroupResponse>> getGroup(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId) {
+            @PathVariable Long groupId
+    ) {
         GroupResponse response = groupService.getGroup(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
     @GetMapping("/my")
     public ResponseEntity<BaseResponse<List<GroupListResponse>>> getMyGroups(
-            @AuthenticationPrincipal LoginMember loginMember) {
+            @AuthenticationPrincipal LoginMember loginMember
+    ) {
         List<GroupListResponse> response = groupService.getMyGroups(loginMember.getId());
         return ResponseEntity.ok(BaseResponse.success(response));
     }
@@ -71,7 +74,8 @@ public class GroupController {
     @GetMapping("/{groupId}/members")
     public ResponseEntity<BaseResponse<List<GroupMemberResponse>>> getGroupMembers(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId) {
+            @PathVariable Long groupId
+    ) {
         List<GroupMemberResponse> response = groupService.getGroupMembers(loginMember.getId(),
                 groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
@@ -80,7 +84,8 @@ public class GroupController {
     @GetMapping("/{groupId}/shopping-list")
     public ResponseEntity<BaseResponse<List<Object>>> getShoppingList(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId) {
+            @PathVariable Long groupId
+    ) {
         List<Object> response = groupService.getShoppingList(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
@@ -88,7 +93,8 @@ public class GroupController {
     @DeleteMapping("/{groupId}/shopping-list")
     public ResponseEntity<BaseResponse<Void>> clearShoppingList(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId) {
+            @PathVariable Long groupId
+    ) {
         groupService.deleteShoppingList(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -96,8 +102,26 @@ public class GroupController {
     @PostMapping("/join")
     public ResponseEntity<BaseResponse<GroupResponse>> joinGroup(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody JoinGroupRequest request) {
+            @Valid @RequestBody JoinGroupRequest request
+    ) {
         GroupResponse response = groupService.joinGroup(loginMember.getId(), request);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/invite/{inviteCode}")
+    public ResponseEntity<BaseResponse<GroupPreviewResponse>> getGroupPreview(
+            @PathVariable String inviteCode
+    ) {
+        GroupPreviewResponse response = groupService.getGroupPreviewByInviteCode(inviteCode);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/{groupId}/invite-code")
+    public ResponseEntity<BaseResponse<InviteCodeResponse>> getInviteCode(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId
+    ) {
+        InviteCodeResponse response = groupService.getInviteCode(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 }

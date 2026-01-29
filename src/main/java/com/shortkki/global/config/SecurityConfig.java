@@ -31,6 +31,8 @@ public class SecurityConfig {
             "/favicon.ico",
             "/actuator/health",
             "/api/auth/**",
+            "/api/v1/groups/invite/**",
+            // Swagger
             "/api/dev/**",
                  // Swagger
             "/swagger-ui/**",
