@@ -42,7 +42,6 @@ public record RecipeResponse(
         List<IngredientResponse> ingredientResponses = ingredients.stream()
                 .map(i -> new IngredientResponse(
                         i.getIngredient().getName(),
-                        i.getIngredient().getUnit(),
                         i.getAmount()))
                 .toList();
 

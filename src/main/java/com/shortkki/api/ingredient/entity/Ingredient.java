@@ -1,5 +1,6 @@
 package com.shortkki.api.ingredient.entity;
 
+import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,15 +8,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ingredient")
-@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ingredient {
+@Builder
+@Getter
+public class Ingredient extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,19 +28,10 @@ public class Ingredient {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 50)
-    private String unit;
-
-    @Builder
-    private Ingredient(String name, String unit) {
-        this.name = name;
-        this.unit = unit;
-    }
-
-    public static Ingredient create(String name, String unit) {
+    public static Ingredient create(String name) {
         return Ingredient.builder()
                 .name(name)
-                .unit(unit)
                 .build();
     }
 }
+

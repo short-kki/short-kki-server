@@ -23,6 +23,8 @@ public class RecipeQueryService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
+    // TODO: fetch join 등의 방법으로 한번에 가져오기
+    // 근데 fetch join은 cartesian product로 메모리가 많이 찰 수 있음
     public RecipeResponse findById(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
@@ -36,6 +38,7 @@ public class RecipeQueryService {
 
     // TODO: N+1 문제 해결 (Fetch Join 고려)
     // TODO: 페이지네이션 추가
+    // 1:N 관계에서 fetch join과 페이지네이션의 조합은 이슈가 있으므로, in 절을 사용해 조회 후 조립하면 좋을듯
     public List<RecipeResponse> findAll() {
         List<Recipe> recipes = recipeRepository.findAll();
 
