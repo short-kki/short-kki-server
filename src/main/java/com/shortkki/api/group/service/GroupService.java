@@ -39,7 +39,7 @@ public class GroupService {
     private final InviteLinkRepository inviteLinkRepository;
 
     @Transactional
-    public void createGroup(Long memberId, CreateGroupRequest request) {
+    public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
         Group group = Group.create(
                 request.name(),
@@ -50,6 +50,8 @@ public class GroupService {
         groupRepository.save(group);
         GroupMember groupMember = GroupMember.createAdmin(member, group);
         groupMemberRepository.save(groupMember);
+
+        return GroupResponse.from(savedGroup, 1L);
     }
 
     @Transactional
@@ -61,8 +63,7 @@ public class GroupService {
                 request.name(),
                 request.description(),
                 request.thumbnailImgUrl(),
-                request.groupType()
-        );
+                request.groupType());
     }
 
     @Transactional

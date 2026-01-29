@@ -12,6 +12,7 @@ import com.shortkki.api.recipe.dto.CategoryInfoRequest;
 import com.shortkki.global.entity.BaseEntity;
 import com.shortkki.global.error.exception.InvalidStateException;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -72,7 +73,7 @@ public class Recipe extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private SourceType sourceType;
-
+    
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
@@ -130,6 +131,8 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(SourceType.IMPORTED)
+                .isDeleted(false)
+                .bookmarkCount(0)
                 .sourceContent(sourceContent)
                 .build();
     }

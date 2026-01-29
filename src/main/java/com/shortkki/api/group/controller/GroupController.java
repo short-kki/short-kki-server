@@ -1,5 +1,6 @@
 package com.shortkki.api.group.controller;
 
+import com.shortkki.api.application.usecase.CreateGroupUseCase;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
 import com.shortkki.api.group.dto.response.GroupListResponse;
@@ -32,14 +33,15 @@ import java.util.List;
 public class GroupController {
 
     private final GroupService groupService;
+    private final CreateGroupUseCase createGroupUseCase;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> createGroup(
+    public ResponseEntity<BaseResponse<GroupResponse>> createGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody CreateGroupRequest request
     ) {
-        groupService.createGroup(loginMember.getId(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+        GroupResponse response = createGroupUseCase.execute(loginMember.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
     @PutMapping("/{groupId}")

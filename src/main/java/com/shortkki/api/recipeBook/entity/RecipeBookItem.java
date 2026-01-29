@@ -1,6 +1,7 @@
-package com.shortkki.api.recipe.entity;
+package com.shortkki.api.recipeBook.entity;
 
-import com.shortkki.api.ingredient.entity.Ingredient;
+
+import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,40 +15,39 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 @Entity
-@Table(name = "recipe_ingredient")
+@Table(name = "recipe_book_item")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecipeIngredient extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class RecipeBookItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ingredient_id")
-    private Ingredient ingredient;
+    @JoinColumn(name = "book_id")
+    private RecipeBook recipeBook;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
-    private Integer amount;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
 
     @Builder
-    private RecipeIngredient(Ingredient ingredient, Recipe recipe, Integer amount) {
-        this.ingredient = ingredient;
+    private RecipeBookItem(RecipeBook recipeBook, Recipe recipe) {
+        this.recipeBook = recipeBook;
         this.recipe = recipe;
-        this.amount = amount;
     }
 
-    public static RecipeIngredient create(Ingredient ingredient, Recipe recipe, Integer amount) {
-        return RecipeIngredient.builder()
-                .ingredient(ingredient)
+    public static RecipeBookItem create(RecipeBook recipeBook, Recipe recipe) {
+        return RecipeBookItem.builder()
+                .recipeBook(recipeBook)
                 .recipe(recipe)
-                .amount(amount)
                 .build();
     }
+
 
 }
