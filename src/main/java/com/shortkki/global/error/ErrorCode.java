@@ -47,6 +47,9 @@ public enum ErrorCode {
     GROUP_NOT_MEMBER(HttpStatus.FORBIDDEN, "GROUP_006", "그룹 멤버가 아닙니다."),
     GROUP_NAME_EMPTY(HttpStatus.BAD_REQUEST, "GROUP_007", "그룹 이름은 비어있을 수 없습니다."),
     GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008", "초대 코드 생성에 실패했습니다."),
+    GROUP_INVITE_LINK_EXPIRED(HttpStatus.BAD_REQUEST, "GROUP_009", "만료된 초대 링크입니다."),
+    GROUP_CANNOT_KICK_SELF(HttpStatus.BAD_REQUEST, "GROUP_010", "본인을 강퇴할 수 없습니다."),
+    GROUP_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "GROUP_011", "그룹 멤버를 찾을 수 없습니다."),
 
     // Ingredient
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "INGREDIENT_001", "재료를 찾을 수 없습니다."),
