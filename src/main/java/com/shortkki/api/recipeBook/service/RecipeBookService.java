@@ -147,6 +147,7 @@ public class RecipeBookService {
     }
 
     // TODO : 추후 삭제 예정
+    @Transactional
     public void createDefaultForMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));

@@ -1,8 +1,8 @@
 package com.shortkki.api.auth.controller;
 
+import com.shortkki.api.application.usecase.RegisterUserUseCase;
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
-import com.shortkki.api.auth.service.AuthService;
 import com.shortkki.api.member.entity.OAuthProvider;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
@@ -19,14 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final RegisterUserUseCase registerUserUseCase;
 
     @PostMapping("/{provider}")
     public ResponseEntity<BaseResponse<LoginResponse>> login(
             @PathVariable OAuthProvider provider,
-            @Valid @RequestBody LoginRequest request
-    ) {
-        LoginResponse response = authService.login(provider, request);
+            @Valid @RequestBody LoginRequest request) {
+        LoginResponse response = registerUserUseCase.execute(provider, request);
         return ResponseEntity.ok(BaseResponse.success("로그인에 성공했습니다.", response));
     }
 }

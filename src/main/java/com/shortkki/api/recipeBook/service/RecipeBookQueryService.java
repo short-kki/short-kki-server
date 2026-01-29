@@ -49,7 +49,7 @@ public class RecipeBookQueryService {
         if (title != null && !title.isBlank()) {
             builder.and(recipeBook.title.containsIgnoreCase(title));
         }
-        
+
         if (isDefault != null) {
             builder.and(recipeBook.isDefault.eq(isDefault));
         }
@@ -80,18 +80,20 @@ public class RecipeBookQueryService {
     }
 
     public long countByMemberId(Long memberId) {
-        return queryFactory
-                .selectFrom(recipeBook)
+        Long count = queryFactory
+                .select(recipeBook.count())
+                .from(recipeBook)
                 .where(recipeBook.member.id.eq(memberId))
-                .stream()
-                .count();
+                .fetchOne();
+        return count != null ? count : 0L;
     }
 
     public long countByGroupId(Long groupId) {
-        return queryFactory
-                .selectFrom(recipeBook)
+        Long count = queryFactory
+                .select(recipeBook.count())
+                .from(recipeBook)
                 .where(recipeBook.groupId.eq(groupId))
-                .stream()
-                .count();
+                .fetchOne();
+        return count != null ? count : 0L;
     }
 }
