@@ -1,6 +1,6 @@
 package com.shortkki.api.recipe.dto.request;
 
-import com.shortkki.api.recipe.entity.SourceType;
+import com.shortkki.api.recipe.entity.RecipeSource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,7 +16,7 @@ public record RecipeCreateRequest(
         CategoryInfoRequest categoryInfo,
 
         @NotNull(message = "출처 타입은 필수입니다.")
-        SourceType sourceType,
+        RecipeSource recipeSource,
 
         String sourceUrl,
 

@@ -3,9 +3,9 @@ package com.shortkki.api.recipe.dto.response;
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
+import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
-import com.shortkki.api.recipe.entity.SourceType;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
@@ -22,7 +22,7 @@ public record RecipeResponse(
         CuisineType cuisineType,
         MealType mealType,
         Difficulty difficulty,
-        SourceType sourceType,
+        RecipeSource recipeSource,
         String sourceUrl,
         SourcePlatform sourcePlatform,
         SourceContentType sourceContentType,

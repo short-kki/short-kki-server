@@ -1,6 +1,6 @@
 package com.shortkki.api.recipe.service;
 
-import com.shortkki.api.recipe.entity.SourceType;
+import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
 import com.shortkki.api.recipe.dto.request.RecipeCreateRequest;
@@ -35,15 +35,15 @@ public class RecipeService {
 
         BasicInfoRequest basicInfo = request.basicInfo();
         CategoryInfoRequest categoryInfo = request.categoryInfo();
-        SourceType sourceType = request.sourceType();
+        RecipeSource recipeSource = request.recipeSource();
 
         SourceContent sourceContent = null;
-        if (sourceType == SourceType.IMPORTED) {
+        if (recipeSource == RecipeSource.IMPORT) {
             sourceContent = sourceContentService.resolveSourceContent(request.sourceUrl());
         }
 
         // TODO: 로그인 연동 후 작성자 세팅
-        Recipe saved = createRecipe(basicInfo, categoryInfo, sourceType, sourceContent);
+        Recipe saved = createRecipe(basicInfo, categoryInfo, recipeSource, sourceContent);
 
         List<RecipeStep> savedSteps = recipeStepService.createSteps(saved, request.steps());
         List<RecipeIngredient> savedIngredients = recipeIngredientService.createIngredients(saved, request.ingredients());
@@ -80,10 +80,10 @@ public class RecipeService {
 
     private Recipe createRecipe(
             BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo,
-            SourceType sourceType, SourceContent sourceContent
+            RecipeSource recipeSource, SourceContent sourceContent
     ) {
-        Recipe created = switch (sourceType) {
-            case USER_CREATED -> Recipe.createManual(
+        Recipe created = switch (recipeSource) {
+            case USER -> Recipe.createManual(
                     basicInfo.title(),
                     basicInfo.description(),
                     basicInfo.servingSize(),
@@ -92,7 +92,7 @@ public class RecipeService {
                     categoryInfo.mealType(),
                     categoryInfo.difficulty()
             );
-            case IMPORTED -> Recipe.createImported(
+            case IMPORT -> Recipe.createImported(
                     basicInfo.title(),
                     basicInfo.description(),
                     basicInfo.servingSize(),
@@ -114,7 +114,7 @@ public class RecipeService {
         if (request.steps() == null || request.steps().isEmpty()) {
             throw new BusinessException(ErrorCode.STEP_REQUIRED);
         }
-        if (request.sourceType() == SourceType.IMPORTED && isBlankUrl(request.sourceUrl())) {
+        if (request.recipeSource() == RecipeSource.IMPORT && isBlankUrl(request.sourceUrl())) {
             throw new BadRequestException(ErrorCode.SOURCE_URL_REQUIRED);
         }
     }
@@ -124,7 +124,7 @@ public class RecipeService {
     }
 
     private void validateUserCreated(Recipe recipe) {
-        if (recipe.getSourceType() != null && recipe.getSourceType() != SourceType.USER_CREATED) {
+        if (recipe.getSourceType() != null && recipe.getSourceType() != RecipeSource.USER) {
             throw new BusinessException(ErrorCode.IMPORTED_RECIPE_NOT_MODIFIABLE);
         }
     }
