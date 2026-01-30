@@ -5,10 +5,12 @@ import com.shortkki.api.recipe.dto.RecipeResponse;
 import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
 import com.shortkki.api.recipe.service.RecipeQueryService;
 import com.shortkki.api.recipe.service.RecipeService;
+import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,8 +24,9 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> create(
+            @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody RecipeCreateRequest request) {
-        RecipeResponse response = recipeService.create(request);
+        RecipeResponse response = recipeService.create(loginMember.getId(), request);
         return ResponseEntity.ok(BaseResponse.success("레시피가 생성되었습니다."));
     }
 
@@ -53,7 +56,6 @@ public class RecipeController {
         return ResponseEntity.ok(BaseResponse.success("레시피가 수정되었습니다."));
     }
     // TODO : 외부 레시피 파싱
-    // TODO : 장볼거리 추가
     // TODO : 태그, 이미 추가
     // TODO : 외부 레시피 생성 로직 분리
 }

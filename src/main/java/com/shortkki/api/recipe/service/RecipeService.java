@@ -10,11 +10,17 @@ import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
 import com.shortkki.api.recipe.repository.RecipeRepository;
+import com.shortkki.api.recipeBook.entity.RecipeBook;
+import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
+import com.shortkki.api.recipeBook.service.RecipeBookService;
+import com.shortkki.api.member.entity.Member;
+import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.service.SourceContentService;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
+import com.shortkki.global.error.exception.NotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,9 +35,14 @@ public class RecipeService {
     private final RecipeStepService recipeStepService;
     private final RecipeIngredientService recipeIngredientService;
     private final SourceContentService sourceContentService;
+    private final MemberRepository memberRepository;
+    private final RecipeBookService recipeBookService;
+    private final RecipeBookQueryService recipeBookQueryService;
 
-    public RecipeResponse create(RecipeCreateRequest request) {
+    public RecipeResponse create(Long memberId, RecipeCreateRequest request) {
         validateRecipeRequest(request);
+
+        Member member = findMemberById(memberId);
 
         BasicInfoRequest basicInfo = request.basicInfo();
         CategoryInfoRequest categoryInfo = request.categoryInfo();
@@ -42,11 +53,13 @@ public class RecipeService {
             sourceContent = sourceContentService.resolveSourceContent(request.sourceUrl());
         }
 
-        // TODO: 로그인 연동 후 작성자 세팅
-        Recipe saved = createRecipe(basicInfo, categoryInfo, sourceType, sourceContent);
+        Recipe saved = createRecipe(member, basicInfo, categoryInfo, sourceType, sourceContent);
 
         List<RecipeStep> savedSteps = recipeStepService.createSteps(saved, request.steps());
-        List<RecipeIngredient> savedIngredients = recipeIngredientService.createIngredients(saved, request.ingredients());
+        List<RecipeIngredient> savedIngredients = recipeIngredientService.createIngredients(saved,
+                request.ingredients());
+
+        addToDefaultRecipeBook(memberId, saved.getId());
 
         return RecipeResponse.toDto(saved, savedSteps, savedIngredients);
     }
@@ -78,20 +91,21 @@ public class RecipeService {
     }
 
     private Recipe createRecipe(
-            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo,
+            Member member, BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo,
             SourceType sourceType, SourceContent sourceContent
     ) {
         Recipe created = switch (sourceType) {
             case USER_CREATED -> Recipe.createManual(
+                    member,
                     basicInfo.title(),
                     basicInfo.description(),
                     basicInfo.servingSize(),
                     basicInfo.cookingTime(),
                     categoryInfo.cuisineType(),
                     categoryInfo.mealType(),
-                    categoryInfo.difficulty()
-            );
+                    categoryInfo.difficulty());
             case IMPORTED -> Recipe.createImported(
+                    member,
                     basicInfo.title(),
                     basicInfo.description(),
                     basicInfo.servingSize(),
@@ -99,11 +113,23 @@ public class RecipeService {
                     categoryInfo.cuisineType(),
                     categoryInfo.mealType(),
                     categoryInfo.difficulty(),
-                    sourceContent
-            );
+                    sourceContent);
         };
 
         return recipeRepository.save(created);
+    }
+
+    private void addToDefaultRecipeBook(Long memberId, Long recipeId) {
+        recipeBookQueryService.findAllByMemberId(memberId).stream()
+                .filter(RecipeBook::getIsDefault)
+                .findFirst()
+                .ifPresent(defaultBook -> recipeBookService.addRecipeInternal(defaultBook.getId(),
+                        recipeId));
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private void validateRecipeRequest(RecipeCreateRequest request) {

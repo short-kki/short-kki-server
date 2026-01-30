@@ -120,6 +120,19 @@ public class RecipeBookService {
     }
 
     @Transactional
+    public void addRecipeInternal(Long recipeBookId, Long recipeId) {
+        RecipeBook recipeBook = findRecipeBookById(recipeBookId);
+        Recipe recipe = findRecipeById(recipeId);
+
+        if (recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
+            return; // 이미 존재하면 무시
+        }
+
+        RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
+        recipeBookItemRepository.save(item);
+    }
+
+    @Transactional
     public void removeRecipe(Long memberId, Long recipeBookId, Long recipeId) {
         RecipeBook recipeBook = findRecipeBookById(recipeBookId);
         validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
