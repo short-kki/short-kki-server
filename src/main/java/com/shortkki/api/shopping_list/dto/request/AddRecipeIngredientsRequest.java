@@ -1,0 +1,9 @@
+package com.shortkki.api.shopping_list.dto.request;
+
+import jakarta.validation.constraints.NotNull;
+
+public record AddRecipeIngredientsRequest(
+        @NotNull(message = "레시피 ID는 필수입니다.")
+        Long recipeId
+) {
+}

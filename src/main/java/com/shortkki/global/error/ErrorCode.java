@@ -36,6 +36,13 @@ public enum ErrorCode {
     STEP_REQUIRED(HttpStatus.BAD_REQUEST, "RECIPE_003", "조리 순서는 최소 1개 이상이어야 합니다."),
     IMPORTED_RECIPE_NOT_MODIFIABLE(HttpStatus.FORBIDDEN, "RECIPE_004", "외부에서 가져온 레시피는 수정하거나 삭제할 수 없습니다."),
 
+    // RecipeBook
+    RECIPE_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_BOOK_001", "레시피북을 찾을 수 없습니다."),
+    CANNOT_DELETE_DEFAULT_RECIPE_BOOK(HttpStatus.BAD_REQUEST, "RECIPE_BOOK_002", "기본 레시피북은 삭제할 수 없습니다."),
+    RECIPE_ALREADY_IN_BOOK(HttpStatus.CONFLICT, "RECIPE_BOOK_003", "이미 레시피북에 추가된 레시피입니다."),
+    RECIPE_NOT_IN_BOOK(HttpStatus.NOT_FOUND, "RECIPE_BOOK_004", "레시피북에 해당 레시피가 없습니다."),
+    INVALID_REORDER_REQUEST(HttpStatus.BAD_REQUEST, "RECIPE_BOOK_005", "전체 레시피북 목록을 전송해야 합니다."),
+
     // Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "GROUP_001", "그룹을 찾을 수 없습니다."),
     GROUP_ACCESS_DENIED(HttpStatus.FORBIDDEN, "GROUP_002", "그룹에 대한 접근 권한이 없습니다."),
@@ -46,6 +53,13 @@ public enum ErrorCode {
     GROUP_NAME_EMPTY(HttpStatus.BAD_REQUEST, "GROUP_007", "그룹 이름은 비어있을 수 없습니다."),
     GROUP_INVITE_CODE_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "GROUP_008", "초대 코드 생성에 실패했습니다."),
 
+    // Ingredient
+    INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "INGREDIENT_001", "재료를 찾을 수 없습니다."),
+
+    // ShoppingList
+    SHOPPING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPPING_LIST_001", "장볼거리를 찾을 수 없습니다."),
+    SHOPPING_LIST_NOT_IN_GROUP(HttpStatus.BAD_REQUEST, "SHOPPING_LIST_002", "해당 그룹의 장볼거리가 아닙니다."),
+
     // Source
     UNSUPPORTED_SOURCE_PLATFORM(HttpStatus.BAD_REQUEST, "SOURCE_001", "지원하지 않는 출처 플랫폼입니다."),
     SOURCE_URL_REQUIRED(HttpStatus.BAD_REQUEST, "SOURCE_002", "출처 URL은 필수입니다."),
@@ -54,8 +68,7 @@ public enum ErrorCode {
     SOURCE_INFO_REQUIRED_FOR_IMPORTED(HttpStatus.BAD_REQUEST, "SOURCE_005", "외부 레시피는 출처 정보가 필수입니다."),
 
     // Curation
-    CURATION_TITLE_DUPLICATE(HttpStatus.CONFLICT, "CURATION_001", "이미 존재하는 큐레이션 제목입니다.")
-    ;
+    CURATION_TITLE_DUPLICATE(HttpStatus.CONFLICT, "CURATION_001", "이미 존재하는 큐레이션 제목입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

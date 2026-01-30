@@ -4,6 +4,10 @@ import com.shortkki.global.error.ErrorCode;
 
 public class AccessDeniedException extends BusinessException {
 
+    public AccessDeniedException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
     public AccessDeniedException(String message) {
         super(ErrorCode.ACCESS_DENIED, message);
     }

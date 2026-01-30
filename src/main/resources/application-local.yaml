@@ -35,7 +35,7 @@ spring:
 
 jwt:
   secret: local__dev_only__short-kki__jwt-secret__32chars_min
-  access-token-validity: 3600000
+  access-token-validity: 86400000
   refresh-token-validity: 604800000
 
 oauth2:

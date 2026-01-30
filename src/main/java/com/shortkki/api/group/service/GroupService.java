@@ -3,16 +3,18 @@ package com.shortkki.api.group.service;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.JoinGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
-import com.shortkki.api.group.dto.response.*;
 import com.shortkki.api.group.dto.response.GroupListResponse;
 import com.shortkki.api.group.dto.response.GroupMemberResponse;
+import com.shortkki.api.group.dto.response.GroupPreviewResponse;
 import com.shortkki.api.group.dto.response.GroupResponse;
+import com.shortkki.api.group.dto.response.InviteCodeResponse;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.entity.GroupMember;
 import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
@@ -21,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,25 +34,20 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
 
-    private static void validateGroupMemberAdmin(GroupMember groupMember) {
-        if (!groupMember.checkIsAdmin()) {
-            throw new BusinessException(ErrorCode.GROUP_ADMIN_REQUIRED);
-        }
-    }
-
     @Transactional
-    public void createGroup(Long memberId, CreateGroupRequest request) {
+    public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
         Group group = Group.create(
                 request.name(),
                 request.description(),
                 request.thumbnailImgUrl(),
                 request.groupType(),
-                generateInviteCode()
-        );
-        groupRepository.save(group);
-        GroupMember groupMember = GroupMember.createAdmin(member, group);
+                generateInviteCode());
+        Group savedGroup = groupRepository.save(group);
+        GroupMember groupMember = GroupMember.createAdmin(member, savedGroup);
         groupMemberRepository.save(groupMember);
+
+        return GroupResponse.from(savedGroup, 1L);
     }
 
     @Transactional
@@ -63,8 +59,7 @@ public class GroupService {
                 request.name(),
                 request.description(),
                 request.thumbnailImgUrl(),
-                request.groupType()
-        );
+                request.groupType());
     }
 
     @Transactional
@@ -98,22 +93,6 @@ public class GroupService {
                 .toList();
     }
 
-    public List<Object> getShoppingList(Long memberId, Long groupId) {
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
-
-        // TODO: 장보기 테이블 구현 후 실제 데이터 조회 로직 추가
-        return Collections.emptyList();
-    }
-
-    @Transactional
-    public void deleteShoppingList(Long memberId, Long groupId) {
-        Group group = findGroupById(groupId);
-        GroupMember groupMember = findGroupMember(memberId, group);
-        validateGroupMemberAdmin(groupMember);
-        // TODO: 장보기 테이블 구현 후 삭제 로직 추가
-    }
-
     @Transactional
     public GroupResponse joinGroup(Long memberId, JoinGroupRequest request) {
         Group group = findGroupByInviteCode(request.inviteCode());
@@ -123,6 +102,19 @@ public class GroupService {
         groupMemberRepository.save(groupMember);
         long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
+    }
+
+    public GroupPreviewResponse getGroupPreviewByInviteCode(String inviteCode) {
+        Group group = findGroupByInviteCode(inviteCode);
+        long memberCount = groupMemberRepository.countByGroup(group);
+        return GroupPreviewResponse.from(group, memberCount);
+    }
+
+    public InviteCodeResponse getInviteCode(Long memberId, Long groupId) {
+        Group group = findGroupById(groupId);
+        GroupMember groupMember = findGroupMember(memberId, group);
+        validateGroupMemberAdmin(groupMember);
+        return InviteCodeResponse.of(group.getCode());
     }
 
     private Group findGroupByInviteCode(String inviteCode) {
@@ -148,12 +140,18 @@ public class GroupService {
 
     private GroupMember findGroupMember(Long memberId, Group group) {
         return groupMemberRepository.findByMemberIdAndGroup(memberId, group)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_MEMBER));
+                .orElseThrow(() -> new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER));
+    }
+
+    private void validateGroupMemberAdmin(GroupMember groupMember) {
+        if (!groupMember.checkIsAdmin()) {
+            throw new AccessDeniedException(ErrorCode.GROUP_ADMIN_REQUIRED);
+        }
     }
 
     private void validateGroupMember(Long memberId, Group group) {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new NotFoundException(ErrorCode.GROUP_NOT_MEMBER);
+            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 

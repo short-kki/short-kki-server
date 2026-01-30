@@ -408,7 +408,7 @@ VALUES (@r_kimchi_stew, @tag_home),
 
 
 -- 큐레이션
-INSERT INTO curation (title, description, day_types, time_types, cuisine_types, meal_types,
+INSERT IGNORE INTO curation (title, description, day_types, time_types, cuisine_types, meal_types,
                       difficulties, keywords, tags, ingredients, is_active, created_at, updated_at)
 VALUES ('자취요리 특선',
         '혼자서 간단하게 만들 수 있는 자취생 맞춤 요리 모음',
@@ -423,3 +423,17 @@ VALUES ('자취요리 특선',
         true,
         NOW(6),
         NOW(6));
+
+
+-- 레시피 북
+INSERT IGNORE INTO recipe_book (id, member_id, title, is_default, sort_order, created_at, updated_at)
+VALUES
+(1, 1, '기본 레시피북', true, 1, NOW(6), NOW(6)),
+(2, 1, '찜해둔 요리', false, 2, NOW(6), NOW(6)),
+(3, 1, '다이어트 식단', false, 3, NOW(6), NOW(6));
+
+
+INSERT IGNORE INTO recipe_book_item (book_id, recipe_id, created_at, updated_at)
+VALUES
+(1, 1, NOW(6), NOW(6)),
+(1, 2, NOW(6), NOW(6));

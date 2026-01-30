@@ -34,6 +34,8 @@ public class SecurityConfig {
             "/api/auth/**",
             // dev
             "/api/dev/tokens",
+            // group
+            "/api/v1/groups/invite/**",
             // swagger
             "/swagger-ui/**",
             "/swagger-ui.html",

@@ -1,5 +1,6 @@
 package com.shortkki.api.group.controller;
 
+import com.shortkki.api.application.usecase.CreateGroupUseCase;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.JoinGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
@@ -25,14 +26,15 @@ import java.util.List;
 public class GroupController {
 
     private final GroupService groupService;
+    private final CreateGroupUseCase createGroupUseCase;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> createGroup(
+    public ResponseEntity<BaseResponse<GroupResponse>> createGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody CreateGroupRequest request
     ) {
-        groupService.createGroup(loginMember.getId(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+        GroupResponse response = createGroupUseCase.execute(loginMember.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
     @PutMapping("/{groupId}")
@@ -81,30 +83,29 @@ public class GroupController {
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
-    @GetMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<List<Object>>> getShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        List<Object> response = groupService.getShoppingList(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success(response));
-    }
-
-    @DeleteMapping("/{groupId}/shopping-list")
-    public ResponseEntity<BaseResponse<Void>> clearShoppingList(
-            @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
-        groupService.deleteShoppingList(loginMember.getId(), groupId);
-        return ResponseEntity.ok(BaseResponse.success());
-    }
-
     @PostMapping("/join")
     public ResponseEntity<BaseResponse<GroupResponse>> joinGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody JoinGroupRequest request
     ) {
         GroupResponse response = groupService.joinGroup(loginMember.getId(), request);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/invite/{inviteCode}")
+    public ResponseEntity<BaseResponse<GroupPreviewResponse>> getGroupPreview(
+            @PathVariable String inviteCode
+    ) {
+        GroupPreviewResponse response = groupService.getGroupPreviewByInviteCode(inviteCode);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/{groupId}/invite-code")
+    public ResponseEntity<BaseResponse<InviteCodeResponse>> getInviteCode(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId
+    ) {
+        InviteCodeResponse response = groupService.getInviteCode(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 }
