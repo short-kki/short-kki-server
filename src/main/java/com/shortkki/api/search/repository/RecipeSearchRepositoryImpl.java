@@ -6,6 +6,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shortkki.api.recipe.entity.CuisineType;
+import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.api.recipe.entity.QRecipe;
 import com.shortkki.api.recipe.entity.QRecipeIngredient;
@@ -33,10 +34,8 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
 
     @Override
     public Slice<Recipe> search(
-            Set<String> keywords,
-            List<CuisineType> cuisineTypes,
-            List<MealType> mealTypes,
-            Pageable pageable
+            Pageable pageable, Set<String> keywords,
+            Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     ) {
         int pageSize = pageable.getPageSize();
 
@@ -46,7 +45,7 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
                 .leftJoin(recipe.ingredients, recipeIngredient)
                 .leftJoin(recipeTag).on(recipeTag.recipeId.eq(recipe.id))
                 .leftJoin(tag).on(tag.id.eq(recipeTag.tagId))
-                .where(where(keywords, cuisineTypes, mealTypes))
+                .where(where(keywords, cuisineTypes, mealTypes, difficulties))
                 .orderBy(recipe.bookmarkCount.desc(), recipe.createdAt.desc(), recipe.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageSize + 1L)
@@ -62,8 +61,9 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
 
     private BooleanBuilder where(
             Set<String> keywords,
-            List<CuisineType> cuisineTypes,
-            List<MealType> mealTypes
+            Set<CuisineType> cuisineTypes,
+            Set<MealType> mealTypes,
+            Set<Difficulty> difficulties
     ) {
         BooleanBuilder where = new BooleanBuilder(recipe.isDeleted.isFalse());
 
@@ -72,6 +72,10 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
         }
         if (!isEmpty(mealTypes)) {
             where.and(recipe.mealType.in(mealTypes));
+        }
+
+        if (!isEmpty(difficulties)) {
+            where.and(recipe.difficulty.in(difficulties));
         }
 
         BooleanBuilder keyword = keywordPredicate(keywords);
@@ -94,12 +98,12 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
                 continue;
             }
 
-            String t = keyword.trim();
-            if (t.isEmpty()) {
+            String trimmed = keyword.trim();
+            if (trimmed.isEmpty()) {
                 continue;
             }
 
-            andKeywords.and(matchAnyField(t));
+            andKeywords.or(matchAnyField(trimmed));
         }
 
         return andKeywords.hasValue() ? andKeywords : null;

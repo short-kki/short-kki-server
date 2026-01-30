@@ -3,12 +3,12 @@ package com.shortkki.api.search.service;
 import com.shortkki.api.recipe.dto.response.RecipeSearchResponse;
 import com.shortkki.api.recipe.dto.response.RecipeSummaryResponse;
 import com.shortkki.api.recipe.entity.CuisineType;
+import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.api.recipe.entity.Recipe;
-import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.search.repository.RecipeSearchRepository;
+import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,12 +30,17 @@ public class RecipeSearchService {
     private final RecipeSearchRepository recipeSearchRepository;
 
     public RecipeSearchResponse search(
-            String searchWord, List<CuisineType> cuisineTypes, List<MealType> mealTypes, Pageable pageable
+            Pageable pageable, String searchWord,
+            Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     ) {
         Set<String> keywords = parseKeywords(searchWord);
 
+        if (keywords.isEmpty()) {
+            throw new BadRequestException("검색어는 필수입니다.");
+        }
+
         Slice<Recipe> recipes = recipeSearchRepository.search(
-                keywords, cuisineTypes, mealTypes, pageable
+                pageable, keywords, cuisineTypes, mealTypes, difficulties
         );
 
         return RecipeSearchResponse.builder()
