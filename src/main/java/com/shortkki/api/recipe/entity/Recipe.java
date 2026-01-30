@@ -80,6 +80,9 @@ public class Recipe extends BaseEntity {
     @Column(length = 50)
     private SourceType sourceType;
 
+    @Column(name = "image_file_id")
+    private Long imageFileId;
+
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
@@ -89,8 +92,7 @@ public class Recipe extends BaseEntity {
             String title, String description, Integer servingSize, Integer cookingTime,
             CuisineType cuisineType, MealType mealType, Difficulty difficulty,
             Integer bookmarkCount,
-            SourceType sourceType, SourceContent sourceContent, Boolean isDeleted
-    ) {
+            SourceType sourceType, SourceContent sourceContent, Boolean isDeleted) {
         this.member = member;
         this.title = title;
         this.description = description;
@@ -108,8 +110,7 @@ public class Recipe extends BaseEntity {
     public static Recipe createManual(
             Member member,
             String title, String description, Integer servingSize, Integer cookingTime,
-            CuisineType cuisineType, MealType mealType, Difficulty difficulty
-    ) {
+            CuisineType cuisineType, MealType mealType, Difficulty difficulty) {
         return Recipe.builder()
                 .member(member)
                 .title(title)
@@ -169,5 +170,9 @@ public class Recipe extends BaseEntity {
 
     public SourceContentType getSourceContentType() {
         return SourceType.IMPORTED == sourceType ? sourceContent.getContentType() : null;
+    }
+
+    public void setImageFileId(Long imageFileId) {
+        this.imageFileId = imageFileId;
     }
 }

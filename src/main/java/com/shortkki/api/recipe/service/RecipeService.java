@@ -1,5 +1,8 @@
 package com.shortkki.api.recipe.service;
 
+import com.shortkki.api.file.entity.FileMetadata;
+import com.shortkki.api.file.entity.FileTargetType;
+import com.shortkki.api.file.service.FileMetadataService;
 import com.shortkki.api.recipe.constant.SourceType;
 import com.shortkki.api.recipe.dto.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.CategoryInfoRequest;
@@ -30,6 +33,7 @@ public class RecipeService {
     private final MemberRepository memberRepository;
     private final RecipeBookService recipeBookService;
     private final RecipeBookQueryService recipeBookQueryService;
+    private final FileMetadataService fileMetadataService;
 
     public void create(Long memberId, RecipeCreateRequest request) {
         validateRecipeRequest(request);
@@ -85,7 +89,17 @@ public class RecipeService {
                 categoryInfo.mealType(),
                 categoryInfo.difficulty());
 
-        return recipeRepository.save(created);
+        Recipe saved = recipeRepository.save(created);
+
+        if (basicInfo.imageFileId() != null) {
+            FileMetadata file = fileMetadataService.getById(basicInfo.imageFileId());
+            file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
+            saved.setImageFileId(basicInfo.imageFileId());
+        }
+
+        // TODO: 태그 저장 로직 추가
+
+        return saved;
     }
 
     private void addToDefaultRecipeBook(Long memberId, Long recipeId) {

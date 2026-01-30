@@ -87,6 +87,8 @@ public class RecipeImportService {
 
         saveSteps(saved, parseResult.steps());
 
+        // TODO: 태그 저장 로직 추가
+
         history.complete("Recipe created: " + saved.getId());
 
         addToDefaultRecipeBook(memberId, saved.getId());
