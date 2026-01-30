@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 public class AiRecipeParserService {
 
-    private static final String MODEL_NAME = "gemini-3.0-flash";
+    private static final String MODEL_NAME = "gemini-3-flash-preview";
     private final Client client;
     private final ObjectMapper objectMapper;
 
