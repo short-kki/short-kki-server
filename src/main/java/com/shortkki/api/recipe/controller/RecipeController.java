@@ -26,7 +26,7 @@ public class RecipeController {
     public ResponseEntity<BaseResponse<Void>> create(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody RecipeCreateRequest request) {
-        RecipeResponse response = recipeService.create(loginMember.getId(), request);
+        recipeService.create(loginMember.getId(), request);
         return ResponseEntity.ok(BaseResponse.success("레시피가 생성되었습니다."));
     }
 
@@ -55,7 +55,5 @@ public class RecipeController {
         recipeService.update(id, request);
         return ResponseEntity.ok(BaseResponse.success("레시피가 수정되었습니다."));
     }
-    // TODO : 외부 레시피 파싱
-    // TODO : 태그, 이미 추가
-    // TODO : 외부 레시피 생성 로직 분리
+    // TODO : 태그, 이미지 추가
 }
