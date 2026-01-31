@@ -106,7 +106,8 @@ public class RecipeService {
         recipeBookQueryService.findAllByMemberId(memberId).stream()
                 .filter(RecipeBook::getIsDefault)
                 .findFirst()
-                .ifPresent(defaultBook -> recipeBookService.addRecipeInternal(defaultBook.getId(), recipeId));
+                .ifPresent(defaultBook -> recipeBookService.addRecipeInternal(
+                        memberId, defaultBook.getId(), recipeId));
     }
 
     private Member findMemberById(Long memberId) {

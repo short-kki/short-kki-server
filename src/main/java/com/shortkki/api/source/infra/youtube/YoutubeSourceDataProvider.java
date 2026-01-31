@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shortkki.api.source.service.dto.SourceContentInfo;
 import com.shortkki.api.source.service.dto.SourceCreatorInfo;
 import com.shortkki.api.source.service.port.SourceDataProvider;
+import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -15,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 public class YoutubeSourceDataProvider implements SourceDataProvider {
 
     private static final String YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3";
+    private static final Pattern VIDEO_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{11}$");
     private final String apiKey;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -29,6 +33,11 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
     @Override
     public SourceContentInfo getSourceInfo(String videoId) {
+        if (!isValidVideoId(videoId)) {
+            log.warn("유효하지 않은 YouTube 영상 ID: {}", videoId);
+            throw new BadRequestException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         String url = String.format(
                 "%s/videos?part=snippet&id=%s&key=%s",
                 YOUTUBE_API_BASE, videoId, apiKey);
@@ -91,6 +100,10 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
             log.error("YouTube Channel API 호출 실패: {}", e.getMessage(), e);
             return new SourceCreatorInfo(channelId, "Unknown Creator", null);
         }
+    }
+
+    private boolean isValidVideoId(String videoId) {
+        return videoId != null && VIDEO_ID_PATTERN.matcher(videoId).matches();
     }
 
     private SourceContentInfo createDefaultContentInfo(String videoId) {

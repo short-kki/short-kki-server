@@ -24,24 +24,32 @@ import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
 import com.shortkki.api.recipeImport.service.parser.AiRecipeParserService;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceImportHistory;
+import com.shortkki.api.source.domain.SourcePlatform;
+import com.shortkki.api.source.repository.SourceContentRepository;
 import com.shortkki.api.source.repository.SourceImportHistoryRepository;
 import com.shortkki.api.source.service.SourceContentService;
+import com.shortkki.api.source.support.ExternalKeyExtractorRegistry;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BadRequestException;
+import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RecipeImportService {
 
     private final SourceContentService sourceContentService;
+    private final SourceContentRepository sourceContentRepository;
+    private final ExternalKeyExtractorRegistry extractorRegistry;
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
     private final RecipeBookService recipeBookService;
@@ -51,10 +59,13 @@ public class RecipeImportService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
+    private final PlatformTransactionManager transactionManager;
 
     public RecipeImportResponse importFromUrl(Long memberId, RecipeImportRequest request) {
         Member member = findMemberById(memberId);
         String sourceUrl = request.sourceUrl();
+
+        validateNotDuplicateSource(sourceUrl);
 
         SourceContent sourceContent = sourceContentService.resolveSourceContent(sourceUrl);
 
@@ -64,13 +75,39 @@ public class RecipeImportService {
                 sourceContent.getPlatform());
         sourceImportHistoryRepository.save(history);
 
-        log.info("AI 레시피 파싱 시작: {}", sourceUrl);
-        RecipeParseResult parseResult = aiRecipeParserService.parseRecipeFromUrl(sourceUrl);
-        log.info("AI 파싱 완료 - 제목: {}, 재료: {}개, 순서: {}개",
-                parseResult.title(),
-                parseResult.ingredients().size(),
-                parseResult.steps().size());
+        RecipeParseResult parseResult;
+        try {
+            log.info("AI 레시피 파싱 시작: {}", sourceUrl);
+            parseResult = aiRecipeParserService.parseRecipeFromUrl(sourceUrl);
+            log.info("AI 파싱 완료 - 제목: {}, 재료: {}개, 순서: {}개",
+                    parseResult.title(),
+                    parseResult.ingredients().size(),
+                    parseResult.steps().size());
+        } catch (Exception e) {
+            history.fail("AI parsing failed: " + e.getMessage());
+            sourceImportHistoryRepository.save(history);
+            throw e;
+        }
 
+        Recipe saved = new TransactionTemplate(transactionManager).execute(status -> {
+            Recipe recipe = saveRecipe(member, sourceContent, parseResult);
+            saveIngredients(recipe, parseResult.ingredients());
+            saveSteps(recipe, parseResult.steps());
+            return recipe;
+        });
+
+        // TODO: 태그 저장 로직 추가
+
+        history.complete("Recipe created: " + saved.getId());
+        sourceImportHistoryRepository.save(history);
+
+        addToDefaultRecipeBook(memberId, saved.getId());
+
+        return RecipeImportResponse.success(saved.getId(), saved.getTitle(), sourceUrl);
+    }
+
+    @Transactional
+    private Recipe saveRecipe(Member member, SourceContent sourceContent, RecipeParseResult parseResult) {
         Recipe recipe = Recipe.createImported(
                 member,
                 parseResult.title() != null ? parseResult.title() : sourceContent.getTitle(),
@@ -81,21 +118,10 @@ public class RecipeImportService {
                 parseMealType(parseResult.mealType()),
                 parseDifficulty(parseResult.difficulty()),
                 sourceContent);
-        Recipe saved = recipeRepository.save(recipe);
-
-        saveIngredients(saved, parseResult.ingredients());
-
-        saveSteps(saved, parseResult.steps());
-
-        // TODO: 태그 저장 로직 추가
-
-        history.complete("Recipe created: " + saved.getId());
-
-        addToDefaultRecipeBook(memberId, saved.getId());
-
-        return RecipeImportResponse.success(saved.getId(), saved.getTitle(), sourceUrl);
+        return recipeRepository.save(recipe);
     }
 
+    @Transactional
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         for (IngredientParseResult ing : ingredients) {
             Ingredient ingredient = ingredientRepository.findByName(ing.name())
@@ -120,6 +146,7 @@ public class RecipeImportService {
         }
     }
 
+    @Transactional
     private void saveSteps(Recipe recipe, List<StepParseResult> steps) {
         for (StepParseResult step : steps) {
             RecipeStep recipeStep = RecipeStep.create(
@@ -132,8 +159,8 @@ public class RecipeImportService {
         recipeBookQueryService.findAllByMemberId(memberId).stream()
                 .filter(RecipeBook::getIsDefault)
                 .findFirst()
-                .ifPresent(defaultBook -> recipeBookService.addRecipeInternal(defaultBook.getId(),
-                        recipeId));
+                .ifPresent(defaultBook -> recipeBookService.addRecipeInternal(
+                        memberId, defaultBook.getId(), recipeId));
     }
 
     private Member findMemberById(Long memberId) {
@@ -171,6 +198,16 @@ public class RecipeImportService {
         } catch (IllegalArgumentException e) {
             log.warn("Unknown difficulty: {}", value);
             return null;
+        }
+    }
+
+    private void validateNotDuplicateSource(String sourceUrl) {
+        SourcePlatform platform = extractorRegistry.detectPlatform(sourceUrl)
+                .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
+        String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
+
+        if (sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey).isPresent()) {
+            throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
         }
     }
 }
