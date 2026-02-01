@@ -20,6 +20,8 @@ public class RecipeCalendarService {
 
     private final RecipeQueueQueryService recipeQueueQueryService;
     private final RecipeQueueValidationService recipeQueueValidationService;
+    private final RecipeCalendarQueryService recipeCalendarQueryService;
+    private final RecipeCalendarValidationService recipeCalendarValidationService;
     private final GroupQueryService groupQueryService;
 
     private final RecipeCalendarRepository recipeCalendarRepository;
@@ -44,5 +46,12 @@ public class RecipeCalendarService {
         recipeQueueRepository.delete(queue);
 
         return RecipeCalendarResponse.from(calendar);
+    }
+
+    public void delete(Long memberId, Long calendarId) {
+        RecipeCalendar calendar = recipeCalendarQueryService.getRecipeCalendar(calendarId);
+        recipeCalendarValidationService.validateRecipeCalendarOwner(calendarId, memberId);
+
+        recipeCalendarRepository.delete(calendar);
     }
 }
