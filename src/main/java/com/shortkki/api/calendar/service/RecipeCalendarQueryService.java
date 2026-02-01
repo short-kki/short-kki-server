@@ -7,6 +7,8 @@ import com.shortkki.api.calendar.repository.RecipeCalendarRepository;
 import com.shortkki.api.group.service.GroupMemberValidationService;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,14 +38,23 @@ public class RecipeCalendarQueryService {
             groupMemberValidationService.validateGroupMember(memberId, groupId);
         }
 
-        List<RecipeCalendarDetailResponse> recipeCalendars = recipeCalendarRepository
+        List<RecipeCalendarDetailResponse> calendarDetails = recipeCalendarRepository
                 .findAllByMemberAndDateRange(memberId, groupId, startDate, endDate)
                 .stream()
                 .map(RecipeCalendarDetailResponse::from)
                 .toList();
 
+        Map<Boolean, List<RecipeCalendarDetailResponse>> partitioned = calendarDetails.stream()
+                .collect(Collectors.partitioningBy(
+                        detail -> detail.groupId() == null
+                ));
+
+        List<RecipeCalendarDetailResponse> personalCalendars = partitioned.get(true);
+        List<RecipeCalendarDetailResponse> groupCalendars = partitioned.get(false);
+
         return RecipeCalendarsResponse.builder()
-                .recipeCalendars(recipeCalendars)
+                .personals(personalCalendars)
+                .groups(groupCalendars)
                 .build();
     }
 }
