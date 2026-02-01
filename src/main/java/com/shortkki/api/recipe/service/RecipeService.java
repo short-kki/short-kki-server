@@ -16,8 +16,10 @@ import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +95,7 @@ public class RecipeService {
 
         if (basicInfo.imageFileId() != null) {
             FileMetadata file = fileMetadataService.getById(basicInfo.imageFileId());
+            validateFileOwnership(file, member);
             file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
             saved.setImageFileId(basicInfo.imageFileId());
         }
@@ -103,11 +106,20 @@ public class RecipeService {
     }
 
     private void addToDefaultRecipeBook(Long memberId, Long recipeId) {
-        recipeBookQueryService.findAllByMemberId(memberId).stream()
+        RecipeBook defaultBook = recipeBookQueryService.findAllByMemberId(memberId).stream()
                 .filter(RecipeBook::getIsDefault)
                 .findFirst()
-                .ifPresent(defaultBook -> recipeBookService.addRecipeInternal(
-                        memberId, defaultBook.getId(), recipeId));
+                .orElse(null);
+
+        if (defaultBook == null) {
+            recipeBookService.createDefaultForMember(memberId);
+            defaultBook = recipeBookQueryService.findAllByMemberId(memberId).stream()
+                    .filter(RecipeBook::getIsDefault)
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
+        }
+
+        recipeBookService.addRecipeInternal(memberId, defaultBook.getId(), recipeId);
     }
 
     private Member findMemberById(Long memberId) {
@@ -127,6 +139,12 @@ public class RecipeService {
     private void validateUserCreated(Recipe recipe) {
         if (recipe.getSourceType() != null && recipe.getSourceType() != SourceType.USER_CREATED) {
             throw new BusinessException(ErrorCode.IMPORTED_RECIPE_NOT_MODIFIABLE);
+        }
+    }
+
+    private void validateFileOwnership(FileMetadata file, Member member) {
+        if (!Objects.equals(file.getUploaderId(), member.getId())) {
+            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }
     }
 }
