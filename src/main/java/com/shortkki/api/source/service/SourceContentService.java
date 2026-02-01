@@ -11,7 +11,9 @@ import com.shortkki.api.source.service.dto.SourceCreatorInfo;
 import com.shortkki.api.source.service.port.SourceDataProvider;
 import com.shortkki.api.source.support.ExternalKeyExtractorRegistry;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.BadRequestException;
+import org.springframework.dao.DataIntegrityViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +51,11 @@ public class SourceContentService {
                 .findByPlatformAndExternalKey(platform, externalKey)
                 .orElseGet(() -> {
                     SourceContent content = createSourceContent(platform, externalKey);
-                    return sourceContentRepository.save(content);
+                    try {
+                        return sourceContentRepository.save(content);
+                    } catch (DataIntegrityViolationException e) {
+                        throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
+                    }
                 });
     }
 

@@ -130,9 +130,10 @@ public class RecipeImportAsyncService {
 
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         for (IngredientParseResult ing : ingredients) {
+            String unit = parseUnit(ing.amount());
             Ingredient ingredient = ingredientRepository.findByName(ing.name())
                     .orElseGet(() -> ingredientRepository.save(
-                            Ingredient.create(ing.name(), ing.amount())));
+                            Ingredient.create(ing.name(), unit)));
             Integer amount = parseAmount(ing.amount());
             RecipeIngredient recipeIngredient = RecipeIngredient.create(
                     ingredient, recipe, amount);
@@ -150,6 +151,14 @@ public class RecipeImportAsyncService {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private String parseUnit(String amountStr) {
+        if (amountStr == null || amountStr.isBlank()) {
+            return "";
+        }
+        String unit = amountStr.replaceAll("[0-9/\\.\\-]+", "").trim();
+        return unit.isBlank() ? "" : unit;
     }
 
     private void saveSteps(Recipe recipe, List<StepParseResult> steps) {
