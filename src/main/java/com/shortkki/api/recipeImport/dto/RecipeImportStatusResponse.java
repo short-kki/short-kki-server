@@ -7,17 +7,21 @@ import com.shortkki.api.source.domain.SourcePlatform;
 public record RecipeImportStatusResponse(
         Long importHistoryId,
         ImportStatus status,
+        Long recipeId,
         String sourceUrl,
         SourcePlatform platform,
+        RecipeImportPreview preview,
         String detail
 ) {
 
-    public static RecipeImportStatusResponse from(SourceImportHistory history) {
+    public static RecipeImportStatusResponse from(SourceImportHistory history, RecipeImportPreview preview) {
         return new RecipeImportStatusResponse(
                 history.getId(),
                 history.getStatus(),
+                history.getRecipeId(),
                 history.getRequestedSourceUrl(),
                 history.getPlatform(),
+                preview,
                 history.getRawResponse()
         );
     }

@@ -106,6 +106,7 @@ public class RecipeImportAsyncService {
 
         // TODO: 태그 저장 로직 추가
 
+        history.updateRecipeId(saved.getId());
         history.complete("Recipe created: " + saved.getId());
         sourceImportHistoryRepository.save(history);
 

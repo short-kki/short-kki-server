@@ -31,6 +31,9 @@ public class SourceImportHistory extends BaseEntity {
     @Column(nullable = false)
     private Long sourceContentId;
 
+    @Column(name = "recipe_id")
+    private Long recipeId;
+
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String requestedSourceUrl;
@@ -48,10 +51,11 @@ public class SourceImportHistory extends BaseEntity {
     private ImportStatus status;
 
     @Builder
-    private SourceImportHistory(Long memberId, Long sourceContentId, String requestedSourceUrl,
-            SourcePlatform platform, String rawResponse, ImportStatus status) {
+    private SourceImportHistory(Long memberId, Long sourceContentId, Long recipeId,
+            String requestedSourceUrl, SourcePlatform platform, String rawResponse, ImportStatus status) {
         this.memberId = memberId;
         this.sourceContentId = sourceContentId;
+        this.recipeId = recipeId;
         this.requestedSourceUrl = requestedSourceUrl;
         this.platform = platform;
         this.rawResponse = rawResponse;
@@ -64,6 +68,7 @@ public class SourceImportHistory extends BaseEntity {
         return SourceImportHistory.builder()
                 .memberId(memberId)
                 .sourceContentId(sourceContentId)
+                .recipeId(null)
                 .requestedSourceUrl(requestedSourceUrl)
                 .platform(platform)
                 .status(ImportStatus.REQUESTED)
@@ -81,6 +86,10 @@ public class SourceImportHistory extends BaseEntity {
     public void complete(String rawResponse) {
         this.rawResponse = rawResponse;
         this.status = ImportStatus.COMPLETED;
+    }
+
+    public void updateRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
     }
 
     public void fail(String rawResponse) {

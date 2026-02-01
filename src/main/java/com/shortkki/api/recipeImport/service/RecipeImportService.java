@@ -3,6 +3,7 @@ package com.shortkki.api.recipeImport.service;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.recipeImport.dto.RecipeImportRequest;
+import com.shortkki.api.recipeImport.dto.RecipeImportPreview;
 import com.shortkki.api.recipeImport.dto.RecipeImportResponse;
 import com.shortkki.api.recipeImport.dto.RecipeImportStatusResponse;
 import com.shortkki.api.source.domain.SourceContent;
@@ -46,13 +47,17 @@ public class RecipeImportService {
                 sourceContent.getPlatform());
         sourceImportHistoryRepository.save(history);
 
+        SourceContent previewContent = sourceContentRepository.findByIdWithCreator(sourceContent.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
+        RecipeImportPreview preview = RecipeImportPreview.from(previewContent);
+
         recipeImportAsyncService.processImport(
                 member.getId(),
                 sourceContent.getId(),
                 history.getId(),
                 sourceUrl);
 
-        return RecipeImportResponse.accepted(history.getId(), sourceUrl);
+        return RecipeImportResponse.accepted(history.getId(), sourceUrl, preview);
     }
 
     public RecipeImportStatusResponse getStatus(Long memberId, Long historyId) {
@@ -63,7 +68,11 @@ public class RecipeImportService {
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }
 
-        return RecipeImportStatusResponse.from(history);
+        SourceContent previewContent = sourceContentRepository.findByIdWithCreator(history.getSourceContentId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
+        RecipeImportPreview preview = RecipeImportPreview.from(previewContent);
+
+        return RecipeImportStatusResponse.from(history, preview);
     }
 
     private Member findMemberById(Long memberId) {
