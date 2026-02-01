@@ -25,6 +25,8 @@ import com.shortkki.api.source.domain.ImportStatus;
 import com.shortkki.api.source.domain.SourceImportHistory;
 import com.shortkki.api.source.repository.SourceContentRepository;
 import com.shortkki.api.source.repository.SourceImportHistoryRepository;
+import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
+import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -129,15 +131,25 @@ public class RecipeImportAsyncService {
     }
 
     private Recipe saveRecipe(Member member, SourceContent sourceContent, RecipeParseResult parseResult) {
-        Recipe recipe = Recipe.createImported(
-                member,
+        RecipeBasicInfo basicInfo = new RecipeBasicInfo(
                 parseResult.title() != null ? parseResult.title() : sourceContent.getTitle(),
                 parseResult.description(),
-                parseResult.servingSize(),
-                parseResult.cookingTime(),
-                parseCuisineType(parseResult.cuisineType()),
-                parseMealType(parseResult.mealType()),
-                parseDifficulty(parseResult.difficulty()),
+                parseResult.servingSize() != null ? parseResult.servingSize() : 1,
+                parseResult.cookingTime() != null ? parseResult.cookingTime() : 0);
+
+        CuisineType cuisineType = parseCuisineType(parseResult.cuisineType());
+        MealType mealType = parseMealType(parseResult.mealType());
+        Difficulty difficulty = parseDifficulty(parseResult.difficulty());
+
+        RecipeCategoryInfo categoryInfo = new RecipeCategoryInfo(
+                cuisineType != null ? cuisineType : CuisineType.ETC,
+                mealType != null ? mealType : MealType.ETC,
+                difficulty != null ? difficulty : Difficulty.ETC);
+
+        Recipe recipe = Recipe.createImported(
+                member,
+                basicInfo,
+                categoryInfo,
                 sourceContent);
         return recipeRepository.save(recipe);
     }

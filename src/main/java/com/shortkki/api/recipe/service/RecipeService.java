@@ -9,6 +9,8 @@ import com.shortkki.api.recipe.dto.CategoryInfoRequest;
 import com.shortkki.api.recipe.dto.RecipeCreateRequest;
 import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
+import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
@@ -42,10 +44,21 @@ public class RecipeService {
 
         Member member = findMemberById(memberId);
 
-        BasicInfoRequest basicInfo = request.basicInfo();
-        CategoryInfoRequest categoryInfo = request.categoryInfo();
+        BasicInfoRequest basicInfoRequest = request.basicInfo();
+        CategoryInfoRequest categoryInfoRequest = request.categoryInfo();
 
-        Recipe saved = createRecipe(member, basicInfo, categoryInfo);
+        RecipeBasicInfo basicInfo = new RecipeBasicInfo(
+                basicInfoRequest.title(),
+                basicInfoRequest.description(),
+                basicInfoRequest.servingSize(),
+                basicInfoRequest.cookingTime());
+
+        RecipeCategoryInfo categoryInfo = new RecipeCategoryInfo(
+                categoryInfoRequest.cuisineType(),
+                categoryInfoRequest.mealType(),
+                categoryInfoRequest.difficulty());
+
+        Recipe saved = createRecipe(member, basicInfo, categoryInfo, basicInfoRequest.imageFileId());
 
         recipeStepService.createSteps(saved, request.steps());
         recipeIngredientService.createIngredients(saved, request.ingredients());
@@ -64,7 +77,21 @@ public class RecipeService {
 
         updateRecipeImage(recipe, member, request.basicInfo().imageFileId());
 
-        recipe.update(request.basicInfo(), request.categoryInfo());
+        BasicInfoRequest basicInfoRequest = request.basicInfo();
+        CategoryInfoRequest categoryInfoRequest = request.categoryInfo();
+
+        RecipeBasicInfo basicInfo = new RecipeBasicInfo(
+                basicInfoRequest.title(),
+                basicInfoRequest.description(),
+                basicInfoRequest.servingSize(),
+                basicInfoRequest.cookingTime());
+        recipe.updateBasicInfo(basicInfo);
+
+        RecipeCategoryInfo categoryInfo = new RecipeCategoryInfo(
+                categoryInfoRequest.cuisineType(),
+                categoryInfoRequest.mealType(),
+                categoryInfoRequest.difficulty());
+        recipe.updateCategoryInfo(categoryInfo);
 
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);
@@ -85,24 +112,16 @@ public class RecipeService {
     }
 
     private Recipe createRecipe(
-            Member member, BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo) {
-        Recipe created = Recipe.createManual(
-                member,
-                basicInfo.title(),
-                basicInfo.description(),
-                basicInfo.servingSize(),
-                basicInfo.cookingTime(),
-                categoryInfo.cuisineType(),
-                categoryInfo.mealType(),
-                categoryInfo.difficulty());
+            Member member, RecipeBasicInfo basicInfo, RecipeCategoryInfo categoryInfo, Long imageFileId) {
+        Recipe created = Recipe.createManual(member, basicInfo, categoryInfo);
 
         Recipe saved = recipeRepository.save(created);
 
-        if (basicInfo.imageFileId() != null) {
-            FileMetadata file = fileMetadataService.getById(basicInfo.imageFileId());
+        if (imageFileId != null) {
+            FileMetadata file = fileMetadataService.getById(imageFileId);
             validateFileOwnership(file, member);
             file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
-            saved.setImageFileId(basicInfo.imageFileId());
+            saved.setImageFileId(imageFileId);
         }
 
         // TODO: 태그 저장 로직 추가
