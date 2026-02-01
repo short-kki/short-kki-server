@@ -4,8 +4,8 @@ import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.recipeImport.dto.RecipeImportRequest;
 import com.shortkki.api.recipeImport.dto.RecipeImportPreview;
-import com.shortkki.api.recipeImport.dto.RecipeImportPayload;
-import com.shortkki.api.recipeImport.dto.RecipeImportStatusPayload;
+import com.shortkki.api.recipeImport.dto.RecipeImportResponse;
+import com.shortkki.api.recipeImport.dto.RecipeImportStatusResponse;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceImportHistory;
 import com.shortkki.api.source.domain.SourcePlatform;
@@ -32,7 +32,7 @@ public class RecipeImportService {
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
     private final RecipeImportAsyncService recipeImportAsyncService;
 
-    public RecipeImportPayload importFromUrl(Long memberId, RecipeImportRequest request) {
+    public RecipeImportResponse importFromUrl(Long memberId, RecipeImportRequest request) {
         Member member = findMemberById(memberId);
         String sourceUrl = request.sourceUrl();
 
@@ -57,10 +57,10 @@ public class RecipeImportService {
                 history.getId(),
                 sourceUrl);
 
-        return RecipeImportPayload.accepted(history.getId(), sourceUrl, preview);
+        return RecipeImportResponse.accepted(history.getId(), sourceUrl, preview);
     }
 
-    public RecipeImportStatusPayload getStatus(Long memberId, Long historyId) {
+    public RecipeImportStatusResponse getStatus(Long memberId, Long historyId) {
         SourceImportHistory history = sourceImportHistoryRepository.findById(historyId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
 
@@ -72,7 +72,7 @@ public class RecipeImportService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
         RecipeImportPreview preview = RecipeImportPreview.from(previewContent);
 
-        return RecipeImportStatusPayload.from(history, preview);
+        return RecipeImportStatusResponse.from(history, preview);
     }
 
     private Member findMemberById(Long memberId) {

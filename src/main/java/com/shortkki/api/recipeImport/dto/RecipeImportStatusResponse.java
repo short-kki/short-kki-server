@@ -4,7 +4,7 @@ import com.shortkki.api.source.domain.ImportStatus;
 import com.shortkki.api.source.domain.SourceImportHistory;
 import com.shortkki.api.source.domain.SourcePlatform;
 
-public record RecipeImportStatusPayload(
+public record RecipeImportStatusResponse(
         Long importHistoryId,
         ImportStatus status,
         Long recipeId,
@@ -13,14 +13,14 @@ public record RecipeImportStatusPayload(
         RecipeImportPreview preview
 ) {
 
-    public static RecipeImportStatusPayload from(SourceImportHistory history, RecipeImportPreview preview) {
-        return new RecipeImportStatusPayload(
+    public static RecipeImportStatusResponse from(SourceImportHistory history,
+            RecipeImportPreview preview) {
+        return new RecipeImportStatusResponse(
                 history.getId(),
                 history.getStatus(),
                 history.getRecipeId(),
                 history.getRequestedSourceUrl(),
                 history.getPlatform(),
-                preview
-        );
+                preview);
     }
 }

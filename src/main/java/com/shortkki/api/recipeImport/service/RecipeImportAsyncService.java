@@ -55,8 +55,7 @@ public class RecipeImportAsyncService {
             Long memberId,
             Long sourceContentId,
             Long historyId,
-            String sourceUrl
-    ) {
+            String sourceUrl) {
         SourceImportHistory history = sourceImportHistoryRepository.findById(historyId)
                 .orElse(null);
         if (history == null) {
@@ -91,12 +90,25 @@ public class RecipeImportAsyncService {
             return;
         }
 
-        Recipe saved = new TransactionTemplate(transactionManager).execute(status -> {
-            Recipe recipe = saveRecipe(member, sourceContent, parseResult);
-            saveIngredients(recipe, parseResult.ingredients());
-            saveSteps(recipe, parseResult.steps());
-            return recipe;
-        });
+        Recipe saved;
+        try {
+            saved = new TransactionTemplate(transactionManager).execute(status -> {
+                try {
+                    Recipe recipe = saveRecipe(member, sourceContent, parseResult);
+                    saveIngredients(recipe, parseResult.ingredients());
+                    saveSteps(recipe, parseResult.steps());
+                    return recipe;
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    throw e;
+                }
+            });
+        } catch (Exception e) {
+            log.error("Recipe save failed", e);
+            history.fail("Save failed: " + e.getMessage());
+            sourceImportHistoryRepository.save(history);
+            return;
+        }
 
         if (saved == null) {
             history.fail("Recipe transaction rolled back.");

@@ -1,6 +1,6 @@
 package com.shortkki.api.recipeImport.dto;
 
-public record RecipeImportPayload(
+public record RecipeImportResponse(
         Long importHistoryId,
         Long recipeId,
         String title,
@@ -9,12 +9,11 @@ public record RecipeImportPayload(
         String message
 ) {
 
-    public static RecipeImportPayload accepted(
+    public static RecipeImportResponse accepted(
             Long importHistoryId,
             String sourceUrl,
-            RecipeImportPreview preview
-    ) {
-        return new RecipeImportPayload(
+            RecipeImportPreview preview) {
+        return new RecipeImportResponse(
                 importHistoryId,
                 null,
                 null,
@@ -23,8 +22,8 @@ public record RecipeImportPayload(
                 "외부 레시피 파싱을 요청했습니다.");
     }
 
-    public static RecipeImportPayload success(Long recipeId, String title, String sourceUrl) {
-        return new RecipeImportPayload(
+    public static RecipeImportResponse success(Long recipeId, String title, String sourceUrl) {
+        return new RecipeImportResponse(
                 null,
                 recipeId,
                 title,

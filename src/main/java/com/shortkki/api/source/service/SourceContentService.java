@@ -45,8 +45,7 @@ public class SourceContentService {
     }
 
     private SourceContent getOrCreateContent(
-            SourcePlatform platform, String externalKey
-    ) {
+            SourcePlatform platform, String externalKey) {
         return sourceContentRepository
                 .findByPlatformAndExternalKey(platform, externalKey)
                 .orElseGet(() -> {
@@ -73,20 +72,35 @@ public class SourceContentService {
                 sourceContentInfo.thumbnailUrl(),
                 // TODO: 컨텐츠 타입 결정하는 방법 정하기 (url / ai 변환)
                 SourceContentType.VIDEO,
-                creator
-        );
+                creator);
     }
 
     private SourceContentCreator getOrCreateCreator(SourcePlatform platform, SourceCreatorInfo creatorInfo) {
+        String externalKey = resolveCreatorKey(platform, creatorInfo);
+        String displayName = resolveCreatorName(creatorInfo);
+        String thumbnailUrl = (creatorInfo != null) ? creatorInfo.thumbnailUrl() : null;
+
         return sourceContentCreatorRepository
-                .findByPlatformAndExternalKey(platform, creatorInfo.externalKey())
+                .findByPlatformAndExternalKey(platform, externalKey)
                 .orElseGet(() -> sourceContentCreatorRepository.save(
                         SourceContentCreator.create(
-                                creatorInfo.externalKey(),
+                                externalKey,
                                 platform,
-                                creatorInfo.displayName(),
-                                creatorInfo.thumbnailUrl()
-                        )
-                ));
+                                displayName,
+                                thumbnailUrl)));
+    }
+
+    private String resolveCreatorKey(SourcePlatform platform, SourceCreatorInfo info) {
+        if (info != null && info.externalKey() != null && !info.externalKey().isBlank()) {
+            return info.externalKey();
+        }
+        return platform.name() + "_UNKNOWN_CREATOR";
+    }
+
+    private String resolveCreatorName(SourceCreatorInfo info) {
+        if (info != null && info.displayName() != null && !info.displayName().isBlank()) {
+            return info.displayName();
+        }
+        return "Unknown Creator";
     }
 }

@@ -55,9 +55,10 @@ public class AiRecipeParserService {
                             .build());
 
             String jsonResult = response.text();
-            log.info("AI 파싱 결과: {}", jsonResult);
+            log.info("AI 파싱 결과 raw: {}", jsonResult);
 
-            return parseJsonResult(jsonResult);
+            String cleanedJson = stripMarkdown(jsonResult);
+            return parseJsonResult(cleanedJson);
 
         } catch (Exception e) {
             log.error("AI 레시피 파싱 실패: {}", e.getMessage(), e);
@@ -67,8 +68,8 @@ public class AiRecipeParserService {
 
     private String buildPrompt(String youtubeUrl) {
         return String.format("""
-                다음 유튜브 링크의 요리 영상을 분석해서 레시피를 JSON 형식으로 추출해줘.
-                
+                다음 URL의 요리 컨텐츠를 분석해서 레시피를 JSON 형식으로 추출해줘.
+
                 반드시 다음 형식을 지켜줘:
                 {
                     "title": "요리 이름",
@@ -85,16 +86,31 @@ public class AiRecipeParserService {
                         {"stepNumber": 1, "description": "조리 과정 설명"}
                     ]
                 }
-                
+
                 - servingSize는 인분 수 (숫자만)
                 - cookingTime은 분 단위 (숫자만)
                 - cuisineType: KOREAN, WESTERN, JAPANESE, CHINESE, ASIAN, FUSION 중 하나
                 - mealType: MAIN, SIDE_DISH, SNACK, DESSERT, SIDE_FOR_DRINK 중 하나
                 - difficulty: BEGINNER, INTERMEDIATE, ADVANCED 중 하나
                 - ingredients와 steps는 빠짐없이 추출
-                
+
                 링크: %s
                 """, youtubeUrl);
+    }
+
+    private String stripMarkdown(String content) {
+        if (content == null)
+            return "";
+        String stripped = content.trim();
+        if (stripped.startsWith("```json")) {
+            stripped = stripped.substring(7);
+        } else if (stripped.startsWith("```")) {
+            stripped = stripped.substring(3);
+        }
+        if (stripped.endsWith("```")) {
+            stripped = stripped.substring(0, stripped.length() - 3);
+        }
+        return stripped.trim();
     }
 
     private RecipeParseResult parseJsonResult(String jsonResult) {
@@ -135,7 +151,7 @@ public class AiRecipeParserService {
                     ingredients, steps);
 
         } catch (Exception e) {
-            log.error("JSON 파싱 실패: {}", e.getMessage(), e);
+            log.error("JSON 파싱 실패. Content: {}", jsonResult, e);
             return RecipeParseResult.empty("파싱 실패");
         }
     }
