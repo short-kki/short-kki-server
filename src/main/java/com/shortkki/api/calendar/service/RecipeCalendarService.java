@@ -28,12 +28,12 @@ public class RecipeCalendarService {
     private final RecipeQueueRepository recipeQueueRepository;
 
     public RecipeCalendarResponse createFromQueue(Long memberId, CreateRecipeCalendarFromQueueRequest request) {
-        RecipeQueue queue = recipeQueueQueryService.getRecipeQueue(request.queueId());
+        RecipeQueue queue = recipeQueueQueryService.findRecipeQueue(request.queueId());
         recipeQueueValidationService.validateRecipeQueueOwner(queue.getId(), memberId);
 
         Group group = null;
         if (request.groupId() != null) {
-            group = groupQueryService.getGroup(request.groupId());
+            group = groupQueryService.findGroup(request.groupId());
         }
 
         Member member = queue.getMember();
@@ -49,7 +49,7 @@ public class RecipeCalendarService {
     }
 
     public void delete(Long memberId, Long calendarId) {
-        RecipeCalendar calendar = recipeCalendarQueryService.getRecipeCalendar(calendarId);
+        RecipeCalendar calendar = recipeCalendarQueryService.findRecipeCalendar(calendarId);
         recipeCalendarValidationService.validateRecipeCalendarOwner(calendarId, memberId);
 
         recipeCalendarRepository.delete(calendar);

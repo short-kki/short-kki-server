@@ -15,7 +15,7 @@ public class RecipeQueueQueryService {
 
     private final RecipeQueueRepository recipeQueueRepository;
 
-    public RecipeQueue getRecipeQueue(long id) {
+    public RecipeQueue findRecipeQueue(long id) {
         return recipeQueueRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_QUEUE_NOT_FOUND));
     }

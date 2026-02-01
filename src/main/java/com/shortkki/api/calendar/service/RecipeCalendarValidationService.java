@@ -16,7 +16,7 @@ public class RecipeCalendarValidationService {
     private final RecipeCalendarQueryService recipeCalendarQueryService;
 
     public void validateRecipeCalendarOwner(long calendarId, long memberId) {
-        RecipeCalendar calendar = recipeCalendarQueryService.getRecipeCalendar(calendarId);
+        RecipeCalendar calendar = recipeCalendarQueryService.findRecipeCalendar(calendarId);
         Member owner = calendar.getMember();
 
         if (!owner.getId().equals(memberId)) {

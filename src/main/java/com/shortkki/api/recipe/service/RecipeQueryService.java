@@ -23,13 +23,13 @@ public class RecipeQueryService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
-    public Recipe getRecipe(Long id) {
+    public Recipe findRecipe(Long id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
     }
 
     public RecipeResponse getRecipeDetail(Long id) {
-        Recipe recipe = getRecipe(id);
+        Recipe recipe = findRecipe(id);
 
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(

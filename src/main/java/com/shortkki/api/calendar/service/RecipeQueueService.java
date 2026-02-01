@@ -25,8 +25,8 @@ public class RecipeQueueService {
     private final RecipeQueueRepository recipeQueueRepository;
 
     public RecipeQueueResponse create(Long memberId, CreateRecipeQueueRequest request) {
-        Member member = memberQueryService.getMember(memberId);
-        Recipe recipe = recipeQueryService.getRecipe(request.recipeId());
+        Member member = memberQueryService.findMember(memberId);
+        Recipe recipe = recipeQueryService.findRecipe(request.recipeId());
 
         RecipeQueue queue = RecipeQueue.create(recipe, member);
         recipeQueueRepository.save(queue);
@@ -35,7 +35,7 @@ public class RecipeQueueService {
     }
 
     public void delete(Long memberId, Long queueId) {
-        RecipeQueue queue = recipeQueueQueryService.getRecipeQueue(queueId);
+        RecipeQueue queue = recipeQueueQueryService.findRecipeQueue(queueId);
         recipeQueueValidationService.validateRecipeQueueOwner(queue.getId(), memberId);
 
         recipeQueueRepository.delete(queue);

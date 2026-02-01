@@ -16,7 +16,7 @@ public class RecipeQueueValidationService {
     private final RecipeQueueQueryService recipeQueueQueryService;
 
     public void validateRecipeQueueOwner(long queueId, long memberId) {
-        RecipeQueue queue = recipeQueueQueryService.getRecipeQueue(queueId);
+        RecipeQueue queue = recipeQueueQueryService.findRecipeQueue(queueId);
         Member owner = queue.getMember();
 
         if (!owner.getId().equals(memberId)) {

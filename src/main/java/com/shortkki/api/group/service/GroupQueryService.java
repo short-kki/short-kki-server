@@ -15,7 +15,7 @@ public class GroupQueryService {
 
     private final GroupRepository groupRepository;
 
-    public Group getGroup(long id) {
+    public Group findGroup(long id) {
         return groupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_FOUND));
     }
