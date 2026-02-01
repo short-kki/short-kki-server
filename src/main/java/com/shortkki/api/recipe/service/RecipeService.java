@@ -64,17 +64,7 @@ public class RecipeService {
 
         updateRecipeImage(recipe, member, request.basicInfo().imageFileId());
 
-        BasicInfoRequest basicInfo = request.basicInfo();
-        CategoryInfoRequest categoryInfo = request.categoryInfo();
-
-        recipe.update(
-                basicInfo.title(),
-                basicInfo.description(),
-                basicInfo.servingSize(),
-                basicInfo.cookingTime(),
-                categoryInfo.cuisineType(),
-                categoryInfo.mealType(),
-                categoryInfo.difficulty());
+        recipe.update(request.basicInfo(), request.categoryInfo());
 
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);

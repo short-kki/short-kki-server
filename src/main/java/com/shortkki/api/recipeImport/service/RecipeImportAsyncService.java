@@ -75,17 +75,19 @@ public class RecipeImportAsyncService {
         }
 
         RecipeParseResult parseResult;
+        String aiRawResponse = null;
         try {
             history.updateStatus(ImportStatus.PARSING);
             sourceImportHistoryRepository.save(history);
             log.info("AI 레시피 파싱 시작: {}", sourceUrl);
             parseResult = aiRecipeParserService.parseRecipeFromUrl(sourceUrl);
+            aiRawResponse = parseResult.rawResponse();
             log.info("AI 파싱 완료 - 제목: {}, 재료: {}개, 순서: {}개",
                     parseResult.title(),
                     parseResult.ingredients().size(),
                     parseResult.steps().size());
         } catch (Exception e) {
-            history.fail("AI parsing failed: " + e.getMessage());
+            history.fail("AI parsing failed: " + e.getMessage(), aiRawResponse);
             sourceImportHistoryRepository.save(history);
             return;
         }
@@ -119,7 +121,7 @@ public class RecipeImportAsyncService {
         // TODO: 태그 저장 로직 추가
 
         history.updateRecipeId(saved.getId());
-        history.complete("Recipe created: " + saved.getId());
+        history.complete(aiRawResponse);
         sourceImportHistoryRepository.save(history);
 
         // TODO: 파싱 완료 알림 처리

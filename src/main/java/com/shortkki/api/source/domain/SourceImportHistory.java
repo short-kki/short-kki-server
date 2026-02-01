@@ -46,19 +46,25 @@ public class SourceImportHistory extends BaseEntity {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String rawResponse;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String errorMessage;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ImportStatus status;
 
     @Builder
     private SourceImportHistory(Long memberId, Long sourceContentId, Long recipeId,
-            String requestedSourceUrl, SourcePlatform platform, String rawResponse, ImportStatus status) {
+            String requestedSourceUrl, SourcePlatform platform, String rawResponse,
+            String errorMessage, ImportStatus status) {
         this.memberId = memberId;
         this.sourceContentId = sourceContentId;
         this.recipeId = recipeId;
         this.requestedSourceUrl = requestedSourceUrl;
         this.platform = platform;
         this.rawResponse = rawResponse;
+        this.errorMessage = errorMessage;
         this.status = status;
     }
 
@@ -92,8 +98,14 @@ public class SourceImportHistory extends BaseEntity {
         this.recipeId = recipeId;
     }
 
-    public void fail(String rawResponse) {
+    public void fail(String errorMessage, String rawResponse) {
+        this.errorMessage = errorMessage;
         this.rawResponse = rawResponse;
+        this.status = ImportStatus.FAILED;
+    }
+
+    public void fail(String errorMessage) {
+        this.errorMessage = errorMessage;
         this.status = ImportStatus.FAILED;
     }
 }

@@ -58,3 +58,6 @@ file:
 youtube:
   api:
     base-url: https://www.googleapis.com/youtube/v3
+
+gemini:
+  model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}

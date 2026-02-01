@@ -150,15 +150,14 @@ public class Recipe extends BaseEntity {
     }
 
     public void update(
-            String title, String description, Integer servingSize, Integer cookingTime,
-            CuisineType cuisineType, MealType mealType, Difficulty difficulty) {
-        this.title = title;
-        this.description = description;
-        this.servingSize = servingSize;
-        this.cookingTime = cookingTime;
-        this.cuisineType = cuisineType;
-        this.mealType = mealType;
-        this.difficulty = difficulty;
+            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo) {
+        this.title = basicInfo.title();
+        this.description = basicInfo.description();
+        this.servingSize = basicInfo.servingSize();
+        this.cookingTime = basicInfo.cookingTime();
+        this.cuisineType = categoryInfo.cuisineType();
+        this.mealType = categoryInfo.mealType();
+        this.difficulty = categoryInfo.difficulty();
     }
 
     public String getSourceUrl() {

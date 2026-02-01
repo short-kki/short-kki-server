@@ -46,6 +46,10 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
         try {
             String response = restTemplate.getForObject(url, String.class);
+            if (response == null) {
+                log.warn("YouTube API 응답이 null입니다: {}", videoId);
+                return createDefaultContentInfo(videoId);
+            }
             JsonNode root = objectMapper.readTree(response);
             JsonNode items = root.path("items");
 
@@ -84,6 +88,10 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
         try {
             String response = restTemplate.getForObject(url, String.class);
+            if (response == null) {
+                log.warn("YouTube API 응답이 null입니다: {}", channelId);
+                return new SourceCreatorInfo(channelId, "Unknown Creator", null);
+            }
             JsonNode root = objectMapper.readTree(response);
             JsonNode items = root.path("items");
 

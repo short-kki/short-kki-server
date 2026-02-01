@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/recipe-imports")
+@RequestMapping("/api/v1/recipe/import")
 @RequiredArgsConstructor
 public class RecipeImportController {
 
