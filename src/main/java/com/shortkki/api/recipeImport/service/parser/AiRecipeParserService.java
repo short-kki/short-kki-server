@@ -1,0 +1,131 @@
+package com.shortkki.api.recipeImport.service.parser;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.genai.Client;
+import com.google.genai.types.Content;
+import com.google.genai.types.GenerateContentConfig;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.FileData;
+import com.google.genai.types.Part;
+import com.shortkki.api.recipeImport.dto.RecipeParseResult;
+import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
+import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
+@Slf4j
+@Service
+public class AiRecipeParserService {
+
+    private static final String PROMPT_TEMPLATE;
+
+    static {
+        try {
+            ClassPathResource resource = new ClassPathResource("prompts/recipe-parser-prompt.txt");
+            PROMPT_TEMPLATE = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load recipe parser prompt template", e);
+        }
+    }
+
+    private final String modelName;
+    private final Client client;
+    private final ObjectMapper objectMapper;
+
+    public AiRecipeParserService(
+            @Value("${GOOGLE_GENAI_API_KEY}") String apiKey,
+            @Value("${gemini.model-name}") String modelName,
+            ObjectMapper objectMapper) {
+        this.modelName = modelName;
+        this.client = Client.builder()
+                .apiKey(apiKey)
+                .build();
+        this.objectMapper = objectMapper;
+    }
+
+    public RecipeParseResult parseRecipeFromUrl(String youtubeUrl) {
+        try {
+            GenerateContentResponse response = client.models.generateContent(
+                    modelName,
+                    Content.builder()
+                            .parts(Arrays.asList(
+                                    Part.builder().text(PROMPT_TEMPLATE).build(),
+                                    Part.builder()
+                                            .fileData(FileData.builder()
+                                                    .fileUri(youtubeUrl)
+                                                    .build())
+                                            .build()))
+                            .build(),
+                    GenerateContentConfig.builder()
+                            .responseMimeType("application/json")
+                            .build());
+
+            String jsonResult = response.text();
+            String cleanedJson = stripMarkdown(jsonResult);
+            return parseJsonResult(cleanedJson, jsonResult);
+
+        } catch (Exception e) {
+            log.error("AI 레시피 파싱 실패: {}", e.getMessage(), e);
+            return RecipeParseResult.empty("파싱 실패");
+        }
+    }
+
+    private String stripMarkdown(String content) {
+        if (content == null)
+            return "";
+        String stripped = content.trim();
+        if (stripped.startsWith("```json")) {
+            stripped = stripped.substring(7);
+        } else if (stripped.startsWith("```")) {
+            stripped = stripped.substring(3);
+        }
+        if (stripped.endsWith("```")) {
+            stripped = stripped.substring(0, stripped.length() - 3);
+        }
+        return stripped.trim();
+    }
+
+    private RecipeParseResult parseJsonResult(String jsonResult, String rawResponse) {
+        try {
+            // RecipeParseResult를 직접 파싱 (rawResponse 제외)
+            RecipeParseResultDto dto = objectMapper.readValue(jsonResult, RecipeParseResultDto.class);
+
+            // rawResponse를 포함한 최종 RecipeParseResult 생성
+            return new RecipeParseResult(
+                    dto.title() != null ? dto.title() : "제목 없음",
+                    dto.description(),
+                    dto.servingSize() != null ? dto.servingSize() : 1,
+                    dto.cookingTime() != null ? dto.cookingTime() : 30,
+                    dto.cuisineType(),
+                    dto.mealType(),
+                    dto.difficulty(),
+                    dto.ingredients() != null ? dto.ingredients() : List.of(),
+                    dto.steps() != null ? dto.steps() : List.of(),
+                    rawResponse);
+
+        } catch (Exception e) {
+            log.error("JSON 파싱 실패", e);
+            return RecipeParseResult.empty("파싱 실패");
+        }
+    }
+
+    // AI 응답 JSON 구조와 일치하는 중간 record (rawResponse 제외)
+    private record RecipeParseResultDto(
+            String title,
+            String description,
+            Integer servingSize,
+            Integer cookingTime,
+            String cuisineType,
+            String mealType,
+            String difficulty,
+            List<IngredientParseResult> ingredients,
+            List<StepParseResult> steps
+    ) {}
+}

@@ -12,7 +12,8 @@ public enum CuisineType {
     JAPANESE("일식"),
     CHINESE("중식"),
     ASIAN("아시아"),
-    FUSION("퓨전");
+    FUSION("퓨전"),
+    ETC("기타");
 
     private final String displayName;
 }

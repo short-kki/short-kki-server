@@ -1,21 +1,21 @@
 INSERT IGNORE INTO member (email, name, oauth_id, oauth_provider, role, created_at, updated_at)
 VALUES ('test@example.com', '테스트유저', 'test-oauth-id-001', 'GOOGLE', 'USER', NOW(6), NOW(6));
 
-INSERT INTO recipe (id, title, description, cooking_time, serving_size, difficulty, cuisine_type, meal_type, source_type, is_deleted, bookmark_count, created_at, updated_at)
+INSERT INTO recipe (id, member_id, title, description, cooking_time, serving_size, difficulty, cuisine_type, meal_type, source_type, is_deleted, bookmark_count, created_at, updated_at)
 VALUES
-(1,'김치찌개', '얼큰하고 맛있는 김치찌개', 30, 2, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
-(2,'김치찌개', '얼큰하고 맛있는 김치찌개', 30, 2, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
-(3,'된장찌개', '구수한 된장찌개', 25, 2, 'BEGINNER', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
-(4,'불고기', '달콤한 한우 불고기', 40, 4, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
-(5,'파스타', '크리미한 까르보나라', 20, 1, 'BEGINNER', 'WESTERN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
-(6,'떡볶이', '매콤달콤 떡볶이', 15, 2, 'BEGINNER', 'KOREAN', 'SNACK', 'USER_CREATED', false, 0, NOW(6), NOW(6));
+(1, (SELECT id FROM member WHERE email = 'test@example.com'), '김치찌개', '얼큰하고 맛있는 김치찌개', 30, 2, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
+(2, (SELECT id FROM member WHERE email = 'test@example.com'), '김치찌개', '얼큰하고 맛있는 김치찌개', 30, 2, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
+(3, (SELECT id FROM member WHERE email = 'test@example.com'), '된장찌개', '구수한 된장찌개', 25, 2, 'BEGINNER', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
+(4, (SELECT id FROM member WHERE email = 'test@example.com'), '불고기', '달콤한 한우 불고기', 40, 4, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
+(5, (SELECT id FROM member WHERE email = 'test@example.com'), '파스타', '크리미한 까르보나라', 20, 1, 'BEGINNER', 'WESTERN', 'MAIN', 'USER_CREATED', false, 0, NOW(6), NOW(6)),
+(6, (SELECT id FROM member WHERE email = 'test@example.com'), '떡볶이', '매콤달콤 떡볶이', 15, 2, 'BEGINNER', 'KOREAN', 'SNACK', 'USER_CREATED', false, 0, NOW(6), NOW(6));
 
 
 INSERT INTO recipe_book (id, member_id, title, is_default, sort_order, created_at, updated_at)
 VALUES
-(1, 1, '기본 레시피북', true, 1, NOW(6), NOW(6)),
-(2, 1, '찜해둔 요리', false, 2, NOW(6), NOW(6)),
-(3, 1, '다이어트 식단', false, 3, NOW(6), NOW(6));
+(1, (SELECT id FROM member WHERE email = 'test@example.com'), '기본 레시피북', true, 1, NOW(6), NOW(6)),
+(2, (SELECT id FROM member WHERE email = 'test@example.com'), '찜해둔 요리', false, 2, NOW(6), NOW(6)),
+(3, (SELECT id FROM member WHERE email = 'test@example.com'), '다이어트 식단', false, 3, NOW(6), NOW(6));
 
 
 INSERT INTO recipe_book_item (book_id, recipe_id, created_at, updated_at)

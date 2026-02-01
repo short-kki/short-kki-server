@@ -25,8 +25,14 @@ public class SourceImportHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
     @Column(nullable = false)
     private Long sourceContentId;
+
+    @Column(name = "recipe_id")
+    private Long recipeId;
 
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -40,25 +46,35 @@ public class SourceImportHistory extends BaseEntity {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String rawResponse;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String errorMessage;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ImportStatus status;
 
     @Builder
-    private SourceImportHistory(Long sourceContentId, String requestedSourceUrl,
-            SourcePlatform platform, String rawResponse, ImportStatus status) {
+    private SourceImportHistory(Long memberId, Long sourceContentId, Long recipeId,
+            String requestedSourceUrl, SourcePlatform platform, String rawResponse,
+            String errorMessage, ImportStatus status) {
+        this.memberId = memberId;
         this.sourceContentId = sourceContentId;
+        this.recipeId = recipeId;
         this.requestedSourceUrl = requestedSourceUrl;
         this.platform = platform;
         this.rawResponse = rawResponse;
+        this.errorMessage = errorMessage;
         this.status = status;
     }
 
     public static SourceImportHistory create(
-            Long sourceContentId, String requestedSourceUrl, SourcePlatform platform
+            Long memberId, Long sourceContentId, String requestedSourceUrl, SourcePlatform platform
     ) {
         return SourceImportHistory.builder()
+                .memberId(memberId)
                 .sourceContentId(sourceContentId)
+                .recipeId(null)
                 .requestedSourceUrl(requestedSourceUrl)
                 .platform(platform)
                 .status(ImportStatus.REQUESTED)
@@ -78,8 +94,18 @@ public class SourceImportHistory extends BaseEntity {
         this.status = ImportStatus.COMPLETED;
     }
 
-    public void fail(String rawResponse) {
+    public void updateRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
+    }
+
+    public void fail(String errorMessage, String rawResponse) {
+        this.errorMessage = errorMessage;
         this.rawResponse = rawResponse;
+        this.status = ImportStatus.FAILED;
+    }
+
+    public void fail(String errorMessage) {
+        this.errorMessage = errorMessage;
         this.status = ImportStatus.FAILED;
     }
 }
