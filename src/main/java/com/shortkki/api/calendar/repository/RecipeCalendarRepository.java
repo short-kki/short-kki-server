@@ -1,7 +1,6 @@
 package com.shortkki.api.calendar.repository;
 
 import com.shortkki.api.calendar.entity.RecipeCalendar;
-import com.shortkki.api.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -13,8 +12,16 @@ public interface RecipeCalendarRepository extends JpaRepository<RecipeCalendar, 
     @Query("""
             select coalesce(max(rc.sortOrder), 0)
             from RecipeCalendar rc
-            where rc.member = :member
+            where rc.member.id = :memberId
               and rc.scheduledDate = :date
             """)
-    int findMaxSortOrder(Member member, LocalDate date);
+    int findPersonalMaxSortOrder(long memberId, LocalDate date);
+
+    @Query("""
+            select coalesce(max(rc.sortOrder), 0)
+            from RecipeCalendar rc
+            where rc.group.id = :groupId
+              and rc.scheduledDate = :date
+            """)
+    int findGroupMaxSortOrder(long groupId, LocalDate date);
 }

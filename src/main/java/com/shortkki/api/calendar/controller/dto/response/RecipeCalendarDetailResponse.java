@@ -4,7 +4,7 @@ import com.shortkki.api.calendar.entity.RecipeCalendar;
 
 import java.time.LocalDate;
 
-public record RecipeCalendarResponse(
+public record RecipeCalendarDetailResponse(
         Long id,
         Long recipeId,
         String recipeTitle,
@@ -12,8 +12,8 @@ public record RecipeCalendarResponse(
         Integer sortOrder,
         Long groupId
 ) {
-    public static RecipeCalendarResponse from(RecipeCalendar calendar) {
-        return new RecipeCalendarResponse(
+    public static RecipeCalendarDetailResponse from(RecipeCalendar calendar) {
+        return new RecipeCalendarDetailResponse(
                 calendar.getId(),
                 calendar.getRecipe().getId(),
                 calendar.getRecipe().getTitle(),

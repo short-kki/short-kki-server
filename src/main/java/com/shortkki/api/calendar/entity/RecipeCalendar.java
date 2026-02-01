@@ -51,12 +51,22 @@ public class RecipeCalendar extends BaseEntity {
     @Column(nullable = false)
     private Integer sortOrder;
 
-    public static RecipeCalendar create(
-            Recipe recipe, Member member, Group group, LocalDate scheduledDate, Integer sortOrder
+    public static RecipeCalendar createForMember(
+            Recipe recipe, Member member, LocalDate scheduledDate, int sortOrder
     ) {
         return RecipeCalendar.builder()
                 .recipe(recipe)
                 .member(member)
+                .scheduledDate(scheduledDate)
+                .sortOrder(sortOrder)
+                .build();
+    }
+
+    public static RecipeCalendar createForGroup(
+            Recipe recipe, Group group, LocalDate scheduledDate, Integer sortOrder
+    ) {
+        return RecipeCalendar.builder()
+                .recipe(recipe)
                 .group(group)
                 .scheduledDate(scheduledDate)
                 .sortOrder(sortOrder)
