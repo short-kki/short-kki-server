@@ -71,7 +71,8 @@ public enum ErrorCode {
         RECIPE_QUEUE_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_QUEUE_001", "레시피 대기열을 찾을 수 없습니다."),
 
         // RecipeCalendar
-        RECIPE_CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_CALENDAR_001", "레시피 캘린더를 찾을 수 없습니다.");
+        RECIPE_CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_CALENDAR_001", "레시피 캘린더를 찾을 수 없습니다."),
+        INVALID_CALENDAR_REORDER_REQUEST(HttpStatus.BAD_REQUEST, "RECIPE_CALENDAR_002", "전체 레시피 캘린더 목록을 전송해야 합니다.");
 
         private final HttpStatus httpStatus;
         private final String code;

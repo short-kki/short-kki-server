@@ -1,6 +1,7 @@
 package com.shortkki.api.calendar.controller;
 
 import com.shortkki.api.calendar.controller.dto.request.CreateRecipeCalendarFromQueueRequest;
+import com.shortkki.api.calendar.controller.dto.request.ReorderRecipeCalendarRequest;
 import com.shortkki.api.calendar.controller.dto.response.RecipeCalendarDetailResponse;
 import com.shortkki.api.calendar.controller.dto.response.RecipeCalendarsResponse;
 import com.shortkki.api.calendar.service.RecipeCalendarQueryService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +53,15 @@ public class RecipeCalendarController {
         RecipeCalendarDetailResponse response = recipeCalendarService.createFromQueue(loginMember.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.success("대기열에서 레시피 캘린더에 등록되었습니다.", response));
+    }
+
+    @PatchMapping("/order")
+    public ResponseEntity<BaseResponse<Void>> reorder(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @Valid @RequestBody ReorderRecipeCalendarRequest request
+    ) {
+        recipeCalendarService.reorder(loginMember.getId(), request);
+        return ResponseEntity.ok(BaseResponse.success("레시피 캘린더 순서가 변경되었습니다."));
     }
 
     @DeleteMapping("/{id}")

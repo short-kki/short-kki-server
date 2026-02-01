@@ -1,6 +1,7 @@
 package com.shortkki.api.calendar.service;
 
 import com.shortkki.api.calendar.controller.dto.request.CreateRecipeCalendarFromQueueRequest;
+import com.shortkki.api.calendar.controller.dto.request.ReorderRecipeCalendarRequest;
 import com.shortkki.api.calendar.controller.dto.response.RecipeCalendarDetailResponse;
 import com.shortkki.api.calendar.entity.RecipeCalendar;
 import com.shortkki.api.calendar.entity.RecipeQueue;
@@ -11,7 +12,14 @@ import com.shortkki.api.group.service.GroupMemberValidationService;
 import com.shortkki.api.group.service.GroupQueryService;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.service.MemberQueryService;
+import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BadRequestException;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +56,34 @@ public class RecipeCalendarService {
         return RecipeCalendarDetailResponse.from(calendar);
     }
 
+    public void delete(Long memberId, Long calendarId) {
+        RecipeCalendar calendar = recipeCalendarQueryService.findRecipeCalendar(calendarId);
+        recipeCalendarValidationService.validateRecipeCalendarOwner(calendarId, memberId);
+
+        recipeCalendarRepository.delete(calendar);
+    }
+
+    public void reorder(Long memberId, ReorderRecipeCalendarRequest request) {
+        if (request.groupId() != null) {
+            groupMemberValidationService.validateGroupMember(memberId, request.groupId());
+        }
+
+        List<RecipeCalendar> calendars = recipeCalendarRepository
+                .findAllByOwnerAndDate(memberId, request.groupId(), request.scheduledDate());
+
+        validateReorderRequest(request.calendarIds(), calendars);
+
+        Map<Long, RecipeCalendar> calendarMap = calendars.stream()
+                .collect(Collectors.toMap(RecipeCalendar::getId, c -> c));
+
+        for (int i = 0; i < request.calendarIds().size(); i++) {
+            RecipeCalendar calendar = calendarMap.get(request.calendarIds().get(i));
+            calendar.updateSortOrder(i + 1);
+        }
+
+        recipeCalendarRepository.saveAll(calendarMap.values());
+    }
+
     private RecipeCalendar createMemberCalendar(
             RecipeQueue queue, Member member, LocalDate scheduledDate
     ) {
@@ -73,10 +109,18 @@ public class RecipeCalendarService {
         );
     }
 
-    public void delete(Long memberId, Long calendarId) {
-        RecipeCalendar calendar = recipeCalendarQueryService.findRecipeCalendar(calendarId);
-        recipeCalendarValidationService.validateRecipeCalendarOwner(calendarId, memberId);
+    private void validateReorderRequest(List<Long> requestIds, List<RecipeCalendar> calendars) {
+        if (requestIds.size() != calendars.size()) {
+            throw new BadRequestException(ErrorCode.INVALID_CALENDAR_REORDER_REQUEST);
+        }
 
-        recipeCalendarRepository.delete(calendar);
+        Set<Long> requestIdSet = new HashSet<>(requestIds);
+        Set<Long> calendarIdSet = calendars.stream()
+                .map(RecipeCalendar::getId)
+                .collect(Collectors.toSet());
+
+        if (!requestIdSet.equals(calendarIdSet)) {
+            throw new BadRequestException(ErrorCode.INVALID_CALENDAR_REORDER_REQUEST);
+        }
     }
 }

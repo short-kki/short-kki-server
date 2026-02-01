@@ -72,4 +72,8 @@ public class RecipeCalendar extends BaseEntity {
                 .sortOrder(sortOrder)
                 .build();
     }
+
+    public void updateSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 }

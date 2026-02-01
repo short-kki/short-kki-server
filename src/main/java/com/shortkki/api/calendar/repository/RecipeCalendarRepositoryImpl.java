@@ -33,6 +33,26 @@ public class RecipeCalendarRepositoryImpl implements RecipeCalendarRepositoryCus
                 .fetch();
     }
 
+    @Override
+    public List<RecipeCalendar> findAllByOwnerAndDate(Long memberId, Long groupId, LocalDate scheduledDate) {
+        return queryFactory
+                .selectFrom(recipeCalendar)
+                .where(
+                        singleOwnerCondition(memberId, groupId),
+                        recipeCalendar.scheduledDate.eq(scheduledDate)
+                )
+                .orderBy(recipeCalendar.sortOrder.asc())
+                .fetch();
+    }
+
+    private BooleanExpression singleOwnerCondition(Long memberId, Long groupId) {
+        if (groupId != null) {
+            return recipeCalendar.group.id.eq(groupId);
+        }
+        return recipeCalendar.member.id.eq(memberId)
+                .and(recipeCalendar.group.isNull());
+    }
+
     private BooleanExpression ownerCondition(Long memberId, Long groupId) {
         if (groupId != null) {
             return recipeCalendar.group.id.eq(groupId);
