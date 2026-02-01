@@ -1,8 +1,20 @@
 package com.shortkki.api.calendar.repository;
 
 import com.shortkki.api.calendar.entity.RecipeCalendar;
+import com.shortkki.api.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RecipeCalendarRepository extends JpaRepository<RecipeCalendar, Long>, RecipeCalendarRepositoryCustom {
+import java.time.LocalDate;
+import org.springframework.data.jpa.repository.Query;
 
+public interface RecipeCalendarRepository extends JpaRepository<RecipeCalendar, Long>,
+        RecipeCalendarRepositoryCustom {
+
+    @Query("""
+            select coalesce(max(rc.sortOrder), 0)
+            from RecipeCalendar rc
+            where rc.member = :member
+              and rc.scheduledDate = :date
+            """)
+    int findMaxSortOrder(Member member, LocalDate date);
 }

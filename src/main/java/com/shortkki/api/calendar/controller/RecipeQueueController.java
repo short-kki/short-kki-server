@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/recipes/queue")
+@RequestMapping("/api/v1/calendar/queue")
 @RequiredArgsConstructor
 public class RecipeQueueController {
 
