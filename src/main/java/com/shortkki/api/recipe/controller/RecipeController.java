@@ -51,8 +51,9 @@ public class RecipeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> update(@PathVariable Long id,
+            @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody RecipeUpdateRequest request) {
-        recipeService.update(id, request);
+        recipeService.update(loginMember.getId(), id, request);
         return ResponseEntity.ok(BaseResponse.success("레시피가 수정되었습니다."));
     }
     // TODO : 태그, 이미지 추가

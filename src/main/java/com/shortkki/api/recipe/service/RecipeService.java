@@ -53,13 +53,28 @@ public class RecipeService {
         addToDefaultRecipeBook(memberId, saved.getId());
     }
 
-    public void update(Long id, RecipeUpdateRequest request) {
+    public void update(Long memberId, Long id, RecipeUpdateRequest request) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
+        validateRecipeOwnership(recipe, memberId);
         validateUserCreated(recipe);
 
-        recipe.update(request.basicInfo(), request.categoryInfo());
+        Member member = findMemberById(memberId);
+
+        updateRecipeImage(recipe, member, request.basicInfo().imageFileId());
+
+        BasicInfoRequest basicInfo = request.basicInfo();
+        CategoryInfoRequest categoryInfo = request.categoryInfo();
+
+        recipe.update(
+                basicInfo.title(),
+                basicInfo.description(),
+                basicInfo.servingSize(),
+                basicInfo.cookingTime(),
+                categoryInfo.cuisineType(),
+                categoryInfo.mealType(),
+                categoryInfo.difficulty());
 
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);
@@ -146,5 +161,25 @@ public class RecipeService {
         if (!Objects.equals(file.getUploaderId(), member.getId())) {
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }
+    }
+
+    private void validateRecipeOwnership(Recipe recipe, Long memberId) {
+        if (!Objects.equals(recipe.getMember().getId(), memberId)) {
+            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+        }
+    }
+
+    private void updateRecipeImage(Recipe recipe, Member member, Long newImageFileId) {
+        if (Objects.equals(recipe.getImageFileId(), newImageFileId)) {
+            return;
+        }
+
+        if (newImageFileId != null) {
+            FileMetadata file = fileMetadataService.getById(newImageFileId);
+            validateFileOwnership(file, member);
+            file.bindTarget(FileTargetType.RECIPE_IMG, recipe.getId());
+        }
+
+        recipe.setImageFileId(newImageFileId);
     }
 }
