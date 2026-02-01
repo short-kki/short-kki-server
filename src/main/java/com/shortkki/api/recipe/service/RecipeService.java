@@ -101,14 +101,11 @@ public class RecipeService {
     }
 
     public void delete(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
-
-        validateUserCreated(recipe);
-
-        recipeStepService.deleteByRecipeId(id);
-        recipeIngredientService.deleteByRecipeId(id);
-        recipeRepository.delete(recipe);
+        recipeRepository.findById(id).ifPresent(recipe -> {
+            recipeStepService.deleteByRecipeId(id);
+            recipeIngredientService.deleteByRecipeId(id);
+            recipeRepository.delete(recipe);
+        });
     }
 
     private Recipe createRecipe(
@@ -130,20 +127,16 @@ public class RecipeService {
     }
 
     private void addToDefaultRecipeBook(Long memberId, Long recipeId) {
-        RecipeBook defaultBook = recipeBookQueryService.findAllByMemberId(memberId).stream()
-                .filter(RecipeBook::getIsDefault)
-                .findFirst()
+        RecipeBook defaultBook = recipeBookQueryService.findDefaultByMemberId(memberId)
                 .orElse(null);
 
         if (defaultBook == null) {
             recipeBookService.createDefaultForMember(memberId);
-            defaultBook = recipeBookQueryService.findAllByMemberId(memberId).stream()
-                    .filter(RecipeBook::getIsDefault)
-                    .findFirst()
+            defaultBook = recipeBookQueryService.findDefaultByMemberId(memberId)
                     .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
         }
 
-        recipeBookService.addRecipeInternal(memberId, defaultBook.getId(), recipeId);
+        recipeBookService.addRecipeIfNotExists(memberId, defaultBook.getId(), recipeId);
     }
 
     private Member findMemberById(Long memberId) {
