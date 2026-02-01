@@ -53,7 +53,9 @@ public class SourceContentService {
                     try {
                         return sourceContentRepository.save(content);
                     } catch (DataIntegrityViolationException e) {
-                        throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
+                        // 동시에 다른 요청으로 인해 저장이 실패한 경우, 다시 조회해서 반환
+                        return sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
+                                .orElseThrow(() -> new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS));
                     }
                 });
     }

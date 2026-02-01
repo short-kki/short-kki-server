@@ -17,16 +17,18 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class YoutubeSourceDataProvider implements SourceDataProvider {
 
-    private static final String YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3";
     private static final Pattern VIDEO_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{11}$");
     private final String apiKey;
+    private final String apiBaseUrl;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
     public YoutubeSourceDataProvider(
             @Value("${GOOGLE_GENAI_API_KEY}") String apiKey,
+            @Value("${youtube.api.base-url}") String apiBaseUrl,
             ObjectMapper objectMapper) {
         this.apiKey = apiKey;
+        this.apiBaseUrl = apiBaseUrl;
         this.restTemplate = new RestTemplate();
         this.objectMapper = objectMapper;
     }
@@ -40,7 +42,7 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
         String url = String.format(
                 "%s/videos?part=snippet&id=%s&key=%s",
-                YOUTUBE_API_BASE, videoId, apiKey);
+                apiBaseUrl, videoId, apiKey);
 
         try {
             String response = restTemplate.getForObject(url, String.class);
@@ -78,7 +80,7 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
         String url = String.format(
                 "%s/channels?part=snippet&id=%s&key=%s",
-                YOUTUBE_API_BASE, channelId, apiKey);
+                apiBaseUrl, channelId, apiKey);
 
         try {
             String response = restTemplate.getForObject(url, String.class);
