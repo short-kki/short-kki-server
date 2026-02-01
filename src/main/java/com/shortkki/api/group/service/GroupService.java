@@ -123,7 +123,7 @@ public class GroupService {
     }
 
     private void existGroupMemberByMemberIdAndGroup(Long memberId, Group group) {
-        if (groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
+        if (groupMemberRepository.existsByMemberIdAndGroup(memberId, group.getId())) {
             throw new BusinessException(ErrorCode.GROUP_ALREADY_JOINED);
         }
     }
@@ -150,7 +150,7 @@ public class GroupService {
     }
 
     private void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
+        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group.getId())) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }

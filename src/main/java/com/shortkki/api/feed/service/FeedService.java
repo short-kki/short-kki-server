@@ -57,7 +57,7 @@ public class FeedService {
     }
 
     private void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
+        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group.getId())) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
