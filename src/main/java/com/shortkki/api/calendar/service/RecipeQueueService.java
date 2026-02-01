@@ -1,7 +1,7 @@
 package com.shortkki.api.calendar.service;
 
 import com.shortkki.api.calendar.controller.dto.request.CreateRecipeQueueRequest;
-import com.shortkki.api.calendar.controller.dto.response.RecipeQueueResponse;
+import com.shortkki.api.calendar.controller.dto.response.RecipeQueueDetailResponse;
 import com.shortkki.api.calendar.entity.RecipeQueue;
 import com.shortkki.api.calendar.repository.RecipeQueueRepository;
 import com.shortkki.api.member.entity.Member;
@@ -24,14 +24,15 @@ public class RecipeQueueService {
 
     private final RecipeQueueRepository recipeQueueRepository;
 
-    public RecipeQueueResponse create(Long memberId, CreateRecipeQueueRequest request) {
+    // TODO: 생성 개수 제한 두기
+    public RecipeQueueDetailResponse create(Long memberId, CreateRecipeQueueRequest request) {
         Member member = memberQueryService.findMember(memberId);
         Recipe recipe = recipeQueryService.findRecipe(request.recipeId());
 
         RecipeQueue queue = RecipeQueue.create(recipe, member);
         recipeQueueRepository.save(queue);
 
-        return RecipeQueueResponse.from(queue);
+        return RecipeQueueDetailResponse.from(queue);
     }
 
     public void delete(Long memberId, Long queueId) {

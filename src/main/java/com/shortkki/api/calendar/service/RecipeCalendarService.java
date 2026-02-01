@@ -41,6 +41,7 @@ public class RecipeCalendarService {
     private final RecipeQueueRepository recipeQueueRepository;
     private final MemberQueryService memberQueryService;
 
+    // TODO: 생성 개수 제한 두기
     public RecipeCalendarDetailResponse createFromQueue(Long memberId, CreateRecipeCalendarFromQueueRequest request) {
         RecipeQueue queue = recipeQueueQueryService.findRecipeQueue(request.queueId());
         recipeQueueValidationService.validateRecipeQueueOwner(queue.getId(), memberId);
