@@ -25,6 +25,9 @@ public class SourceImportHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
     @Column(nullable = false)
     private Long sourceContentId;
 
@@ -45,8 +48,9 @@ public class SourceImportHistory extends BaseEntity {
     private ImportStatus status;
 
     @Builder
-    private SourceImportHistory(Long sourceContentId, String requestedSourceUrl,
+    private SourceImportHistory(Long memberId, Long sourceContentId, String requestedSourceUrl,
             SourcePlatform platform, String rawResponse, ImportStatus status) {
+        this.memberId = memberId;
         this.sourceContentId = sourceContentId;
         this.requestedSourceUrl = requestedSourceUrl;
         this.platform = platform;
@@ -55,9 +59,10 @@ public class SourceImportHistory extends BaseEntity {
     }
 
     public static SourceImportHistory create(
-            Long sourceContentId, String requestedSourceUrl, SourcePlatform platform
+            Long memberId, Long sourceContentId, String requestedSourceUrl, SourcePlatform platform
     ) {
         return SourceImportHistory.builder()
+                .memberId(memberId)
                 .sourceContentId(sourceContentId)
                 .requestedSourceUrl(requestedSourceUrl)
                 .platform(platform)
