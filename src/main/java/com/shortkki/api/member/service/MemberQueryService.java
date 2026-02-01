@@ -14,7 +14,7 @@ public class MemberQueryService {
 
     private final MemberRepository memberRepository;
 
-    public Member getById(Long id) {
+    public Member getMember(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버 입니다."));
     }

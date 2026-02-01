@@ -23,7 +23,7 @@ public class DevService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public LoginResponse getLoginResponse(Long memberId) {
-        Member member = memberQueryService.getById(memberId);
+        Member member = memberQueryService.getMember(memberId);
 
         String accessToken = jwtTokenProvider.createAccessToken(memberId, member.getEmail(), member.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(memberId);

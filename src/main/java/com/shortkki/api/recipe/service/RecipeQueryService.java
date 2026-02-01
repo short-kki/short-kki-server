@@ -23,9 +23,13 @@ public class RecipeQueryService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
-    public RecipeResponse findById(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
+    public Recipe getRecipe(Long id) {
+        return recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
+    }
+
+    public RecipeResponse getRecipeDetail(Long id) {
+        Recipe recipe = getRecipe(id);
 
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(
@@ -36,7 +40,7 @@ public class RecipeQueryService {
 
     // TODO: N+1 문제 해결 (Fetch Join 고려)
     // TODO: 페이지네이션 추가
-    public List<RecipeResponse> findAll() {
+    public List<RecipeResponse> getAll() {
         List<Recipe> recipes = recipeRepository.findAll();
 
         return recipes.stream()
