@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +24,6 @@ public class Group extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "그룹 이름은 필수이며 비어있을 수 없습니다.")
     @Column(nullable = false)
     private String name;
 
@@ -37,28 +35,21 @@ public class Group extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GroupType groupType = GroupType.FRIENDS;
 
-    @NotNull(message = "그룹 코드를 생성해야 합니다.")
-    @Column(nullable = false, unique = true)
-    private String code;
-
     @Builder
-    private Group(String name, String description, String thumbnailImgUrl, GroupType groupType,
-            String code) {
+    private Group(String name, String description, String thumbnailImgUrl, GroupType groupType) {
         this.name = name;
         this.description = description;
         this.thumbnailImgUrl = thumbnailImgUrl;
         this.groupType = groupType;
-        this.code = code;
     }
 
     public static Group create(String name, String description, String thumbnailImgUrl,
-            GroupType groupType, String code) {
+            GroupType groupType) {
         return Group.builder()
                 .name(name)
                 .description(description)
                 .thumbnailImgUrl(thumbnailImgUrl)
                 .groupType(groupType)
-                .code(code)
                 .build();
     }
 

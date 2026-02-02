@@ -428,9 +428,9 @@ VALUES ('자취요리 특선',
 -- 레시피 북
 INSERT IGNORE INTO recipe_book (id, member_id, title, is_default, sort_order, created_at, updated_at)
 VALUES
-(1, 1, '기본 레시피북', true, 1, NOW(6), NOW(6)),
-(2, 1, '찜해둔 요리', false, 2, NOW(6), NOW(6)),
-(3, 1, '다이어트 식단', false, 3, NOW(6), NOW(6));
+(1, (SELECT id FROM member WHERE email = 'test@example.com'), '기본 레시피북', true, 1, NOW(6), NOW(6)),
+(2, (SELECT id FROM member WHERE email = 'test@example.com'), '찜해둔 요리', false, 2, NOW(6), NOW(6)),
+(3, (SELECT id FROM member WHERE email = 'test@example.com'), '다이어트 식단', false, 3, NOW(6), NOW(6));
 
 
 INSERT IGNORE INTO recipe_book_item (book_id, recipe_id, created_at, updated_at)

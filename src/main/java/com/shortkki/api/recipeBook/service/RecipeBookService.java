@@ -77,7 +77,7 @@ public class RecipeBookService {
 
     public RecipeBookResponse findById(Long memberId, Long id) {
         RecipeBook recipeBook = findRecipeBookById(id);
-        validateRecipeBookOwnership(recipeBook, memberId);
+        validateRecipeBookAccess(recipeBook, memberId);
 
         List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
         List<RecipeSummaryResponse> recipes = items.stream()
@@ -110,7 +110,7 @@ public class RecipeBookService {
     @Transactional
     public void addRecipe(Long memberId, Long recipeBookId, Long recipeId) {
         RecipeBook recipeBook = findRecipeBookById(recipeBookId);
-        validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
+        validateRecipeBookAccess(recipeBook, memberId);
 
         Recipe recipe = findRecipeById(recipeId);
         validateRecipeNotInBook(recipeBookId, recipeId);
@@ -120,9 +120,23 @@ public class RecipeBookService {
     }
 
     @Transactional
+    public void addRecipeInternal(Long memberId, Long recipeBookId, Long recipeId) {
+        RecipeBook recipeBook = findRecipeBookById(recipeBookId);
+        validateRecipeBookAccess(recipeBook, memberId);
+        Recipe recipe = findRecipeById(recipeId);
+
+        if (recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
+            return;
+        }
+
+        RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
+        recipeBookItemRepository.save(item);
+    }
+
+    @Transactional
     public void removeRecipe(Long memberId, Long recipeBookId, Long recipeId) {
         RecipeBook recipeBook = findRecipeBookById(recipeBookId);
-        validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
+        validateRecipeBookAccess(recipeBook, memberId);
         validateRecipeInBook(recipeBookId, recipeId);
 
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);

@@ -15,16 +15,18 @@ public record RecipeCreateRequest(
         @NotNull(message = "카테고리 정보는 필수입니다")
         CategoryInfoRequest categoryInfo,
 
+        @Valid
+        @NotNull(message = "재료는 필수입니다.")
+        @Size(min = 1, message = "재료는 최소 1개 이상이어야 합니다.")
+        List<IngredientRequest> ingredients,
+
+        @Valid
+        @NotNull(message = "조리 순서는 필수입니다.")
+        @Size(min = 1, message = "조리 순서는 최소 1개 이상이어야 합니다.")
+        List<StepRequest> steps,
+
         @NotNull(message = "출처 타입은 필수입니다.")
-        RecipeSource recipeSource,
-
-        String sourceUrl,
-
-        @Valid @NotNull(message = "재료는 필수입니다.")
-        @Size(min = 1, message = "재료는 최소 1개 이상이어야 합니다.") List<IngredientRequest> ingredients,
-
-        @Valid @NotNull(message = "조리 순서는 필수입니다.")
-        @Size(min = 1, message = "조리 순서는 최소 1개 이상이어야 합니다.") List<StepRequest> steps
+        RecipeSource recipeSource
 ) {
 
 }

@@ -11,7 +11,6 @@ public record GroupResponse(
         String description,
         String thumbnailImgUrl,
         GroupType groupType,
-        String code,
         long memberCount,
         LocalDateTime createdAt
 ) {
@@ -23,7 +22,6 @@ public record GroupResponse(
                 group.getDescription(),
                 group.getThumbnailImgUrl(),
                 group.getGroupType(),
-                group.getCode(),
                 memberCount,
                 group.getCreatedAt()
         );

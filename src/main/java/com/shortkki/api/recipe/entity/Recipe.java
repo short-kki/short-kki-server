@@ -5,6 +5,7 @@ import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
 import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
+import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.entity.BaseEntity;
 import com.shortkki.global.error.exception.InvalidStateException;
 import jakarta.persistence.Column;
@@ -16,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -38,6 +40,10 @@ public class Recipe extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipe")
     private List<RecipeIngredient> ingredients;
@@ -78,15 +84,18 @@ public class Recipe extends BaseEntity {
     @ColumnDefault("0")
     private Integer bookmarkCount = 0;
 
-    @Builder.Default
+    @Column(name = "image_file_id")
+    private Long imageFileId;
+
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
     public static Recipe createManual(
-            String title, String description, Integer servingSize, Integer cookingTime,
+            Member member, String title, String description, Integer servingSize, Integer cookingTime,
             CuisineType cuisineType, MealType mealType, Difficulty difficulty
     ) {
         return Recipe.builder()
+                .member(member)
                 .title(title)
                 .description(description)
                 .servingSize(servingSize)
@@ -95,19 +104,21 @@ public class Recipe extends BaseEntity {
                 .mealType(mealType)
                 .difficulty(difficulty)
                 .sourceType(RecipeSource.USER)
+                .bookmarkCount(0)
+                .isDeleted(false)
                 .build();
     }
 
     public static Recipe createImported(
-            String title, String description, Integer servingSize, Integer cookingTime,
-            CuisineType cuisineType, MealType mealType, Difficulty difficulty,
-            SourceContent sourceContent
+            Member member, String title, String description, Integer servingSize, Integer cookingTime,
+            CuisineType cuisineType, MealType mealType, Difficulty difficulty, SourceContent sourceContent
     ) {
         if (sourceContent == null) {
             throw new InvalidStateException("원본 컨텐츠 정보 없이 외부 레시피를 생성할 수 없습니다.");
         }
 
         return Recipe.builder()
+                .member(member)
                 .title(title)
                 .description(description)
                 .servingSize(servingSize)
@@ -144,5 +155,9 @@ public class Recipe extends BaseEntity {
 
     public SourceContentType getSourceContentType() {
         return RecipeSource.IMPORT == sourceType ? sourceContent.getContentType() : null;
+    }
+
+    public void setImageFileId(Long imageFileId) {
+        this.imageFileId = imageFileId;
     }
 }

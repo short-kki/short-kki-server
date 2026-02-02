@@ -37,3 +37,5 @@ oauth2:
       client-id: test-naver-client-id
       client-secret: test-naver-client-secret
       redirect-uri: http://localhost/test/oauth/naver
+
+GOOGLE_GENAI_API_KEY: test-google-genai-api-key

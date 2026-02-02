@@ -1,0 +1,25 @@
+이 YouTube 동영상의 요리 레시피를 분석하여 다음 JSON 형식으로 추출해줘.
+
+반드시 다음 형식을 지켜줘:
+{
+    "title": "요리 이름",
+    "description": "요리 설명 (1-2문장)",
+    "servingSize": 2,
+    "cookingTime": 30,
+    "cuisineType": "KOREAN",
+    "mealType": "MAIN",
+    "difficulty": "BEGINNER",
+    "ingredients": [
+        {"name": "재료명", "amount": "용량 (예: 200g, 2큰술)"}
+    ],
+    "steps": [
+        {"stepNumber": 1, "description": "조리 과정 설명"}
+    ]
+}
+
+- servingSize는 인분 수 (숫자만)
+- cookingTime은 분 단위 (숫자만)
+- cuisineType: KOREAN, WESTERN, JAPANESE, CHINESE, ASIAN, FUSION 중 하나
+- mealType: MAIN, SIDE_DISH, SNACK, DESSERT, SIDE_FOR_DRINK 중 하나
+- difficulty: BEGINNER, INTERMEDIATE, ADVANCED 중 하나
+- ingredients와 steps는 빠짐없이 추출
