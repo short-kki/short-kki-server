@@ -57,7 +57,6 @@ public class RecipeService {
 
         validateUserCreated(recipe);
 
-
         recipe.update(request.basicInfo(), request.categoryInfo());
 
         recipeStepService.deleteByRecipeId(id);
@@ -124,7 +123,7 @@ public class RecipeService {
     }
 
     private void validateUserCreated(Recipe recipe) {
-        if (recipe.getSourceType() != null && recipe.getSourceType() != RecipeSource.USER) {
+        if (recipe.getSourceType() != RecipeSource.USER) {
             throw new BusinessException(ErrorCode.IMPORTED_RECIPE_NOT_MODIFIABLE);
         }
     }

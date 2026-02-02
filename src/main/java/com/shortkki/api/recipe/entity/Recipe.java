@@ -71,7 +71,7 @@ public class Recipe extends BaseEntity {
     private Difficulty difficulty;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "source_type", length = 50)
+    @Column(name = "source_type", length = 50, nullable = false)
     private RecipeSource sourceType;
 
     @Builder.Default

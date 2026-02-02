@@ -91,6 +91,8 @@ public class Curation extends BaseEntity {
             Set<String> ingredients
     ) {
         validateTitle(title);
+        validateDayTime(dayTypes, timeTypes);
+
         return Curation.builder()
                 .title(title)
                 .description(description)
@@ -103,6 +105,12 @@ public class Curation extends BaseEntity {
                 .tags(tags)
                 .ingredients(ingredients)
                 .build();
+    }
+
+    private static void validateDayTime(Set<DayType> dayTypes, Set<TimeType> timeTypes) {
+        if (dayTypes == null || dayTypes.isEmpty() || timeTypes == null || timeTypes.isEmpty()) {
+            throw new IllegalArgumentException("요일 타입과 시간대 타입은 비어있을 수 없습니다.");
+        }
     }
 
     private static void validateTitle(String title) {
