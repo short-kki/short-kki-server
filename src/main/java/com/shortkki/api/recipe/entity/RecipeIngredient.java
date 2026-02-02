@@ -2,6 +2,7 @@ package com.shortkki.api.recipe.entity;
 
 import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.global.entity.BaseEntity;
+import com.shortkki.global.error.exception.InvalidStateException;
 import io.micrometer.core.annotation.Counted;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,7 +47,9 @@ public class RecipeIngredient extends BaseEntity {
 
     @Builder
     private RecipeIngredient(Ingredient ingredient, Recipe recipe, String name, Double amount,
-            String unit) {
+            String unit
+    ) {
+        validate(name, unit, amount);
         this.ingredient = ingredient;
         this.recipe = recipe;
         this.name = name;
@@ -56,7 +59,8 @@ public class RecipeIngredient extends BaseEntity {
 
     public static RecipeIngredient create(Ingredient ingredient, Recipe recipe, String name,
             Double amount,
-            String unit) {
+            String unit
+    ) {
         return RecipeIngredient.builder()
                 .ingredient(ingredient)
                 .recipe(recipe)
@@ -64,6 +68,18 @@ public class RecipeIngredient extends BaseEntity {
                 .amount(amount)
                 .unit(unit)
                 .build();
+    }
+
+    private void validate(String name, String unit, Double amount) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidStateException("재료명은 필수입니다");
+        }
+        if (unit == null || unit.isBlank()) {
+            throw new InvalidStateException("단위는 필수입니다");
+        }
+        if (amount == null || amount < 0) {
+            throw new InvalidStateException("수량은 0 이상이어야 합니다");
+        }
     }
 
 }
