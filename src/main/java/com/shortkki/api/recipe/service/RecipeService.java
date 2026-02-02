@@ -3,11 +3,11 @@ package com.shortkki.api.recipe.service;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
 import com.shortkki.api.file.service.FileMetadataService;
-import com.shortkki.api.recipe.constant.SourceType;
-import com.shortkki.api.recipe.dto.BasicInfoRequest;
-import com.shortkki.api.recipe.dto.CategoryInfoRequest;
-import com.shortkki.api.recipe.dto.RecipeCreateRequest;
-import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
+import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
+import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
+import com.shortkki.api.recipe.dto.request.RecipeCreateRequest;
+import com.shortkki.api.recipe.dto.request.RecipeUpdateRequest;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
 import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
@@ -154,7 +154,7 @@ public class RecipeService {
     }
 
     private void validateUserCreated(Recipe recipe) {
-        if (recipe.getSourceType() != null && recipe.getSourceType() != SourceType.USER_CREATED) {
+        if (recipe.getSourceType() != null && recipe.getSourceType() != RecipeSource.USER) {
             throw new BusinessException(ErrorCode.IMPORTED_RECIPE_NOT_MODIFIABLE);
         }
     }

@@ -1,6 +1,6 @@
 package com.shortkki.api.group.controller;
 
-import com.shortkki.api.application.usecase.CreateGroupUseCase;
+import com.shortkki.api.group.application.usecase.CreateGroupUseCase;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
 import com.shortkki.api.group.dto.response.GroupListResponse;
@@ -8,7 +8,7 @@ import com.shortkki.api.group.dto.response.GroupMemberResponse;
 import com.shortkki.api.group.dto.response.GroupPreviewResponse;
 import com.shortkki.api.group.dto.response.GroupResponse;
 import com.shortkki.api.group.dto.response.InviteCodeResponse;
-import com.shortkki.api.group.service.GroupService;
+import com.shortkki.api.group.application.service.GroupService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;

@@ -83,6 +83,71 @@ public class RecipeImportAsyncService {
             log.error("Failed to serialize parsed result", e);
             history.fail("Failed to store parsed result: " + e.getMessage());
             sourceImportHistoryRepository.save(history);
+            return;
+        }
+
+        // TODO: 태그 저장 로직 추가
+
+        history.updateRecipeId(saved.getId());
+        history.complete(aiRawResponse);
+        sourceImportHistoryRepository.save(history);
+
+        // TODO: 파싱 완료 알림 처리
+        addToDefaultRecipeBook(memberId, saved.getId());
+    }
+
+    private Recipe saveRecipe(Member member, SourceContent sourceContent, RecipeParseResult parseResult) {
+        Recipe recipe = Recipe.createImported(
+                member,
+                parseResult.title() != null ? parseResult.title() : sourceContent.getTitle(),
+                parseResult.description(),
+                parseResult.servingSize(),
+                parseResult.cookingTime(),
+                parseCuisineType(parseResult.cuisineType()),
+                parseMealType(parseResult.mealType()),
+                parseDifficulty(parseResult.difficulty()),
+                sourceContent);
+        return recipeRepository.save(recipe);
+    }
+
+    private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
+        for (IngredientParseResult ing : ingredients) {
+            String unit = parseUnit(ing.amount());
+            Ingredient ingredient = ingredientRepository.findByName(ing.name())
+                    .orElseGet(() -> ingredientRepository.save(
+                            Ingredient.create(ing.name())));
+            Integer amount = parseAmount(ing.amount());
+            RecipeIngredient recipeIngredient = RecipeIngredient.create(
+                    ingredient, recipe, amount);
+            recipeIngredientRepository.save(recipeIngredient);
+        }
+    }
+
+    private Integer parseAmount(String amountStr) {
+        if (amountStr == null || amountStr.isBlank()) {
+            return null;
+        }
+        try {
+            String numberOnly = amountStr.replaceAll("[^0-9]", "");
+            return numberOnly.isEmpty() ? null : Integer.parseInt(numberOnly);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String parseUnit(String amountStr) {
+        if (amountStr == null || amountStr.isBlank()) {
+            return "";
+        }
+        String unit = amountStr.replaceAll("[0-9/\\.\\-]+", "").trim();
+        return unit.isBlank() ? "" : unit;
+    }
+
+    private void saveSteps(Recipe recipe, List<StepParseResult> steps) {
+        for (StepParseResult step : steps) {
+            RecipeStep recipeStep = RecipeStep.create(
+                    recipe, step.stepNumber(), step.description());
+            recipeStepRepository.save(recipeStep);
         }
     }
 

@@ -1,6 +1,6 @@
 package com.shortkki.api.auth.controller;
 
-import com.shortkki.api.application.usecase.RegisterUserUseCase;
+import com.shortkki.api.auth.application.usecase.RegisterUserUseCase;
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
 import com.shortkki.api.member.entity.OAuthProvider;
