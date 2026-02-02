@@ -4,9 +4,9 @@ import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.api.ingredient.repository.IngredientRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
-import com.shortkki.api.recipe.constant.CuisineType;
-import com.shortkki.api.recipe.constant.Difficulty;
-import com.shortkki.api.recipe.constant.MealType;
+import com.shortkki.api.recipe.entity.CuisineType;
+import com.shortkki.api.recipe.entity.Difficulty;
+import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
@@ -147,7 +147,7 @@ public class RecipeImportAsyncService {
             String unit = parseUnit(ing.amount());
             Ingredient ingredient = ingredientRepository.findByName(ing.name())
                     .orElseGet(() -> ingredientRepository.save(
-                            Ingredient.create(ing.name(), unit)));
+                            Ingredient.create(ing.name())));
             Integer amount = parseAmount(ing.amount());
             RecipeIngredient recipeIngredient = RecipeIngredient.create(
                     ingredient, recipe, amount);
