@@ -27,6 +27,7 @@ import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +59,8 @@ public class RecipeImportService {
                 sourceContent.getPlatform());
         sourceImportHistoryRepository.save(history);
 
-        SourceContent previewContent = sourceContentRepository.findByIdWithCreator(sourceContent.getId())
+        SourceContent previewContent = sourceContentRepository.findByIdWithCreator(
+                        sourceContent.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
         RecipeImportPreview preview = RecipeImportPreview.from(previewContent);
 
@@ -79,7 +81,8 @@ public class RecipeImportService {
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }
 
-        SourceContent previewContent = sourceContentRepository.findByIdWithCreator(history.getSourceContentId())
+        SourceContent previewContent = sourceContentRepository.findByIdWithCreator(
+                        history.getSourceContentId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
         RecipeImportPreview preview = RecipeImportPreview.from(previewContent);
 
@@ -111,6 +114,7 @@ public class RecipeImportService {
         }
     }
 
+    @Transactional
     public Long confirmAndSave(Long memberId, Long historyId, RecipeEditRequest request) {
         SourceImportHistory history = sourceImportHistoryRepository.findById(historyId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
@@ -125,24 +129,21 @@ public class RecipeImportService {
         SourceContent sourceContent = sourceContentRepository.findById(history.getSourceContentId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
 
-        // Convert RecipeEditRequest to RecipeParseResult
         RecipeParseResult parseResult = convertToParseResult(request);
 
-        // Save recipe with relations
         Recipe savedRecipe;
         try {
-            savedRecipe = transactionalService.saveRecipeWithRelations(member, sourceContent, parseResult);
+            savedRecipe = transactionalService.saveRecipeWithRelations(member, sourceContent,
+                    parseResult);
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR,
                     "레시피 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
 
-        // Update history status to COMPLETED
         history.updateRecipeId(savedRecipe.getId());
         history.complete(history.getRawResponse());
         sourceImportHistoryRepository.save(history);
 
-        // Add to default recipe book
         recipeBookQueryService.findDefaultByMemberId(memberId)
                 .ifPresent(defaultBook -> recipeBookService.addRecipeIfNotExists(
                         memberId, defaultBook.getId(), savedRecipe.getId()));
@@ -160,7 +161,8 @@ public class RecipeImportService {
                 .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
         String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
 
-        if (sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey).isPresent()) {
+        if (sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
+                .isPresent()) {
             throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
         }
     }
@@ -175,8 +177,8 @@ public class RecipeImportService {
         var ingredients = request.ingredients().stream()
                 .map(ing -> new RecipeParseResult.IngredientParseResult(
                         ing.name(),
-                        ing.amount(),
-                        ing.unit()))
+                        ing.unit(),
+                        ing.amount()))
                 .toList();
 
         var steps = request.steps().stream()
@@ -195,7 +197,7 @@ public class RecipeImportService {
                 request.difficulty(),
                 ingredients,
                 steps,
-                null  // rawResponse not needed for user-edited data
+                null
         );
     }
 }

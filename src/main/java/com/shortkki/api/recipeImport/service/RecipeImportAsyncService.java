@@ -76,7 +76,7 @@ public class RecipeImportAsyncService {
             // TODO: 파싱 완료 알림 처리 - 사용자에게 검토 요청
         } catch (Exception e) {
             log.error("Failed to serialize parsed result", e);
-            history.fail("Failed to store parsed result: " + e.getMessage());
+            history.fail("Failed to store parsed result: " + e.getMessage(), aiRawResponse);
             sourceImportHistoryRepository.save(history);
         }
     }
