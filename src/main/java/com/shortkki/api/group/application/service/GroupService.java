@@ -1,4 +1,4 @@
-package com.shortkki.api.group.service;
+package com.shortkki.api.group.application.service;
 
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;

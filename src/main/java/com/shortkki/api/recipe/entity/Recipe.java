@@ -87,6 +87,7 @@ public class Recipe extends BaseEntity {
     @Column(name = "image_file_id")
     private Long imageFileId;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isDeleted = false;
 

@@ -1,4 +1,4 @@
-package com.shortkki.api.auth.service;
+package com.shortkki.api.auth.application.service;
 
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;

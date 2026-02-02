@@ -1,8 +1,8 @@
-package com.shortkki.api.application.usecase;
+package com.shortkki.api.auth.application.usecase;
 
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
-import com.shortkki.api.auth.service.AuthService;
+import com.shortkki.api.auth.application.service.AuthService;
 import com.shortkki.api.member.entity.OAuthProvider;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import lombok.RequiredArgsConstructor;

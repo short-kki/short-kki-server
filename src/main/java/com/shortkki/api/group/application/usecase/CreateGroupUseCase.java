@@ -1,8 +1,8 @@
-package com.shortkki.api.application.usecase;
+package com.shortkki.api.group.application.usecase;
 
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.response.GroupResponse;
-import com.shortkki.api.group.service.GroupService;
+import com.shortkki.api.group.application.service.GroupService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
