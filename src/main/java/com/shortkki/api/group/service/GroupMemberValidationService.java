@@ -12,9 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GroupMemberValidationService {
 
+    private final GroupValidationService groupValidationService;
+
     private final GroupMemberRepository groupMemberRepository;
 
     public void validateGroupMember(long memberId, long groupId) {
+        groupValidationService.validateGroupExist(groupId);
+
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, groupId)) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }

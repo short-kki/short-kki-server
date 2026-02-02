@@ -19,7 +19,7 @@ public class RecipeQueueValidationService {
         RecipeQueue queue = recipeQueueQueryService.findRecipeQueue(queueId);
         Member owner = queue.getMember();
 
-        if (!owner.getId().equals(memberId)) {
+        if (owner == null || !owner.getId().equals(memberId)) {
             throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }
     }
