@@ -2,7 +2,7 @@ package com.shortkki.api.recipe.service;
 
 import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.api.ingredient.repository.IngredientRepository;
-import com.shortkki.api.recipe.dto.IngredientRequest;
+import com.shortkki.api.recipe.dto.request.IngredientRequest;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
@@ -28,8 +28,6 @@ public class RecipeIngredientService {
                             .orElseGet(() -> ingredientRepository.save(
                                     Ingredient.create(info.name())));
                     return RecipeIngredient.create(ingredient, recipe, info.amount(), info.unit());
-                                    Ingredient.create(info.name())));
-                    return RecipeIngredient.create(ingredient, recipe, info.amount());
                 })
                 .toList();
         return recipeIngredientRepository.saveAll(recipeIngredients);
