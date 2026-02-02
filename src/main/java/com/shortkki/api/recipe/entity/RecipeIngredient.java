@@ -3,7 +3,6 @@ package com.shortkki.api.recipe.entity;
 import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.global.entity.BaseEntity;
 import com.shortkki.global.error.exception.InvalidStateException;
-import io.micrometer.core.annotation.Counted;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
