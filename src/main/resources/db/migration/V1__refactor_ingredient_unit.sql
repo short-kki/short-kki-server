@@ -4,7 +4,10 @@ ALTER TABLE recipe_ingredient ADD COLUMN unit VARCHAR(50);
 -- Migrate existing unit data from ingredient to recipe_ingredient
 UPDATE recipe_ingredient ri
     INNER JOIN ingredient i ON ri.ingredient_id = i.id
-SET ri.unit = i.unit;
+SET ri.unit = COALESCE(i.unit, '');
+
+-- Handle any orphaned recipe_ingredients without matching ingredient
+UPDATE recipe_ingredient SET unit = '' WHERE unit IS NULL;
 
 -- Make unit column NOT NULL after data migration
 ALTER TABLE recipe_ingredient MODIFY COLUMN unit VARCHAR(50) NOT NULL;

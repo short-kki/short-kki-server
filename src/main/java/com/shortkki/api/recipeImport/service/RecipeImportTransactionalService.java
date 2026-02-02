@@ -69,11 +69,11 @@ public class RecipeImportTransactionalService {
 
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         for (IngredientParseResult ing : ingredients) {
-            String unit = parseUnit(ing.amount());
             Ingredient ingredient = ingredientRepository.findByName(ing.name())
                     .orElseGet(() -> ingredientRepository.save(
                             Ingredient.create(ing.name())));
             Double amount = parseAmount(ing.amount());
+            String unit = ing.unit() != null ? ing.unit() : "";
             RecipeIngredient recipeIngredient = RecipeIngredient.create(
                     ingredient, recipe, amount, unit);
             recipeIngredientRepository.save(recipeIngredient);
@@ -93,19 +93,10 @@ public class RecipeImportTransactionalService {
             return null;
         }
         try {
-            String numberOnly = amountStr.replaceAll("[^0-9.]", "");
-            return numberOnly.isEmpty() ? null : Double.parseDouble(numberOnly);
+            return Double.parseDouble(amountStr);
         } catch (NumberFormatException e) {
             return null;
         }
-    }
-
-    private String parseUnit(String amountStr) {
-        if (amountStr == null || amountStr.isBlank()) {
-            return "";
-        }
-        String unit = amountStr.replaceAll("[0-9/\\.\\-]+", "").trim();
-        return unit.isBlank() ? "" : unit;
     }
 
     private CuisineType parseCuisineType(String value) {

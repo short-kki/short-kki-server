@@ -2,7 +2,6 @@ package com.shortkki.api.recipeImport.service;
 
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
-import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
@@ -29,6 +28,7 @@ public class RecipeImportAsyncService {
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
     private final RecipeParserPort recipeParserPort;
     private final RecipeImportTransactionalService transactionalService;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     @Async
     public void processImport(
@@ -72,30 +72,18 @@ public class RecipeImportAsyncService {
             return;
         }
 
-        Recipe saved;
+        // Store parsed result as JSON for user review and editing
         try {
-            saved = transactionalService.saveRecipeWithRelations(member, sourceContent, parseResult);
+            String parsedContentJson = objectMapper.writeValueAsString(parseResult);
+            history.markAsParsed(aiRawResponse, parsedContentJson);
+            sourceImportHistoryRepository.save(history);
+            log.info("레시피 파싱 완료, 사용자 확인 대기 중. historyId={}", historyId);
+            // TODO: 파싱 완료 알림 처리 - 사용자에게 검토 요청
         } catch (Exception e) {
-            log.error("Recipe save failed", e);
-            history.fail("Save failed: " + e.getMessage());
+            log.error("Failed to serialize parsed result", e);
+            history.fail("Failed to store parsed result: " + e.getMessage());
             sourceImportHistoryRepository.save(history);
-            return;
         }
-
-        if (saved == null) {
-            history.fail("Recipe transaction rolled back.");
-            sourceImportHistoryRepository.save(history);
-            return;
-        }
-
-        // TODO: 태그 저장 로직 추가
-
-        history.updateRecipeId(saved.getId());
-        history.complete(aiRawResponse);
-        sourceImportHistoryRepository.save(history);
-
-        // TODO: 파싱 완료 알림 처리
-        addToDefaultRecipeBook(memberId, saved.getId());
     }
 
     private void addToDefaultRecipeBook(Long memberId, Long recipeId) {
