@@ -10,16 +10,32 @@
     "mealType": "MAIN",
     "difficulty": "BEGINNER",
     "ingredients": [
-        {"name": "재료명", "amount": "용량 (예: 200g, 2큰술)"}
+        {"name": "재료명", "amount": "200g"}
     ],
     "steps": [
         {"stepNumber": 1, "description": "조리 과정 설명"}
     ]
 }
 
+중요한 가이드라인:
+
+**제목 (title) 정규화:**
+- 간결하고 일관된 형식으로 작성 (예: "김치찌개", "된장찌개", "불고기")
+- 불필요한 수식어 제거 (예: "맛있는", "초간단", "집에서 만드는" 등)
+- 요리의 핵심 이름만 추출
+- 예시: "엄마가 해주시던 맛있는 김치찌개" → "김치찌개"
+
+**재료 (ingredients) 형식:**
+- name: 재료의 기본 이름만 (예: "돼지고기", "김치", "두부")
+- amount: 반드시 "숫자+단위" 형식으로 작성 (예: "200g", "2큰술", "1개", "300ml")
+- 숫자와 단위를 분리하지 말고 하나의 문자열로 작성
+- 단위는 g, ml, 큰술, 작은술, 개, 컵, 숟가락 등 일반적인 단위 사용
+- 소수점도 가능 (예: "0.5큰술", "1.5컵")
+
+**기타:**
 - servingSize는 인분 수 (숫자만)
 - cookingTime은 분 단위 (숫자만)
-- cuisineType: KOREAN, WESTERN, JAPANESE, CHINESE, ASIAN, FUSION 중 하나
-- mealType: MAIN, SIDE_DISH, SNACK, DESSERT, SIDE_FOR_DRINK 중 하나
-- difficulty: BEGINNER, INTERMEDIATE, ADVANCED 중 하나
+- cuisineType: KOREAN, WESTERN, JAPANESE, CHINESE, ASIAN, FUSION, ETC 중 하나
+- mealType: MAIN, SIDE_DISH, SNACK, DESSERT, SIDE_FOR_DRINK, ETC 중 하나
+- difficulty: BEGINNER, INTERMEDIATE, ADVANCED, ETC 중 하나
 - ingredients와 steps는 빠짐없이 추출

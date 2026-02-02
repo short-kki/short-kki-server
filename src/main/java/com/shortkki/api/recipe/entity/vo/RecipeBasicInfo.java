@@ -33,7 +33,7 @@ public class RecipeBasicInfo {
         if (servingSize == null || servingSize <= 0) {
             throw new IllegalArgumentException("1인분 기준 양은 양수여야 합니다");
         }
-        if (cookingTime == null || cookingTime < 0) {
+        if (cookingTime == null || cookingTime <= 0) {
             throw new IllegalArgumentException("조리 시간은 양수여야 합니다");
         }
 

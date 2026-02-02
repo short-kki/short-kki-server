@@ -72,10 +72,10 @@ public class RecipeImportTransactionalService {
             String unit = parseUnit(ing.amount());
             Ingredient ingredient = ingredientRepository.findByName(ing.name())
                     .orElseGet(() -> ingredientRepository.save(
-                            Ingredient.create(ing.name(), unit)));
-            Integer amount = parseAmount(ing.amount());
+                            Ingredient.create(ing.name())));
+            Double amount = parseAmount(ing.amount());
             RecipeIngredient recipeIngredient = RecipeIngredient.create(
-                    ingredient, recipe, amount);
+                    ingredient, recipe, amount, unit);
             recipeIngredientRepository.save(recipeIngredient);
         }
     }
@@ -88,13 +88,13 @@ public class RecipeImportTransactionalService {
         }
     }
 
-    private Integer parseAmount(String amountStr) {
+    private Double parseAmount(String amountStr) {
         if (amountStr == null || amountStr.isBlank()) {
             return null;
         }
         try {
-            String numberOnly = amountStr.replaceAll("[^0-9]", "");
-            return numberOnly.isEmpty() ? null : Integer.parseInt(numberOnly);
+            String numberOnly = amountStr.replaceAll("[^0-9.]", "");
+            return numberOnly.isEmpty() ? null : Double.parseDouble(numberOnly);
         } catch (NumberFormatException e) {
             return null;
         }

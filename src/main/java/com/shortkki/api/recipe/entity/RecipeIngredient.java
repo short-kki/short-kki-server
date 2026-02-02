@@ -2,6 +2,7 @@ package com.shortkki.api.recipe.entity;
 
 import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,20 +34,25 @@ public class RecipeIngredient extends BaseEntity {
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
-    private Integer amount;
+    private Double amount;
+
+    @Column(nullable = false, length = 50)
+    private String unit;
 
     @Builder
-    private RecipeIngredient(Ingredient ingredient, Recipe recipe, Integer amount) {
+    private RecipeIngredient(Ingredient ingredient, Recipe recipe, Double amount, String unit) {
         this.ingredient = ingredient;
         this.recipe = recipe;
         this.amount = amount;
+        this.unit = unit;
     }
 
-    public static RecipeIngredient create(Ingredient ingredient, Recipe recipe, Integer amount) {
+    public static RecipeIngredient create(Ingredient ingredient, Recipe recipe, Double amount, String unit) {
         return RecipeIngredient.builder()
                 .ingredient(ingredient)
                 .recipe(recipe)
                 .amount(amount)
+                .unit(unit)
                 .build();
     }
 

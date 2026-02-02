@@ -24,19 +24,14 @@ public class Ingredient {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 50)
-    private String unit;
-
     @Builder
-    private Ingredient(String name, String unit) {
+    private Ingredient(String name) {
         this.name = name;
-        this.unit = unit;
     }
 
-    public static Ingredient create(String name, String unit) {
+    public static Ingredient create(String name) {
         return Ingredient.builder()
                 .name(name)
-                .unit(unit)
                 .build();
     }
 }
