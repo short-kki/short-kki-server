@@ -1,8 +1,8 @@
 package com.shortkki.api.recipe.controller;
 
-import com.shortkki.api.recipe.dto.RecipeCreateRequest;
-import com.shortkki.api.recipe.dto.RecipeResponse;
-import com.shortkki.api.recipe.dto.RecipeUpdateRequest;
+import com.shortkki.api.recipe.dto.request.RecipeCreateRequest;
+import com.shortkki.api.recipe.dto.response.RecipeResponse;
+import com.shortkki.api.recipe.dto.request.RecipeUpdateRequest;
 import com.shortkki.api.recipe.service.RecipeQueryService;
 import com.shortkki.api.recipe.service.RecipeService;
 import com.shortkki.global.auth.dto.LoginMember;
