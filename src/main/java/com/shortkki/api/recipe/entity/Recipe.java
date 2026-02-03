@@ -84,12 +84,12 @@ public class Recipe extends BaseEntity {
     @ColumnDefault("0")
     private Integer bookmarkCount = 0;
 
-    @Column(name = "image_file_id")
-    private Long imageFileId;
+    @Column(name = "main_img_file_id")
+    private Long mainImgFileId;
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean isDeleted = false;
+    private Boolean isActive = false;
 
     public static Recipe createManual(
             Member member, String title, String description, Integer servingSize, Integer cookingTime,
@@ -106,7 +106,7 @@ public class Recipe extends BaseEntity {
                 .difficulty(difficulty)
                 .sourceType(RecipeSource.USER)
                 .bookmarkCount(0)
-                .isDeleted(false)
+                .isActive(false)
                 .build();
     }
 
@@ -130,7 +130,7 @@ public class Recipe extends BaseEntity {
                 .sourceType(RecipeSource.IMPORT)
                 .sourceContent(sourceContent)
                 .bookmarkCount(0)
-                .isDeleted(false)
+                .isActive(false)
                 .build();
     }
 
@@ -158,7 +158,7 @@ public class Recipe extends BaseEntity {
         return RecipeSource.IMPORT == sourceType ? sourceContent.getContentType() : null;
     }
 
-    public void setImageFileId(Long imageFileId) {
-        this.imageFileId = imageFileId;
+    public void setMainImgFileId(Long imageFileId) {
+        this.mainImgFileId = imageFileId;
     }
 }

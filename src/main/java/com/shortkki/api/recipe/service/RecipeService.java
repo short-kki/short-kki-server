@@ -102,7 +102,7 @@ public class RecipeService {
             FileMetadata file = fileMetadataService.getById(basicInfo.imageFileId());
             validateFileOwnership(file, member);
             file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
-            saved.setImageFileId(basicInfo.imageFileId());
+            saved.setMainImgFileId(basicInfo.imageFileId());
         }
 
         // TODO: 태그 저장 로직 추가
@@ -160,7 +160,7 @@ public class RecipeService {
     }
 
     private void updateRecipeImage(Recipe recipe, Member member, Long newImageFileId) {
-        if (Objects.equals(recipe.getImageFileId(), newImageFileId)) {
+        if (Objects.equals(recipe.getMainImgFileId(), newImageFileId)) {
             return;
         }
 
@@ -170,6 +170,6 @@ public class RecipeService {
             file.bindTarget(FileTargetType.RECIPE_IMG, recipe.getId());
         }
 
-        recipe.setImageFileId(newImageFileId);
+        recipe.setMainImgFileId(newImageFileId);
     }
 }
