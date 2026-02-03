@@ -42,7 +42,7 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
         List<Recipe> results = query
                 .selectDistinct(recipe)
                 .from(recipe)
-                .leftJoin(recipe.ingredients, recipeIngredient)
+                .leftJoin(recipeIngredient).on(recipeIngredient.recipe.id.eq(recipe.id))
                 .leftJoin(recipeTag).on(recipeTag.recipeId.eq(recipe.id))
                 .leftJoin(tag).on(tag.id.eq(recipeTag.tagId))
                 .where(where(keywords, cuisineTypes, mealTypes, difficulties))
@@ -68,14 +68,14 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
         BooleanBuilder where = new BooleanBuilder(recipe.isDeleted.isFalse());
 
         if (!isEmpty(cuisineTypes)) {
-            where.and(recipe.cuisineType.in(cuisineTypes));
+            where.and(recipe.categoryInfo.cuisineType.in(cuisineTypes));
         }
         if (!isEmpty(mealTypes)) {
-            where.and(recipe.mealType.in(mealTypes));
+            where.and(recipe.categoryInfo.mealType.in(mealTypes));
         }
 
         if (!isEmpty(difficulties)) {
-            where.and(recipe.difficulty.in(difficulties));
+            where.and(recipe.categoryInfo.difficulty.in(difficulties));
         }
 
         BooleanBuilder keyword = keywordPredicate(keywords);
@@ -110,8 +110,8 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
     }
 
     private BooleanExpression matchAnyField(String keyword) {
-        return recipe.title.containsIgnoreCase(keyword)
-                .or(recipe.description.containsIgnoreCase(keyword))
+        return recipe.basicInfo.title.containsIgnoreCase(keyword)
+                .or(recipe.basicInfo.description.containsIgnoreCase(keyword))
                 .or(recipeIngredient.ingredient.name.containsIgnoreCase(keyword))
                 .or(tag.name.containsIgnoreCase(keyword));
     }

@@ -13,7 +13,7 @@ public record RecipeSummaryResponse(
     public static RecipeSummaryResponse from(Recipe recipe) {
         return new RecipeSummaryResponse(
                 recipe.getId(),
-                recipe.getTitle(),
+                recipe.getBasicInfo().getTitle(),
                 recipe.getBookmarkCount(),
                 null,
                 null

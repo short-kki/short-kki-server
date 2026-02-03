@@ -1,8 +1,10 @@
 package com.shortkki.api.recipeImport.controller;
 
+import com.shortkki.api.recipeImport.dto.RecipeEditRequest;
 import com.shortkki.api.recipeImport.dto.RecipeImportRequest;
 import com.shortkki.api.recipeImport.dto.RecipeImportResponse;
 import com.shortkki.api.recipeImport.dto.RecipeImportStatusResponse;
+import com.shortkki.api.recipeImport.dto.RecipeParseResultResponse;
 import com.shortkki.api.recipeImport.service.RecipeImportService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
@@ -40,5 +42,22 @@ public class RecipeImportController {
             @PathVariable Long historyId) {
         RecipeImportStatusResponse response = recipeImportService.getStatus(loginMember.getId(), historyId);
         return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/{historyId}/parsed")
+    public ResponseEntity<BaseResponse<RecipeParseResultResponse>> getParsedRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long historyId) {
+        RecipeParseResultResponse response = recipeImportService.getParsedRecipe(loginMember.getId(), historyId);
+        return ResponseEntity.ok(BaseResponse.success("파싱된 레시피 정보를 조회했습니다.", response));
+    }
+
+    @PostMapping("/{historyId}/confirm")
+    public ResponseEntity<BaseResponse<Long>> confirmAndSaveRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long historyId,
+            @Valid @RequestBody RecipeEditRequest request) {
+        Long recipeId = recipeImportService.confirmAndSave(loginMember.getId(), historyId, request);
+        return ResponseEntity.ok(BaseResponse.success("레시피가 저장되었습니다.", recipeId));
     }
 }

@@ -6,6 +6,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +32,15 @@ public class RecipeBookQueryService {
                 .where(recipeBook.groupId.eq(groupId))
                 .orderBy(recipeBook.title.asc())
                 .fetch();
+    }
+
+    public Optional<RecipeBook> findDefaultByMemberId(Long memberId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(recipeBook)
+                        .where(
+                                recipeBook.member.id.eq(memberId),
+                                recipeBook.isDefault.isTrue())
+                        .fetchOne());
     }
 }

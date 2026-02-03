@@ -42,19 +42,20 @@ public record RecipeResponse(
         List<IngredientResponse> ingredientResponses = ingredients.stream()
                 .map(i -> new IngredientResponse(
                         i.getIngredient().getName(),
+                        i.getUnit(),
                         i.getAmount()))
                 .toList();
 
         return new RecipeResponse(
                 recipe.getId(),
-                recipe.getTitle(),
-                recipe.getDescription(),
-                recipe.getServingSize(),
-                recipe.getCookingTime(),
+                recipe.getBasicInfo().getTitle(),
+                recipe.getBasicInfo().getDescription(),
+                recipe.getBasicInfo().getServingSize(),
+                recipe.getBasicInfo().getCookingTime(),
                 recipe.getBookmarkCount(),
-                recipe.getCuisineType(),
-                recipe.getMealType(),
-                recipe.getDifficulty(),
+                recipe.getCategoryInfo().getCuisineType(),
+                recipe.getCategoryInfo().getMealType(),
+                recipe.getCategoryInfo().getDifficulty(),
                 recipe.getSourceType(),
                 recipe.getSourceUrl(),
                 recipe.getSourcePlatform(),
