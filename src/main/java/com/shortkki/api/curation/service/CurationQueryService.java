@@ -6,20 +6,18 @@ import com.shortkki.api.curation.entity.DayType;
 import com.shortkki.api.curation.entity.TimeType;
 import com.shortkki.api.curation.repository.CurationRepository;
 import com.shortkki.api.recipe.dto.response.RecipeSummaryResponse;
+import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.search.application.port.RecipeSearchPort;
 import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CurationQueryService {
 
@@ -27,13 +25,34 @@ public class CurationQueryService {
     private static final int RECIPES_PER_CURATION = 10;
 
     private final CurationRepository curationRepository;
-    private final RecipeSearchPort recipeSearchPort;
+    private final RecipeSearchPort jpaSearchPort;
+    private final RecipeSearchPort esSearchPort;
+
+    public CurationQueryService(
+            CurationRepository curationRepository,
+            @Qualifier("jpaRecipeSearch") RecipeSearchPort jpaSearchPort,
+            @Qualifier("esRecipeSearch") RecipeSearchPort esSearchPort
+    ) {
+        this.curationRepository = curationRepository;
+        this.jpaSearchPort = jpaSearchPort;
+        this.esSearchPort = esSearchPort;
+    }
 
     public List<CurationRecommendResponse> getRecommendedCurations(LocalDateTime now) {
+        return getRecommendedCurations(now, jpaSearchPort);
+    }
+
+    public List<CurationRecommendResponse> getRecommendedCurationsV2(LocalDateTime now) {
+        return getRecommendedCurations(now, esSearchPort);
+    }
+
+    private List<CurationRecommendResponse> getRecommendedCurations(
+            LocalDateTime now, RecipeSearchPort searchPort
+    ) {
         List<Curation> curations = getCurrentCurations(now, CURATION_COUNT);
 
         return curations.stream()
-                .map(this::toCurationRecommendResponse)
+                .map(curation -> toCurationRecommendResponse(curation, searchPort))
                 .toList();
     }
 
@@ -49,12 +68,15 @@ public class CurationQueryService {
         return candidates.size() <= size ? candidates : candidates.subList(0, size);
     }
 
-    private CurationRecommendResponse toCurationRecommendResponse(Curation curation) {
-        String searchWord = mergeKeywordsToSearchWord(curation);
-
-        List<RecipeSummaryResponse> recipes = recipeSearchPort.search(
+    private CurationRecommendResponse toCurationRecommendResponse(
+            Curation curation, RecipeSearchPort searchPort
+    ) {
+        List<RecipeSummaryResponse> recipes = searchPort.search(
                         PageRequest.of(0, RECIPES_PER_CURATION),
-                        searchWord,
+                        curation.getSearchWord(),
+                        curation.getTags(),
+                        curation.getIngredients(),
+                        RecipeSource.IMPORT,
                         curation.getCuisineTypes(),
                         curation.getMealTypes(),
                         curation.getDifficulties()
@@ -71,26 +93,18 @@ public class CurationQueryService {
     }
 
     private RecipeSummaryResponse toRecipeSummaryResponse(RecipeSearchItem item) {
-        return RecipeSummaryResponse.builder()
-                .id(item.id())
-                .title(item.title())
-                .bookmarkCount(item.bookmarkCount())
-                .thumbnailUrl(item.thumbnailUrl())
-                .authorName(item.authorName())
-                .build();
-    }
-
-    private String mergeKeywordsToSearchWord(Curation curation) {
-        Set<String> merged = new HashSet<>();
-        addAll(merged, curation.getKeywords());
-        addAll(merged, curation.getTags());
-        addAll(merged, curation.getIngredients());
-        return String.join(" ", merged);
-    }
-
-    private void addAll(Set<String> target, Set<String> source) {
-        if (source != null) {
-            target.addAll(source);
-        }
+        return new RecipeSummaryResponse(
+                item.id(),
+                item.title(),
+                item.bookmarkCount(),
+                item.sourceUrl(),
+                item.mainImgUrl(),
+                item.recipeSource(),
+                item.authorName(),
+                item.authorProfileImgUrl(),
+                item.platform(),
+                item.creatorName(),
+                item.creatorProfileImgUrl()
+        );
     }
 }

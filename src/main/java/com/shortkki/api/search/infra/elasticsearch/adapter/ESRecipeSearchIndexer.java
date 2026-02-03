@@ -1,8 +1,5 @@
 package com.shortkki.api.search.infra.elasticsearch.adapter;
 
-import com.shortkki.api.file.application.service.FileMetadataQueryService;
-import com.shortkki.api.file.application.service.FileUrlResolver;
-import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.Tag;
@@ -16,20 +13,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class ElasticsearchRecipeSearchIndexer implements RecipeSearchIndexer {
+public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
 
     private final RecipeQueryService recipeQueryService;
     private final RecipeIngredientQueryService ingredientQueryService;
     private final RecipeTagQueryService tagQueryService;
-    private final FileMetadataQueryService fileMetadataQueryService;
-    private final FileUrlResolver fileUrlResolver;
 
     private final RecipeDocumentRepository recipeDocumentRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public void upsert(long recipeId) {
         Recipe recipe = recipeQueryService.findById(recipeId);
         RecipeDocument doc = toDocument(recipe);
@@ -38,29 +35,35 @@ public class ElasticsearchRecipeSearchIndexer implements RecipeSearchIndexer {
     }
 
     private RecipeDocument toDocument(Recipe recipe) {
-        Set<String> ingredients = ingredientQueryService.findIngredientsByRecipeId(recipe.getId()).stream()
+        Set<String> ingredients = ingredientQueryService.findIngredientsByRecipeId(recipe.getId())
+                .stream()
                 .map(Ingredient::getName)
                 .collect(Collectors.toSet());
+
         Set<String> tags = tagQueryService.findTagsByRecipeId(recipe.getId()).stream()
                 .map(Tag::getName)
                 .collect(Collectors.toSet());
-        FileMetadata mainImgFile = fileMetadataQueryService.findById(recipe.getId());
-        String mainImgUrl = fileUrlResolver.getUrl(mainImgFile);
 
-        return RecipeDocument.builder()
-                .id(recipe.getId())
-                .title(recipe.getTitle())
-                .description(recipe.getDescription())
-                .sourceType(recipe.getSourceType().name())
-                .cuisineType(recipe.getCuisineType().name())
-                .mealType(recipe.getMealType().name())
-                .difficulty(recipe.getDifficulty().name())
-                .ingredients(ingredients)
-                .tags(tags)
-                .mainImgUrl(mainImgUrl)
-                .bookmarkCount(recipe.getBookmarkCount())
-                .isActive(recipe.getIsActive())
-                .createdAt(recipe.getCreatedAt())
-                .build();
+        return new RecipeDocument(
+                recipe.getId(),
+                recipe.getTitle(),
+                recipe.getDescription(),
+                recipe.getSourceType().name(),
+                recipe.getBookmarkCount(),
+                recipe.getMainImgUrl(),
+                recipe.getCuisineType().name(),
+                recipe.getMealType().name(),
+                recipe.getDifficulty().name(),
+                ingredients,
+                tags,
+                recipe.getAuthorName(),
+                recipe.getAuthorProfileImgUrl(),
+                recipe.getCreatorName(),
+                recipe.getCreatorProfileImgUrl(),
+                recipe.getSourcePlatform().name(),
+                recipe.getSourceUrl(),
+                recipe.getIsActive(),
+                recipe.getCreatedAt().toLocalDate()
+        );
     }
 }
