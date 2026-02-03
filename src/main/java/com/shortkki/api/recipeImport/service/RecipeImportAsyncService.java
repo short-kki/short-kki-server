@@ -20,11 +20,13 @@ import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
 import com.shortkki.api.recipeImport.service.parser.AiRecipeParserService;
+import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.ImportStatus;
 import com.shortkki.api.source.domain.SourceImportHistory;
 import com.shortkki.api.source.repository.SourceContentRepository;
 import com.shortkki.api.source.repository.SourceImportHistoryRepository;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +40,16 @@ import org.springframework.transaction.support.TransactionTemplate;
 @RequiredArgsConstructor
 public class RecipeImportAsyncService {
 
+    private final RecipeBookService recipeBookService;
+    private final RecipeBookQueryService recipeBookQueryService;
+    private final AiRecipeParserService aiRecipeParserService;
+
+    private final DomainEventPublisher domainEventPublisher;
+
     private final SourceContentRepository sourceContentRepository;
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
-    private final RecipeBookService recipeBookService;
-    private final RecipeBookQueryService recipeBookQueryService;
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
-    private final AiRecipeParserService aiRecipeParserService;
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
@@ -99,6 +104,8 @@ public class RecipeImportAsyncService {
                     Recipe recipe = saveRecipe(member, sourceContent, parseResult);
                     saveIngredients(recipe, parseResult.ingredients());
                     saveSteps(recipe, parseResult.steps());
+
+                    domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
                     return recipe;
                 } catch (Exception e) {
                     status.setRollbackOnly();
