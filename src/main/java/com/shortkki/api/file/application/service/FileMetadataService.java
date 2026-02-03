@@ -7,19 +7,28 @@ import com.shortkki.api.file.entity.FileVisibility;
 import com.shortkki.api.file.entity.UploaderType;
 import com.shortkki.api.file.repository.FileMetadataRepository;
 import com.shortkki.api.file.util.FileKeyUtil;
-import com.shortkki.global.error.exception.NotFoundException;
 import java.time.LocalDate;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class FileMetadataService {
 
     private final FileMetadataRepository fileMetadataRepository;
     private final FileUploadProperties fileProps;
+    private final String baseUrl;
+
+    public FileMetadataService(
+            @Value("${file.cdn.public-base-url}")
+            String baseUrl, FileMetadataRepository fileMetadataRepository,
+            FileUploadProperties fileProps
+    ) {
+        this.baseUrl = baseUrl;
+        this.fileMetadataRepository = fileMetadataRepository;
+        this.fileProps = fileProps;
+    }
 
     public FileMetadata createFileMetadata(
             String filename, long size, UploaderType uploaderType, Long uploaderId,
@@ -34,6 +43,7 @@ public class FileMetadataService {
                 filename,
                 extension,
                 size,
+                baseUrl,
                 targetType,
                 uploaderType,
                 uploaderId,
