@@ -40,8 +40,8 @@ public class AiRecipeParserService {
     private final ObjectMapper objectMapper;
 
     public AiRecipeParserService(
-            @Value("${GOOGLE_GENAI_API_KEY}") String apiKey,
-            @Value("${gemini.model-name}") String modelName,
+            @Value("${google.credential.api-key}") String apiKey,
+            @Value("${google.services.gemini.model-name}") String modelName,
             ObjectMapper objectMapper) {
         this.modelName = modelName;
         this.client = Client.builder()

@@ -13,7 +13,7 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
     @Query(value = """
         SELECT *
         FROM curation c
-        WHERE c.is_active = 1
+        WHERE c.is_active = true
           AND (
                 c.day_types IS NULL
                 OR c.day_types = ''

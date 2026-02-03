@@ -24,8 +24,8 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
     private final ObjectMapper objectMapper;
 
     public YoutubeSourceDataProvider(
-            @Value("${GOOGLE_GENAI_API_KEY}") String apiKey,
-            @Value("${youtube.api.base-url}") String apiBaseUrl,
+            @Value("${google.credential.api-key}") String apiKey,
+            @Value("${google.services.youtube.api.base-url}") String apiBaseUrl,
             ObjectMapper objectMapper) {
         this.apiKey = apiKey;
         this.apiBaseUrl = apiBaseUrl;

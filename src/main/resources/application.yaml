@@ -10,22 +10,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
-        format_sql: true
         default_batch_fetch_size: 100
     open-in-view: false
-
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
 
 oauth2:
   provider:
@@ -55,9 +44,12 @@ file:
     expire-seconds: ${FILE_UPLOAD_EXPIRE_SECONDS:300}
     max-bytes: ${FILE_UPLOAD_MAX_BYTES:10485760} # 10MB
 
-youtube:
-  api:
-    base-url: https://www.googleapis.com/youtube/v3
-
-gemini:
-  model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
+google:
+  credential:
+    api-key: ${GOOGLE_GENAI_API_KEY:google-api-test-key}
+  services:
+    youtube:
+      api:
+        base-url: https://www.googleapis.com/youtube/v3
+    gemini:
+      model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
