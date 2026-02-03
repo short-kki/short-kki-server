@@ -2,6 +2,9 @@ package com.shortkki.api.recipeImport.service;
 
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.recipe.entity.CuisineType;
+import com.shortkki.api.recipe.entity.Difficulty;
+import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.api.recipeImport.dto.RecipeEditRequest;
 import com.shortkki.api.recipeImport.dto.RecipeImportRequest;
 import com.shortkki.api.recipeImport.dto.RecipeImportPreview;
@@ -25,6 +28,7 @@ import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,9 +82,7 @@ public class RecipeImportService {
         SourceImportHistory history = sourceImportHistoryRepository.findById(historyId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
 
-        if (history.getMemberId() == null || !history.getMemberId().equals(memberId)) {
-            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        }
+        validateHistoryOwnership(history, memberId);
 
         SourceContent previewContent = sourceContentRepository.findByIdWithCreator(
                         history.getSourceContentId())
@@ -178,8 +180,8 @@ public class RecipeImportService {
         var ingredients = request.ingredients().stream()
                 .map(ing -> new RecipeParseResult.IngredientParseResult(
                         ing.name(),
-                        ing.unit(),
-                        ing.amount()))
+                        ing.amount(),
+                        ing.unit()))
                 .toList();
 
         var steps = request.steps().stream()
@@ -193,12 +195,24 @@ public class RecipeImportService {
                 request.description(),
                 request.servingSize(),
                 request.cookingTime(),
-                request.cuisineType(),
-                request.mealType(),
-                request.difficulty(),
+                parseEnum(request.cuisineType(), CuisineType.ETC, CuisineType.class),
+                parseEnum(request.mealType(), MealType.ETC, MealType.class),
+                parseEnum(request.difficulty(), Difficulty.ETC, Difficulty.class),
                 ingredients,
                 steps,
+                request.tags() != null ? request.tags() : List.of(),
                 null
         );
+    }
+
+    private <E extends Enum<E>> E parseEnum(String value, E fallback, Class<E> enumType) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Enum.valueOf(enumType, value.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
     }
 }

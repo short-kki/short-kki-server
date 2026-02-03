@@ -1,5 +1,8 @@
 package com.shortkki.api.recipeImport.dto;
 
+import com.shortkki.api.recipe.entity.CuisineType;
+import com.shortkki.api.recipe.entity.Difficulty;
+import com.shortkki.api.recipe.entity.MealType;
 import java.util.List;
 
 public record RecipeParseResultResponse(
@@ -7,11 +10,12 @@ public record RecipeParseResultResponse(
         String description,
         Integer servingSize,
         Integer cookingTime,
-        String cuisineType,
-        String mealType,
-        String difficulty,
+        CuisineType cuisineType,
+        MealType mealType,
+        Difficulty difficulty,
         List<IngredientDto> ingredients,
-        List<StepDto> steps
+        List<StepDto> steps,
+        List<String> tags
 ) {
 
     public static RecipeParseResultResponse from(RecipeParseResult parseResult) {
@@ -33,20 +37,24 @@ public record RecipeParseResultResponse(
                         .map(step -> new StepDto(
                                 step.stepNumber(),
                                 step.description()))
-                        .toList()
+                        .toList(),
+
+                parseResult.tags() != null ? parseResult.tags() : List.of()
         );
     }
 
     public record IngredientDto(
             String name,
-            String amount,
+            Double amount,
             String unit
     ) {
+
     }
 
     public record StepDto(
             int stepNumber,
             String description
     ) {
+
     }
 }
