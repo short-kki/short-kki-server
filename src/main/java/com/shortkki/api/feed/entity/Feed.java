@@ -4,7 +4,7 @@ import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class Feed extends BaseEntity {
     private FeedType feedType;
 
     // TODO : 좋아요 테이블을 만들어야 할까
-    @Positive(message = "좋아요는 0 미만의 숫자를 가질 수 없습니다.")
+    @PositiveOrZero(message = "좋아요는 0 미만의 숫자를 가질 수 없습니다.")
     private Long likes = 0L;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +45,7 @@ public class Feed extends BaseEntity {
         this.member = member;
         this.content = content;
         this.feedType = feedType;
+        this.likes = 0L;
     }
 
     public static Feed create(Group group, Member member, String content, FeedType feedType) {
@@ -58,5 +59,15 @@ public class Feed extends BaseEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        if (this.likes > 0) {
+            this.likes--;
+        }
     }
 }

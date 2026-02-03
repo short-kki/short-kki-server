@@ -30,7 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 아키텍처
 
 ### 패키지 구조
-- `com.shortkki.api.*` - 도메인 모듈 (auth, feed, file, group, ingredient, member, recipe, shopping_list)
+- `com.shortkki.api.*` - 도메인 모듈 (auth, feed, file, group, ingredient, member, recipe, recipeBook, shopping_list, source)
 - `com.shortkki.global.*` - 공통 관심사 (auth, config, entity, error, response)
 
 ### 도메인 모듈 패턴
@@ -52,7 +52,9 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - `Group` - 그룹, `GroupMember`를 통해 Member와 N:M 관계
 - `InviteLink` - 초대 링크, Group과 1:N 관계 (만료일 기반 유효성 검증)
 - `Recipe` - 레시피, `RecipeIngredient`를 통해 Ingredient와 N:M 관계
+- `RecipeBook` - 레시피북, Member당 기본 레시피북 존재, `RecipeBookEntry`로 Recipe와 N:M 관계
 - `ShoppingList` - 장볼거리, Group과 Ingredient에 속함
+- `SourceContent` - 외부 레시피 원본 정보 (YouTube 등), `SourceContentCreator`로 크리에이터 관리
 - `Feed` - 피드, Recipe를 참조
 
 ### 기반 클래스
@@ -75,6 +77,11 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - `FileUploadPort` 인터페이스와 `S3FileUploadAdapter` 구현체
 - `FileMetadata`가 업로드 상태와 공개 여부 추적
 
+### 레시피 파싱
+- Google Gemini AI를 사용한 외부 레시피 파싱
+- `SourceDataProvider` 인터페이스와 플랫폼별 구현체 (예: `YoutubeSourceDataProvider`)
+- `ExternalKeyExtractor` 레지스트리로 URL에서 외부 키 추출
+
 ## 테스트
 
 ### 테스트 기반 클래스
@@ -89,5 +96,5 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - Java 21, Spring Boot 3.5.9
 - 엔티티는 protected 기본 생성자와 `@Builder`, 정적 팩토리 메서드 (`create()`) 사용
 - QueryDSL 생성 소스는 `src/main/generated/`에 위치
-- Flyway 마이그레이션은 `src/main/resources/db/migration/`에 위치
+- 초기 데이터는 `src/main/resources/data.sql`에 위치
 - 설정 속성은 `@ConfigurationProperties`로 바인딩 (예: `FileUploadProperties`, `OAuth2Properties`)
