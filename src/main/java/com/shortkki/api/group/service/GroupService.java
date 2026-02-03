@@ -1,5 +1,6 @@
 package com.shortkki.api.group.service;
 
+import com.shortkki.api.feed.repository.FeedRepository;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
 import com.shortkki.api.group.dto.response.GroupListResponse;
@@ -15,6 +16,7 @@ import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.group.repository.InviteLinkRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.shopping_list.repository.ShoppingListRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
@@ -37,6 +39,8 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
     private final InviteLinkRepository inviteLinkRepository;
+    private final FeedRepository feedRepository;
+    private final ShoppingListRepository shoppingListRepository;
 
     @Transactional
     public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
@@ -70,6 +74,10 @@ public class GroupService {
         Group group = findGroupById(groupId);
         GroupMember groupMember = findGroupMember(memberId, group);
         validateGroupMemberAdmin(groupMember);
+        feedRepository.deleteAllByGroup(group);
+        shoppingListRepository.deleteAllByGroup(group);
+        inviteLinkRepository.deleteAllByGroup(group);
+        groupMemberRepository.deleteAllByGroup(group);
         groupRepository.delete(group);
     }
 
