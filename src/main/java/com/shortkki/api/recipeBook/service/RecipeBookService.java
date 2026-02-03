@@ -140,10 +140,10 @@ public class RecipeBookService {
 
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
 
-        Recipe recipe = recipeBookValidationService.findRecipeById(recipeId);
         long deleted = recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId,
                 recipeId);
         if (deleted > 0) {
+            Recipe recipe = recipeBookValidationService.findRecipeById(recipeId);
             recipe.decrementBookmarkCount();
         }
     }
