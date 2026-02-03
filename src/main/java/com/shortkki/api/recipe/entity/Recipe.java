@@ -41,11 +41,11 @@ public class Recipe extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_content_id")
+    @JoinColumn(name = "source_content_id", unique = true)
     private SourceContent sourceContent;
 
     @Column(nullable = false, length = 100)
@@ -85,8 +85,9 @@ public class Recipe extends BaseEntity {
     private FileMetadata mainImgFile;
 
     @Builder.Default
+    @ColumnDefault("true")
     @Column(nullable = false)
-    private Boolean isActive = false;
+    private Boolean isActive = true;
 
     public static Recipe createManual(
             Member member, String title, String description, Integer servingSize, Integer cookingTime,
@@ -103,7 +104,7 @@ public class Recipe extends BaseEntity {
                 .difficulty(difficulty)
                 .sourceType(RecipeSource.USER)
                 .bookmarkCount(0)
-                .isActive(false)
+                .isActive(true)
                 .build();
     }
 
@@ -127,7 +128,7 @@ public class Recipe extends BaseEntity {
                 .sourceType(RecipeSource.IMPORT)
                 .sourceContent(sourceContent)
                 .bookmarkCount(0)
-                .isActive(false)
+                .isActive(true)
                 .build();
     }
 
@@ -143,19 +144,52 @@ public class Recipe extends BaseEntity {
         this.difficulty = categoryInfo.difficulty();
     }
 
+    public void setMainImgFile(FileMetadata mainImgFile) {
+        this.mainImgFile = mainImgFile;
+    }
+
     public String getSourceUrl() {
-        return RecipeSource.IMPORT == sourceType ? sourceContent.getCanonicalUrl() : null;
+        return isImported() ? sourceContent.getCanonicalUrl() : null;
     }
 
     public SourcePlatform getSourcePlatform() {
-        return RecipeSource.IMPORT == sourceType ? sourceContent.getPlatform() : null;
+        return isImported() ? sourceContent.getPlatform() : null;
     }
 
     public SourceContentType getSourceContentType() {
-        return RecipeSource.IMPORT == sourceType ? sourceContent.getContentType() : null;
+        return isImported() ? sourceContent.getContentType() : null;
     }
 
-    public void setMainImgFile(FileMetadata mainImgFile) {
-        this.mainImgFile = mainImgFile;
+    public String getAuthorName() {
+        return isImported() ? this.getMember().getName() : null;
+    }
+
+    public String getAuthorProfileImgUrl() {
+        // TODO: 멤버 프로필 이미지 url 추가
+        return null;
+    }
+
+    public String getCreatorName() {
+        return isImported() ? this.getSourceContent().getSourceCreator().getDisplayName() : null;
+    }
+
+    public String getCreatorProfileImgUrl() {
+        return isImported() ? this.getSourceContent().getSourceCreator().getProfileImgUrl() : null;
+    }
+
+    public String getMainImgUrl() {
+        if (isImported()) {
+            return sourceContent.getThumbnailUrl();
+        }
+
+        if (mainImgFile != null) {
+            return mainImgFile.getUrl();
+        }
+
+        return null;
+    }
+
+    public boolean isImported() {
+        return RecipeSource.IMPORT.equals(this.sourceType);
     }
 }

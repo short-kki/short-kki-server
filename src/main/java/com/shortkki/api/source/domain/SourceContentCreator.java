@@ -11,9 +11,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 @Entity
 @Table(name = "source_content_creator",
@@ -21,8 +23,10 @@ import lombok.NoArgsConstructor;
                 name = "UK_SOURCE_CREATOR_PLATFORM_KEY",
                 columnNames = {"platform", "external_key"}
         ))
-@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class SourceContentCreator extends BaseEntity {
 
     @Id
@@ -40,24 +44,16 @@ public class SourceContentCreator extends BaseEntity {
     private String displayName;
 
     @Column(length = 500)
-    private String thumbnailUrl;
+    private String profileImgUrl;
 
-    @Builder
-    private SourceContentCreator(String externalKey, SourcePlatform platform,
-            String displayName, String thumbnailUrl) {
-        this.externalKey = externalKey;
-        this.platform = platform;
-        this.displayName = displayName;
-        this.thumbnailUrl = thumbnailUrl;
-    }
-
-    public static SourceContentCreator create(String externalKey, SourcePlatform platform,
-            String displayName, String thumbnailUrl) {
+    public static SourceContentCreator create(
+            String externalKey, SourcePlatform platform, String displayName, String profileImgUrl
+    ) {
         return SourceContentCreator.builder()
                 .externalKey(externalKey)
                 .platform(platform)
                 .displayName(displayName)
-                .thumbnailUrl(thumbnailUrl)
+                .profileImgUrl(profileImgUrl)
                 .build();
     }
 }
