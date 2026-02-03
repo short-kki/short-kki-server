@@ -30,13 +30,13 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
     }
 
     @Override
-    public boolean existsByMemberIdAndGroup(Long memberId, Group group) {
+    public boolean existsByMemberIdAndGroup(Long memberId, Long groupId) {
         Integer result = queryFactory
                 .selectOne()
                 .from(groupMember)
                 .where(
                         groupMember.member.id.eq(memberId),
-                        groupMember.group.eq(group)
+                        groupMember.group.id.eq(groupId)
                 )
                 .fetchFirst();
         return result != null;

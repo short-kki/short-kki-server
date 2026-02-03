@@ -23,11 +23,15 @@ public class RecipeQueryService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
+    public Recipe findRecipe(Long id) {
+        return recipeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
+    }
+
     // TODO: fetch join 등의 방법으로 한번에 가져오기
     // 근데 fetch join은 cartesian product로 메모리가 많이 찰 수 있음
     public RecipeResponse findById(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
+        Recipe recipe = findRecipe(id);
 
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(

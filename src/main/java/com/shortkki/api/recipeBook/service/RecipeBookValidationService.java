@@ -1,5 +1,6 @@
 package com.shortkki.api.recipeBook.service;
 
+import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
@@ -27,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RecipeBookValidationService {
 
+    private final GroupMemberValidationService groupMemberValidationService;
+
     private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
     private final MemberRepository memberRepository;
@@ -50,12 +53,6 @@ public class RecipeBookValidationService {
 
         if (!requestIdSet.equals(memberBookIds)) {
             throw new BadRequestException(ErrorCode.INVALID_REORDER_REQUEST);
-        }
-    }
-
-    public void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 
@@ -92,7 +89,7 @@ public class RecipeBookValidationService {
     public void validateRecipeBookAccess(RecipeBook recipeBook, Long memberId) {
         if (recipeBook.getGroupId() != null) {
             Group group = findGroupById(recipeBook.getGroupId());
-            validateGroupMember(memberId, group);
+            groupMemberValidationService.validateGroupMember(memberId, group.getId());
         } else {
             validateRecipeBookOwnership(recipeBook, memberId);
         }
