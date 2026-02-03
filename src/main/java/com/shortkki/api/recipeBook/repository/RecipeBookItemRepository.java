@@ -23,4 +23,15 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
             where i.recipeBook.id = :recipeBookId
             """)
     List<RecipeBookItem> findAllByRecipeBookIdWithRecipe(@Param("recipeBookId") Long recipeBookId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+                update RecipeBookItem rbi
+                   set rbi.recipeBook.id = :toBookId
+                 where rbi.recipeBook.id = :fromBookId
+                   and rbi.recipe.id = :recipeId
+            """)
+    long moveRecipe(@Param("fromBookId") Long fromBookId,
+            @Param("toBookId") Long toBookId,
+            @Param("recipeId") Long recipeId);
 }

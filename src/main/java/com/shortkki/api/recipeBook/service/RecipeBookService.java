@@ -14,6 +14,8 @@ import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.group.entity.Group;
+import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.NotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -196,4 +198,29 @@ public class RecipeBookService {
 
         recipeBookRepository.saveAll(recipeBookMap.values());
     }
+
+    @Transactional
+    public void moveRecipe(Long memberId, Long fromBookId, Long toBookId, Long recipeId) {
+        if (fromBookId.equals(toBookId)) {
+            return;
+        }
+        
+        RecipeBook fromBook = recipeBookValidationService.findRecipeBookById(fromBookId);
+        RecipeBook toBook = recipeBookValidationService.findRecipeBookById(toBookId);
+
+        recipeBookValidationService.validateRecipeBookAccess(fromBook, memberId);
+        recipeBookValidationService.validateRecipeBookAccess(toBook, memberId);
+
+        recipeBookValidationService.validateRecipeNotInBook(toBookId, recipeId);
+
+        recipeBookValidationService.validateRecipeInBook(fromBookId, recipeId);
+
+        long updated = recipeBookItemRepository.moveRecipe(fromBookId, toBookId, recipeId);
+
+        if (updated == 0) {
+            throw new NotFoundException(ErrorCode.RECIPE_NOT_IN_BOOK);
+        }
+    }
+
+
 }

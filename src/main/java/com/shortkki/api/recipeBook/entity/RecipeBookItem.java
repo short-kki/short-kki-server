@@ -20,10 +20,9 @@ import org.hibernate.annotations.Fetch;
 
 
 @Entity
-// TODO : 나중에 DB 유니크 제약조건으로 변경 (데이터 정합성을 위해서)
 @Table(name = "recipe_book_item",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"recipe_book_id", "recipe_id"})
+                @UniqueConstraint(columnNames = {"book_id", "recipe_id"})
         })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
