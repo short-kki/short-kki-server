@@ -37,7 +37,7 @@ public class RecipeIngredient extends BaseEntity {
 
     @Column(nullable = false, length = 50)
     private String name;
-    
+
     private Double amount;
 
     @Column(nullable = false, length = 50)
@@ -75,7 +75,7 @@ public class RecipeIngredient extends BaseEntity {
         if (unit == null || unit.isBlank()) {
             throw new InvalidStateException("단위는 필수입니다");
         }
-        if (amount != null || amount < 0) {
+        if (amount != null && amount < 0) {
             throw new InvalidStateException("수량은 0 이상이어야 합니다");
         }
     }

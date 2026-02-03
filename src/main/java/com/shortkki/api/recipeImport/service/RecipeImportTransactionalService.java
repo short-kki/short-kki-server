@@ -75,7 +75,7 @@ public class RecipeImportTransactionalService {
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         List<RecipeIngredient> entities = ingredients.stream()
                 .map(ing -> {
-                    
+
                     String rawName = ing.name() == null ? "" : ing.name().trim();
                     Ingredient ingredient = ingredientQueryService.findStandardByNameOrNull(
                             rawName);
@@ -84,7 +84,7 @@ public class RecipeImportTransactionalService {
                     Double amount = parseAmount(ing.amount());
                     String unit = (ing.unit() != null && !ing.unit().isBlank())
                             ? ing.unit().trim()
-                            : "";
+                            : "단위없음";
 
                     return RecipeIngredient.create(ingredient, recipe, name, amount, unit);
                 })
