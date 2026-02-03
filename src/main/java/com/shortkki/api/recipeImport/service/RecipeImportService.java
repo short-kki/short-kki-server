@@ -34,6 +34,8 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -62,8 +64,17 @@ public class RecipeImportService {
         SourceImportHistory history = createHistory(member, sourceContent, sourceUrl);
         RecipeImportPreview preview = loadPreview(sourceContent.getId());
 
-        recipeImportAsyncService.processImport(member.getId(), sourceContent.getId(),
-                history.getId(), sourceUrl);
+        Long resolvedMemberId = member.getId();
+        Long resolvedSourceContentId = sourceContent.getId();
+        Long resolvedHistoryId = history.getId();
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        recipeImportAsyncService.processImport(
+                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId, sourceUrl);
+                    }
+                });
 
         return RecipeImportResponse.accepted(history.getId(), sourceUrl, preview);
     }
