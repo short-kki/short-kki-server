@@ -1,4 +1,4 @@
-package com.shortkki.api.file.service.dto;
+package com.shortkki.api.file.application.dto;
 
 import java.time.Instant;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.shortkki.api.file.service;
+package com.shortkki.api.file.application.service;
 
 import com.shortkki.api.file.config.FileUploadProperties;
 import com.shortkki.api.file.entity.FileMetadata;
@@ -14,17 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional
 public class FileMetadataService {
 
     private final FileMetadataRepository fileMetadataRepository;
     private final FileUploadProperties fileProps;
-
-    public FileMetadata getById(long fileId) {
-        return fileMetadataRepository.findById(fileId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 파일 입니다."));
-    }
 
     public FileMetadata createFileMetadata(
             String filename, long size, UploaderType uploaderType, Long uploaderId,

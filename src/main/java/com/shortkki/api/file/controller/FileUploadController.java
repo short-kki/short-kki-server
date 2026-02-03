@@ -2,7 +2,7 @@ package com.shortkki.api.file.controller;
 
 import com.shortkki.api.file.controller.dto.FileUploadRequest;
 import com.shortkki.api.file.controller.dto.FileUploadResponse;
-import com.shortkki.api.file.service.FileUploadService;
+import com.shortkki.api.file.application.service.FileUploadService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;

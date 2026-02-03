@@ -38,6 +38,8 @@ aws:
       bucket: ${AWS_S3_BUCKET:shortkki-dev-storage}
 
 file:
+  cdn:
+    public-base-url: https://d36jasu56jneaq.cloudfront.net/
   upload:
     public-prefix: ${FILE_PUBLIC_PREFIX:public/uploads}
     private-prefix: ${FILE_PRIVATE_PREFIX:private/uploads}

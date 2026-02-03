@@ -1,4 +1,4 @@
-package com.shortkki.api.file.service;
+package com.shortkki.api.file.application.service;
 
 import com.shortkki.api.file.config.FileUploadProperties;
 import com.shortkki.api.file.controller.dto.FileUploadRequest;
@@ -7,8 +7,8 @@ import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
 import com.shortkki.api.file.entity.FileVisibility;
 import com.shortkki.api.file.entity.UploaderType;
-import com.shortkki.api.file.service.dto.UploadUrlDto;
-import com.shortkki.api.file.service.port.FileUploadPort;
+import com.shortkki.api.file.application.dto.UploadUrlDto;
+import com.shortkki.api.file.application.port.FileUploadPort;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.service.MemberQueryService;
 import com.shortkki.global.error.exception.AccessDeniedException;
@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FileUploadService {
 
     private final FileMetadataService fileMetadataService;
+    private final FileMetadataQueryService fileMetadataQueryService;
     private final MemberQueryService memberQueryService;
     private final FileUploadPort fileUploadPort;
 
@@ -53,7 +54,7 @@ public class FileUploadService {
     }
 
     public void markUploaded(long fileId, long memberId) {
-        FileMetadata file = fileMetadataService.getById(fileId);
+        FileMetadata file = fileMetadataQueryService.findById(fileId);
         Member member = memberQueryService.getById(memberId);
 
         if (!Objects.equals(file.getUploaderId(), member.getId())) {

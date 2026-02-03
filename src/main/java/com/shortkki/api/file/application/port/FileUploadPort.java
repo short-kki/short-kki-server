@@ -1,6 +1,6 @@
-package com.shortkki.api.file.service.port;
+package com.shortkki.api.file.application.port;
 
-import com.shortkki.api.file.service.dto.UploadUrlDto;
+import com.shortkki.api.file.application.dto.UploadUrlDto;
 
 public interface FileUploadPort {
 
