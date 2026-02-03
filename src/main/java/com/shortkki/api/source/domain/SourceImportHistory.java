@@ -48,6 +48,10 @@ public class SourceImportHistory extends BaseEntity {
 
     @Lob
     @Column(columnDefinition = "TEXT")
+    private String parsedContent;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String errorMessage;
 
     @Enumerated(EnumType.STRING)
@@ -57,13 +61,14 @@ public class SourceImportHistory extends BaseEntity {
     @Builder
     private SourceImportHistory(Long memberId, Long sourceContentId, Long recipeId,
             String requestedSourceUrl, SourcePlatform platform, String rawResponse,
-            String errorMessage, ImportStatus status) {
+            String parsedContent, String errorMessage, ImportStatus status) {
         this.memberId = memberId;
         this.sourceContentId = sourceContentId;
         this.recipeId = recipeId;
         this.requestedSourceUrl = requestedSourceUrl;
         this.platform = platform;
         this.rawResponse = rawResponse;
+        this.parsedContent = parsedContent;
         this.errorMessage = errorMessage;
         this.status = status;
     }
@@ -87,6 +92,12 @@ public class SourceImportHistory extends BaseEntity {
 
     public void updateRawResponse(String rawResponse) {
         this.rawResponse = rawResponse;
+    }
+
+    public void markAsParsed(String rawResponse, String parsedContent) {
+        this.rawResponse = rawResponse;
+        this.parsedContent = parsedContent;
+        this.status = ImportStatus.PARSED;
     }
 
     public void complete(String rawResponse) {

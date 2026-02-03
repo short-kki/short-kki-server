@@ -1,4 +1,4 @@
-package com.shortkki.api.recipeImport.service.parser;
+package com.shortkki.api.recipeImport.adapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.Client;
@@ -10,10 +10,11 @@ import com.google.genai.types.Part;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
+import com.shortkki.api.recipeImport.port.RecipeParserPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,8 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@Service
-public class AiRecipeParserService {
+@Component
+public class GeminiRecipeParserAdapter implements RecipeParserPort {
 
     private static final String PROMPT_TEMPLATE;
 
@@ -39,7 +40,7 @@ public class AiRecipeParserService {
     private final Client client;
     private final ObjectMapper objectMapper;
 
-    public AiRecipeParserService(
+    public GeminiRecipeParserAdapter(
             @Value("${GOOGLE_GENAI_API_KEY}") String apiKey,
             @Value("${gemini.model-name}") String modelName,
             ObjectMapper objectMapper) {
@@ -50,6 +51,7 @@ public class AiRecipeParserService {
         this.objectMapper = objectMapper;
     }
 
+    @Override
     public RecipeParseResult parseRecipeFromUrl(String youtubeUrl) {
         try {
             GenerateContentResponse response = client.models.generateContent(

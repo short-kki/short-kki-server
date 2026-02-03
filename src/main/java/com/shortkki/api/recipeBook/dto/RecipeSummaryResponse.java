@@ -1,6 +1,5 @@
 package com.shortkki.api.recipeBook.dto;
 
-
 import com.shortkki.api.recipe.entity.Recipe;
 
 public record RecipeSummaryResponse(
@@ -15,7 +14,7 @@ public record RecipeSummaryResponse(
     public static RecipeSummaryResponse from(Recipe recipe) {
         return new RecipeSummaryResponse(
                 recipe.getId(),
-                recipe.getTitle(),
+                recipe.getBasicInfo().getTitle(),
                 recipe.getBookmarkCount(),
                 null, // TODO: recipe.getThumbnailUrl()
                 null // TODO: recipe.getAuthor().getName()

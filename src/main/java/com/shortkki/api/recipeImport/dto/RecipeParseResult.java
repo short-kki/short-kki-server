@@ -21,7 +21,8 @@ public record RecipeParseResult(
 
     public record IngredientParseResult(
             String name,
-            String amount
+            String amount,
+            String unit
     ) {
 
     }
