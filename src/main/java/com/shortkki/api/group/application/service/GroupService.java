@@ -1,5 +1,6 @@
 package com.shortkki.api.group.application.service;
 
+
 import com.shortkki.api.feed.repository.FeedRepository;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
@@ -42,7 +43,7 @@ public class GroupService {
     private final InviteLinkRepository inviteLinkRepository;
     private final FeedRepository feedRepository;
     private final ShoppingListRepository shoppingListRepository;
-
+  
     @Transactional
     public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);

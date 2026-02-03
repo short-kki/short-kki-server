@@ -109,7 +109,7 @@ public class FeedService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
-
+  
     private void validateGroupMember(Long memberId, Long groupId) {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, groupId)) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
