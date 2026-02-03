@@ -19,9 +19,8 @@ public class TagService {
     private final RecipeTagRepository recipeTagRepository;
 
     /**
-     * 기존 tag가 있으면 재사용 (sourceType 변경 안 함).
-     * 없으면 주어진 source로 신규 생성.
-     * DataIntegrityViolationException은 동시성 경합 대비.
+     * 기존 tag가 있으면 재사용 (sourceType 변경 안 함). 없으면 주어진 source로 신규 생성. DataIntegrityViolationException은
+     * 동시성 경합 대비.
      */
     public Tag getOrCreateTag(String name, TagSource source) {
         try {
@@ -36,12 +35,7 @@ public class TagService {
             return tagRepository.findByName(name).orElseThrow(() -> e);
         }
     }
-
-    /**
-     * recipeId에 대한 tag 목록을 저장.
-     * null/blank 제거, trim, 중복 제거 후 저장.
-     * Tag 엔티티 자체는 shared이므로 삭제하지 않음.
-     */
+    
     public void saveRecipeTags(Long recipeId, List<String> tagNames, TagSource source) {
         List<String> normalized = normalize(tagNames);
         if (normalized.isEmpty()) {
