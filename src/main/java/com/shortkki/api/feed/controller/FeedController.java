@@ -39,4 +39,34 @@ public class FeedController {
         feedService.createFeed(loginMember.getId(), groupId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
+
+    @DeleteMapping("/{feedId}")
+    public ResponseEntity<BaseResponse<Void>> deleteFeed(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long feedId
+    ) {
+        feedService.deleteFeed(loginMember.getId(), groupId, feedId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    @PostMapping("/{feedId}/like")
+    public ResponseEntity<BaseResponse<Void>> likeFeed(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long feedId
+    ) {
+        feedService.likeFeed(loginMember.getId(), groupId, feedId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
+    @DeleteMapping("/{feedId}/like")
+    public ResponseEntity<BaseResponse<Void>> unlikeFeed(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long feedId
+    ) {
+        feedService.unlikeFeed(loginMember.getId(), groupId, feedId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 }

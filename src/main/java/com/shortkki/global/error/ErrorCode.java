@@ -64,6 +64,10 @@ public enum ErrorCode {
     SHOPPING_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOPPING_LIST_001", "장볼거리를 찾을 수 없습니다."),
     SHOPPING_LIST_NOT_IN_GROUP(HttpStatus.BAD_REQUEST, "SHOPPING_LIST_002", "해당 그룹의 장볼거리가 아닙니다."),
 
+    // Feed
+    FEED_ALREADY_LIKED(HttpStatus.CONFLICT, "FEED_001", "이미 좋아요한 피드입니다."),
+    FEED_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "FEED_002", "좋아요 기록을 찾을 수 없습니다."),
+
     // Source
     UNSUPPORTED_SOURCE_PLATFORM(HttpStatus.BAD_REQUEST, "SOURCE_001", "지원하지 않는 출처 플랫폼입니다."),
     SOURCE_URL_REQUIRED(HttpStatus.BAD_REQUEST, "SOURCE_002", "출처 URL은 필수입니다."),
@@ -85,4 +89,5 @@ public enum ErrorCode {
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
+
 }
