@@ -1,14 +1,14 @@
 package com.shortkki.api.group.controller;
 
-import com.shortkki.api.application.usecase.CreateGroupUseCase;
+import com.shortkki.api.group.application.usecase.CreateGroupUseCase;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
-import com.shortkki.api.group.dto.request.JoinGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
-import com.shortkki.api.group.dto.response.*;
 import com.shortkki.api.group.dto.response.GroupListResponse;
 import com.shortkki.api.group.dto.response.GroupMemberResponse;
+import com.shortkki.api.group.dto.response.GroupPreviewResponse;
 import com.shortkki.api.group.dto.response.GroupResponse;
-import com.shortkki.api.group.service.GroupService;
+import com.shortkki.api.group.dto.response.InviteCodeResponse;
+import com.shortkki.api.group.application.service.GroupService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
@@ -16,7 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -83,12 +90,12 @@ public class GroupController {
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
-    @PostMapping("/join")
+    @PostMapping("/invite/{inviteCode}/join")
     public ResponseEntity<BaseResponse<GroupResponse>> joinGroup(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody JoinGroupRequest request
+            @PathVariable String inviteCode
     ) {
-        GroupResponse response = groupService.joinGroup(loginMember.getId(), request);
+        GroupResponse response = groupService.joinGroup(loginMember.getId(), inviteCode);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
@@ -100,12 +107,22 @@ public class GroupController {
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
-    @GetMapping("/{groupId}/invite-code")
+    @GetMapping("/{groupId}/invites")
     public ResponseEntity<BaseResponse<InviteCodeResponse>> getInviteCode(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId
     ) {
-        InviteCodeResponse response = groupService.getInviteCode(loginMember.getId(), groupId);
+        InviteCodeResponse response = groupService.getOrGenerateInviteCode(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @DeleteMapping("/{groupId}/members/{memberId}")
+    public ResponseEntity<BaseResponse<Void>> kickMember(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long memberId
+    ) {
+        groupService.kickMember(loginMember.getId(), groupId, memberId);
+        return ResponseEntity.ok(BaseResponse.success());
     }
 }

@@ -1,12 +1,15 @@
 # CLAUDE.md
 
-이 파일은 Claude Code (claude.ai/code)가 이 저장소의 코드를 작업할 때 참고하는 가이드입니다.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 빌드 & 테스트 명령어
 
 ```bash
 # 빌드
 ./gradlew build
+
+# 컴파일만 확인 (빠른 검증)
+./gradlew compileJava
 
 # 테스트 실행
 ./gradlew test
@@ -43,6 +46,14 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - `*Repository` - JpaRepository 상속
 - `*RepositoryCustom` - QueryDSL 메서드용 인터페이스
 - `*RepositoryImpl` - QueryDSL 구현체
+
+### 주요 도메인 관계
+- `Member` - 사용자, OAuth 로그인으로 가입
+- `Group` - 그룹, `GroupMember`를 통해 Member와 N:M 관계
+- `InviteLink` - 초대 링크, Group과 1:N 관계 (만료일 기반 유효성 검증)
+- `Recipe` - 레시피, `RecipeIngredient`를 통해 Ingredient와 N:M 관계
+- `ShoppingList` - 장볼거리, Group과 Ingredient에 속함
+- `Feed` - 피드, Recipe를 참조
 
 ### 기반 클래스
 - `BaseEntity` - 모든 엔티티에 `createdAt`, `updatedAt` 감사 필드 제공

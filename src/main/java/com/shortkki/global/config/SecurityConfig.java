@@ -30,11 +30,13 @@ public class SecurityConfig {
             "/error",
             "/favicon.ico",
             "/actuator/health",
+            // auth
             "/api/auth/**",
+            // dev
+            "/api/dev/tokens",
+            // group
             "/api/v1/groups/invite/**",
-            // Swagger
-            "/api/dev/**",
-                 // Swagger
+            // swagger
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/**"

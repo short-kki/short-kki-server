@@ -1,6 +1,6 @@
 package com.shortkki.api.recipe.service;
 
-import com.shortkki.api.recipe.dto.RecipeResponse;
+import com.shortkki.api.recipe.dto.response.RecipeResponse;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
@@ -28,7 +28,9 @@ public class RecipeQueryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
     }
 
-    public RecipeResponse getRecipeDetail(Long id) {
+    // TODO: fetch join 등의 방법으로 한번에 가져오기
+    // 근데 fetch join은 cartesian product로 메모리가 많이 찰 수 있음
+    public RecipeResponse findById(Long id) {
         Recipe recipe = findRecipe(id);
 
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
@@ -40,7 +42,8 @@ public class RecipeQueryService {
 
     // TODO: N+1 문제 해결 (Fetch Join 고려)
     // TODO: 페이지네이션 추가
-    public List<RecipeResponse> getAll() {
+    // 1:N 관계에서 fetch join과 페이지네이션의 조합은 이슈가 있으므로, in 절을 사용해 조회 후 조립하면 좋을듯
+    public List<RecipeResponse> findAll() {
         List<Recipe> recipes = recipeRepository.findAll();
 
         return recipes.stream()

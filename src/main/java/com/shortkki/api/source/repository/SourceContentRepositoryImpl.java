@@ -27,4 +27,14 @@ public class SourceContentRepositoryImpl implements SourceContentRepositoryCusto
                 .fetchOne();
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<SourceContent> findByIdWithCreator(Long id) {
+        SourceContent result = queryFactory
+                .selectFrom(sourceContent)
+                .join(sourceContent.sourceCreator).fetchJoin()
+                .where(sourceContent.id.eq(id))
+                .fetchOne();
+        return Optional.ofNullable(result);
+    }
 }

@@ -12,19 +12,9 @@ import com.shortkki.api.recipeBook.repository.RecipeBookItemRepository;
 import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 
 import com.shortkki.api.member.entity.Member;
-import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.group.entity.Group;
-import com.shortkki.api.group.repository.GroupRepository;
-import com.shortkki.api.group.repository.GroupMemberRepository;
-import com.shortkki.api.recipe.repository.RecipeRepository;
-import com.shortkki.global.error.ErrorCode;
-import com.shortkki.global.error.exception.AccessDeniedException;
-import com.shortkki.global.error.exception.BadRequestException;
-import com.shortkki.global.error.exception.NotFoundException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,15 +27,12 @@ public class RecipeBookService {
 
     private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
-    private final MemberRepository memberRepository;
-    private final RecipeRepository recipeRepository;
-    private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final RecipeBookQueryService queryService;
+    private final RecipeBookValidationService validationService;
 
     @Transactional
     public RecipeBookResponse create(Long memberId, RecipeBookCreateRequest request) {
-        Member member = findMemberById(memberId);
+        Member member = validationService.findMemberById(memberId);
 
         List<RecipeBook> existingBooks = queryService.findAllByMemberId(memberId);
         int nextSortOrder = existingBooks.stream()
@@ -67,8 +54,8 @@ public class RecipeBookService {
     }
 
     public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId) {
-        Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        Group group = validationService.findGroupById(groupId);
+        validationService.validateGroupMember(memberId, group);
         List<RecipeBook> recipeBooks = queryService.findAllByGroupId(groupId);
         return recipeBooks.stream()
                 .map(RecipeBookResponse::from)
@@ -76,8 +63,8 @@ public class RecipeBookService {
     }
 
     public RecipeBookResponse findById(Long memberId, Long id) {
-        RecipeBook recipeBook = findRecipeBookById(id);
-        validateRecipeBookOwnership(recipeBook, memberId);
+        RecipeBook recipeBook = validationService.findRecipeBookById(id);
+        validationService.validateRecipeBookAccess(recipeBook, memberId);
 
         List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
         List<RecipeSummaryResponse> recipes = items.stream()
@@ -89,19 +76,19 @@ public class RecipeBookService {
 
     @Transactional
     public void updateTitle(Long memberId, Long id, RecipeBookUpdateRequest request) {
-        RecipeBook recipeBook = findRecipeBookById(id);
-        validateNotGroupRecipeBook(recipeBook);
-        validateRecipeBookOwnership(recipeBook, memberId);
+        RecipeBook recipeBook = validationService.findRecipeBookById(id);
+        validationService.validateNotGroupRecipeBook(recipeBook);
+        validationService.validateRecipeBookOwnership(recipeBook, memberId);
 
         recipeBook.updateTitle(request.title());
     }
 
     @Transactional
     public void delete(Long memberId, Long id) {
-        RecipeBook recipeBook = findRecipeBookById(id);
-        validateNotGroupRecipeBook(recipeBook);
-        validateRecipeBookOwnership(recipeBook, memberId);
-        validateNotDefaultRecipeBook(recipeBook);
+        RecipeBook recipeBook = validationService.findRecipeBookById(id);
+        validationService.validateNotGroupRecipeBook(recipeBook);
+        validationService.validateRecipeBookOwnership(recipeBook, memberId);
+        validationService.validateNotDefaultRecipeBook(recipeBook);
 
         recipeBookItemRepository.deleteAllByRecipeBookId(id);
         recipeBookRepository.delete(recipeBook);
@@ -109,11 +96,25 @@ public class RecipeBookService {
 
     @Transactional
     public void addRecipe(Long memberId, Long recipeBookId, Long recipeId) {
-        RecipeBook recipeBook = findRecipeBookById(recipeBookId);
-        validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
+        RecipeBook recipeBook = validationService.findRecipeBookById(recipeBookId);
+        validationService.validateRecipeBookAccess(recipeBook, memberId);
 
-        Recipe recipe = findRecipeById(recipeId);
-        validateRecipeNotInBook(recipeBookId, recipeId);
+        Recipe recipe = validationService.findRecipeById(recipeId);
+        validationService.validateRecipeNotInBook(recipeBookId, recipeId);
+
+        RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
+        recipeBookItemRepository.save(item);
+    }
+
+    @Transactional
+    public void addRecipeIfNotExists(Long memberId, Long recipeBookId, Long recipeId) {
+        RecipeBook recipeBook = validationService.findRecipeBookById(recipeBookId);
+        validationService.validateRecipeBookAccess(recipeBook, memberId);
+        Recipe recipe = validationService.findRecipeById(recipeId);
+
+        if (recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
+            return;
+        }
 
         RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
         recipeBookItemRepository.save(item);
@@ -121,19 +122,16 @@ public class RecipeBookService {
 
     @Transactional
     public void removeRecipe(Long memberId, Long recipeBookId, Long recipeId) {
-        RecipeBook recipeBook = findRecipeBookById(recipeBookId);
-        validateRecipeBookAccess(recipeBook, memberId); // 멤버 또는 그룹원 검증
-        validateRecipeInBook(recipeBookId, recipeId);
+        RecipeBook recipeBook = validationService.findRecipeBookById(recipeBookId);
+        validationService.validateRecipeBookAccess(recipeBook, memberId);
+        validationService.validateRecipeInBook(recipeBookId, recipeId);
 
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
     }
 
     @Transactional
     public void createDefaultForMember(Member member) {
-        boolean hasDefault = queryService.findAllByMemberId(member.getId()).stream()
-                .anyMatch(RecipeBook::getIsDefault);
-
-        if (hasDefault) {
+        if (queryService.findDefaultByMemberId(member.getId()).isPresent()) {
             return;
         }
 
@@ -143,13 +141,13 @@ public class RecipeBookService {
 
     @Transactional
     public void createDefaultForMember(Long memberId) {
-        Member member = findMemberById(memberId);
+        Member member = validationService.findMemberById(memberId);
         createDefaultForMember(member);
     }
 
     @Transactional
     public void createDefaultForGroup(Long groupId, String groupName) {
-        findGroupById(groupId);
+        validationService.findGroupById(groupId);
 
         boolean hasDefault = queryService.findAllByGroupId(groupId).stream()
                 .anyMatch(RecipeBook::getIsDefault);
@@ -167,7 +165,7 @@ public class RecipeBookService {
         List<Long> recipeBookIds = request.recipeBookIds();
         List<RecipeBook> memberRecipeBooks = queryService.findAllByMemberId(memberId);
 
-        validateReorderRequest(recipeBookIds, memberRecipeBooks);
+        validationService.validateReorderRequest(recipeBookIds, memberRecipeBooks);
 
         Map<Long, RecipeBook> recipeBookMap = memberRecipeBooks.stream()
                 .collect(Collectors.toMap(RecipeBook::getId, book -> book));
@@ -178,89 +176,5 @@ public class RecipeBookService {
         }
 
         recipeBookRepository.saveAll(recipeBookMap.values());
-    }
-
-    private void validateReorderRequest(List<Long> requestIds, List<RecipeBook> memberBooks) {
-        if (requestIds.size() != memberBooks.size()) {
-            throw new BadRequestException(ErrorCode.INVALID_REORDER_REQUEST);
-        }
-
-        Set<Long> requestIdSet = new HashSet<>(requestIds);
-        if (requestIdSet.size() != requestIds.size()) {
-            throw new BadRequestException(ErrorCode.INVALID_REORDER_REQUEST);
-        }
-
-        Set<Long> memberBookIds = memberBooks.stream()
-                .map(RecipeBook::getId)
-                .collect(Collectors.toSet());
-
-        if (!requestIdSet.equals(memberBookIds)) {
-            throw new BadRequestException(ErrorCode.INVALID_REORDER_REQUEST);
-        }
-    }
-
-    private void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group.getId())) {
-            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
-        }
-    }
-
-    private void validateRecipeBookOwnership(RecipeBook recipeBook, Long memberId) {
-        if (!recipeBook.isOwnedByMember(memberId)) {
-            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        }
-    }
-
-    private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
-    private RecipeBook findRecipeBookById(Long recipeBookId) {
-        return recipeBookRepository.findById(recipeBookId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
-    }
-
-    private Recipe findRecipeById(Long recipeId) {
-        return recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
-    }
-
-    private Group findGroupById(Long groupId) {
-        return groupRepository.findById(groupId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_FOUND));
-    }
-
-    private void validateNotDefaultRecipeBook(RecipeBook recipeBook) {
-        if (recipeBook.getIsDefault()) {
-            throw new BadRequestException(ErrorCode.CANNOT_DELETE_DEFAULT_RECIPE_BOOK);
-        }
-    }
-
-    private void validateRecipeNotInBook(Long recipeBookId, Long recipeId) {
-        if (recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
-            throw new BadRequestException(ErrorCode.RECIPE_ALREADY_IN_BOOK);
-        }
-    }
-
-    private void validateRecipeInBook(Long recipeBookId, Long recipeId) {
-        if (!recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
-            throw new NotFoundException(ErrorCode.RECIPE_NOT_IN_BOOK);
-        }
-    }
-
-    private void validateNotGroupRecipeBook(RecipeBook recipeBook) {
-        if (recipeBook.getGroupId() != null) {
-            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
-        }
-    }
-
-    private void validateRecipeBookAccess(RecipeBook recipeBook, Long memberId) {
-        if (recipeBook.getGroupId() != null) {
-            Group group = findGroupById(recipeBook.getGroupId());
-            validateGroupMember(memberId, group);
-        } else {
-            validateRecipeBookOwnership(recipeBook, memberId);
-        }
     }
 }

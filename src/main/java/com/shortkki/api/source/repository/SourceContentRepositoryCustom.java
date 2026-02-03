@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface SourceContentRepositoryCustom {
 
     Optional<SourceContent> findByPlatformAndExternalKey(SourcePlatform platform, String externalKey);
+
+    Optional<SourceContent> findByIdWithCreator(Long id);
 }
