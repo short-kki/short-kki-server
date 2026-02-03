@@ -2,7 +2,7 @@ package com.shortkki.api.group.application.service;
 
 import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.global.error.ErrorCode;
-import com.shortkki.global.error.exception.AccessDeniedException;
+import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ public class GroupValidationService {
 
     public void validateGroupExist(long groupId) {
         if (!groupRepository.existsById(groupId)) {
-            throw new AccessDeniedException(ErrorCode.GROUP_NOT_FOUND);
+            throw new NotFoundException(ErrorCode.GROUP_NOT_FOUND);
         }
     }
 }
