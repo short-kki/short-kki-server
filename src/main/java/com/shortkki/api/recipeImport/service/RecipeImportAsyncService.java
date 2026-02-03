@@ -54,6 +54,7 @@ public class RecipeImportAsyncService {
         try {
             history.updateStatus(ImportStatus.PARSING);
             sourceImportHistoryRepository.save(history);
+            
             log.info("AI 레시피 파싱 시작: {}", sourceUrl);
             parseResult = recipeParserPort.parseRecipeFromUrl(sourceUrl);
             aiRawResponse = parseResult.rawResponse();
@@ -67,7 +68,6 @@ public class RecipeImportAsyncService {
             return;
         }
 
-        // Store parsed result as JSON for user review and editing
         try {
             String parsedContentJson = objectMapper.writeValueAsString(parseResult);
             history.markAsParsed(aiRawResponse, parsedContentJson);
@@ -81,3 +81,5 @@ public class RecipeImportAsyncService {
         }
     }
 }
+
+// TODO : 예외 발생한 PARSING 상태된 기록 정리

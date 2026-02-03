@@ -44,6 +44,7 @@ public class RecipeImportService {
     private final RecipeBookQueryService recipeBookQueryService;
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
+    @Transactional
     public RecipeImportResponse importFromUrl(Long memberId, RecipeImportRequest request) {
         Member member = findMemberById(memberId);
         String sourceUrl = request.sourceUrl();
@@ -140,8 +141,8 @@ public class RecipeImportService {
                     "레시피 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
 
-        history.updateRecipeId(savedRecipe.getId());
-        history.complete(history.getRawResponse());
+        // history.updateRecipeId(savedRecipe.getId());
+        history.complete(savedRecipe.getId());
         sourceImportHistoryRepository.save(history);
 
         recipeBookQueryService.findDefaultByMemberId(memberId)

@@ -29,35 +29,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecipeImportTransactionalService {
 
     private final RecipeRepository recipeRepository;
-    private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
 
     private final IngredientQueryService ingredientQueryService;
 
-
-    @Transactional
+    
     public Recipe saveRecipeWithRelations(
             Member member,
             SourceContent sourceContent,
-            RecipeParseResult parseResult) {
+            RecipeParseResult parseResult
+    ) {
         Recipe recipe = saveRecipe(member, sourceContent, parseResult);
-        saveIngredients(recipe, parseResult.ingredients());
-        saveSteps(recipe, parseResult.steps());
+
+        saveIngredients(recipe,
+                parseResult.ingredients() == null ? List.of() : parseResult.ingredients());
+        saveSteps(recipe, parseResult.steps() == null ? List.of() : parseResult.steps());
+
         return recipe;
     }
 
     private Recipe saveRecipe(Member member, SourceContent sourceContent,
-            RecipeParseResult parseResult) {
+            RecipeParseResult parseResult
+    ) {
         RecipeBasicInfo basicInfo = new RecipeBasicInfo(
                 parseResult.title() != null ? parseResult.title() : sourceContent.getTitle(),
                 parseResult.description(),
                 parseResult.servingSize() != null ? parseResult.servingSize() : 1,
                 parseResult.cookingTime() != null ? parseResult.cookingTime() : 0);
 
-        CuisineType cuisineType = parseCuisineType(parseResult.cuisineType());
-        MealType mealType = parseMealType(parseResult.mealType());
-        Difficulty difficulty = parseDifficulty(parseResult.difficulty());
+        CuisineType cuisineType = parseEnum(parseResult.cuisineType(), CuisineType.class);
+        MealType mealType = parseEnum(parseResult.mealType(), MealType.class);
+        Difficulty difficulty = parseEnum(parseResult.difficulty(), Difficulty.class);
 
         RecipeCategoryInfo categoryInfo = new RecipeCategoryInfo(
                 cuisineType != null ? cuisineType : CuisineType.ETC,
@@ -69,6 +72,7 @@ public class RecipeImportTransactionalService {
                 basicInfo,
                 categoryInfo,
                 sourceContent);
+
         return recipeRepository.save(recipe);
     }
 
@@ -112,34 +116,12 @@ public class RecipeImportTransactionalService {
         }
     }
 
-    private CuisineType parseCuisineType(String value) {
-        if (value == null) {
+    private <T extends Enum<T>> T parseEnum(String value, Class<T> enumType) {
+        if (value == null || value.isBlank()) {
             return null;
         }
         try {
-            return CuisineType.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    private MealType parseMealType(String value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            return MealType.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    private Difficulty parseDifficulty(String value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            return Difficulty.valueOf(value);
+            return Enum.valueOf(enumType, value.trim());
         } catch (IllegalArgumentException e) {
             return null;
         }
