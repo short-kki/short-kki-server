@@ -26,7 +26,7 @@ public record RecipeImportPreview(
                 content.getTitle(),
                 content.getThumbnailUrl(),
                 creator.getDisplayName(),
-                creator.getThumbnailUrl()
+                creator.getProfileImgUrl()
         );
     }
 }
