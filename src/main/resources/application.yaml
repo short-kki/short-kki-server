@@ -61,3 +61,7 @@ youtube:
 
 gemini:
   model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
+
+publicdata:
+  ingredient:
+    enabled: false
