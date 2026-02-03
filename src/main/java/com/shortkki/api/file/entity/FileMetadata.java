@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,7 @@ public class FileMetadata extends BaseEntity {
     @Column(nullable = false)
     private long size;
 
+    @Lob
     @Column(length = 2000, nullable = false)
     private String baseUrl;
 

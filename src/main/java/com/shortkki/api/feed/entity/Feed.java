@@ -20,7 +20,8 @@ public class Feed extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
+    @Column(length = 2000)
     private String content;
 
     @Enumerated(EnumType.STRING)

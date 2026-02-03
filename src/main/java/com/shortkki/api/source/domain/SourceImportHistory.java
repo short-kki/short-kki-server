@@ -35,7 +35,7 @@ public class SourceImportHistory extends BaseEntity {
     private Long recipeId;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 2000)
     private String requestedSourceUrl;
 
     @Enumerated(EnumType.STRING)
@@ -43,11 +43,11 @@ public class SourceImportHistory extends BaseEntity {
     private SourcePlatform platform;
 
     @Lob
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(length = 2000)
     private String rawResponse;
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 2000)
     private String errorMessage;
 
     @Enumerated(EnumType.STRING)
