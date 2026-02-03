@@ -5,22 +5,30 @@ spring:
     import: classpath:application-secret.properties
 
   datasource:
-#    url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
     url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-#    driver-class-name: org.h2.Driver
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #    username: sa
     username: root
-    password:
+    password: root
+  #    url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
+  #    driver-class-name: org.h2.Driver
+  #    username: sa
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     open-in-view: false
     properties:
       hibernate:
+        show_sql: true
         format_sql: true
     defer-datasource-initialization: true
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+  h2:
+    console:
+      enabled: true
 
   sql:
     init:
@@ -28,10 +36,6 @@ spring:
 
   flyway:
     enabled: false
-
-  h2:
-    console:
-      enabled: true
 
 jwt:
   secret: local__dev_only__short-kki__jwt-secret__32chars_min
@@ -68,3 +72,9 @@ springdoc:
     operations-sorter: method
     try-it-out-enabled: true
     filter: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+#    org.hibernate.orm.jdbc.bind: trace
+#    org.elasticsearch.client: TRACE
