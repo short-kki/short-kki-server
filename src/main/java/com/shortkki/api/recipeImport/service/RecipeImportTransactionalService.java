@@ -9,7 +9,6 @@ import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
 import com.shortkki.api.recipe.entity.RecipeTag;
-import com.shortkki.api.recipe.entity.Tag;
 import com.shortkki.api.recipe.entity.TagSource;
 import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
 import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
@@ -17,8 +16,8 @@ import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipe.repository.RecipeStepRepository;
 import com.shortkki.api.recipe.repository.RecipeTagRepository;
-import com.shortkki.api.recipe.repository.TagRepository;
 import com.shortkki.api.recipe.service.IngredientQueryService;
+import com.shortkki.api.recipe.service.TagService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +39,7 @@ public class RecipeImportTransactionalService {
 
     private final IngredientQueryService ingredientQueryService;
 
-    private final TagRepository tagRepository;
+    private final TagService tagService;
     private final RecipeTagRepository recipeTagRepository;
 
     @Transactional
@@ -114,13 +112,12 @@ public class RecipeImportTransactionalService {
             return;
         }
 
-        Set<String> original = normalizeTagSet(originalParsedTags);
+        Set<String> original = (originalParsedTags != null) ? originalParsedTags : Set.of();
 
         List<RecipeTag> recipeTags = new ArrayList<>(normalized.size());
         for (String name : normalized) {
             TagSource source = original.contains(name) ? TagSource.SYSTEM : TagSource.USER;
-            Tag tag = getOrCreateTag(name, source);
-            recipeTags.add(RecipeTag.of(recipe.getId(), tag.getId()));
+            recipeTags.add(RecipeTag.of(recipe.getId(), tagService.getOrCreateTag(name, source).getId()));
         }
 
         recipeTagRepository.saveAll(recipeTags);
@@ -132,30 +129,6 @@ public class RecipeImportTransactionalService {
                 .map(String::trim)
                 .distinct()
                 .toList();
-    }
-
-    private Set<String> normalizeTagSet(Set<String> tags) {
-        if (tags == null || tags.isEmpty()) {
-            return Set.of();
-        }
-        return tags.stream()
-                .filter(t -> t != null && !t.isBlank())
-                .map(String::trim)
-                .collect(java.util.stream.Collectors.toSet());
-    }
-
-    private Tag getOrCreateTag(String name, TagSource source) {
-        try {
-            return tagRepository.findByName(name)
-                    .orElseGet(() -> {
-                        Tag newTag = (source == TagSource.SYSTEM)
-                                ? Tag.createSystemTag(name)
-                                : Tag.createUserTag(name);
-                        return tagRepository.save(newTag);
-                    });
-        } catch (DataIntegrityViolationException e) { // 동시성 경합 대비
-            return tagRepository.findByName(name).orElseThrow(() -> e);
-        }
     }
 
     private String normalizeText(String s) {
