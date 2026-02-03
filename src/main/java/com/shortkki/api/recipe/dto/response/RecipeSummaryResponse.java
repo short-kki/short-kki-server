@@ -1,14 +1,20 @@
 package com.shortkki.api.recipe.dto.response;
 
-import lombok.Builder;
+import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.source.domain.SourcePlatform;
 
-@Builder
 public record RecipeSummaryResponse(
         Long id,
         String title,
-        Integer bookmarkCount,
-        String thumbnailUrl,
-        String authorName
+        int bookmarkCount,
+        String sourceUrl,
+        String mainImgUrl,
+        RecipeSource recipeSource,
+        String authorName,
+        String authorProfileImgUrl,
+        SourcePlatform platform,
+        String creatorName,
+        String creatorProfileImgUrl
 ) {
 
 }

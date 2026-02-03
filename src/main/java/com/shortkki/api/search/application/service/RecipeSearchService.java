@@ -3,33 +3,56 @@ package com.shortkki.api.search.application.service;
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
+import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.search.application.port.RecipeSearchPort;
 import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import com.shortkki.api.search.controller.dto.RecipeSearchResponse;
+import com.shortkki.api.search.util.SearchWordTokenizer;
 import com.shortkki.global.error.exception.BadRequestException;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
 public class RecipeSearchService {
 
-    private final RecipeSearchPort recipeSearchPort;
+    private final RecipeSearchPort jpaSearchPort;
+    private final RecipeSearchPort esSearchPort;
+
+    public RecipeSearchService(
+            @Qualifier("jpaRecipeSearch") RecipeSearchPort jpaSearchPort,
+            @Qualifier("esRecipeSearch") RecipeSearchPort esSearchPort
+    ) {
+        this.jpaSearchPort = jpaSearchPort;
+        this.esSearchPort = esSearchPort;
+    }
 
     public RecipeSearchResponse search(
-            Pageable pageable, String searchWord,
+            Pageable pageable, String searchWord, RecipeSource recipeSource,
             Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     ) {
         validateSearchWord(searchWord);
-        Slice<RecipeSearchItem> result = recipeSearchPort.search(
-                pageable, searchWord, cuisineTypes, mealTypes, difficulties
+        Set<String> keywords = SearchWordTokenizer.tokenize(searchWord);
+        Slice<RecipeSearchItem> result = jpaSearchPort.search(
+                pageable, searchWord, keywords, keywords, recipeSource, cuisineTypes, mealTypes, difficulties
+        );
+        return RecipeSearchResponse.from(result);
+    }
+
+    public RecipeSearchResponse searchV2(
+            Pageable pageable, String searchWord, RecipeSource recipeSource,
+            Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
+    ) {
+        validateSearchWord(searchWord);
+        Set<String> keywords = SearchWordTokenizer.tokenize(searchWord);
+        Slice<RecipeSearchItem> result = esSearchPort.search(
+                pageable, searchWord, keywords, keywords, recipeSource, cuisineTypes, mealTypes, difficulties
         );
         return RecipeSearchResponse.from(result);
     }

@@ -3,6 +3,7 @@ package com.shortkki.api.search.controller;
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
+import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.search.application.service.RecipeSearchService;
 import com.shortkki.api.search.controller.dto.RecipeSearchResponse;
 import com.shortkki.global.response.BaseResponse;
@@ -12,27 +13,41 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/recipes/search")
 public class RecipeSearchController {
 
     private final RecipeSearchService recipeSearchService;
 
-    @GetMapping
+    @GetMapping("/api/v1/recipes/search")
     public ResponseEntity<BaseResponse<RecipeSearchResponse>> search(
             @RequestParam String searchWord,
             @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(required = false) RecipeSource recipeSource,
             @RequestParam(required = false) Set<CuisineType> cuisineTypes,
             @RequestParam(required = false) Set<MealType> mealTypes,
             @RequestParam(required = false) Set<Difficulty> difficulties
     ) {
         RecipeSearchResponse response = recipeSearchService.search(
-                pageable, searchWord, cuisineTypes, mealTypes, difficulties
+                pageable, searchWord, recipeSource, cuisineTypes, mealTypes, difficulties
+        );
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/api/v2/recipes/search")
+    public ResponseEntity<BaseResponse<RecipeSearchResponse>> searchV2(
+            @RequestParam String searchWord,
+            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(required = false) RecipeSource recipeSource,
+            @RequestParam(required = false) Set<CuisineType> cuisineTypes,
+            @RequestParam(required = false) Set<MealType> mealTypes,
+            @RequestParam(required = false) Set<Difficulty> difficulties
+    ) {
+        RecipeSearchResponse response = recipeSearchService.searchV2(
+                pageable, searchWord, recipeSource, cuisineTypes, mealTypes, difficulties
         );
         return ResponseEntity.ok(BaseResponse.success(response));
     }

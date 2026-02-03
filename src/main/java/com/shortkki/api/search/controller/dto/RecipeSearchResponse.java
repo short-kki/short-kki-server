@@ -15,11 +15,21 @@ public record RecipeSearchResponse(
 
     public static RecipeSearchResponse from(Slice<RecipeSearchItem> slice) {
         List<RecipeSummaryResponse> result = slice.getContent().stream()
-                .map(item -> new RecipeSummaryResponse(
-                        item.id(), item.title(), item.bookmarkCount(),
-                        item.thumbnailUrl(), item.authorName()
-                ))
-                .toList();
+                .map(item ->
+                        new RecipeSummaryResponse(
+                                item.id(),
+                                item.title(),
+                                item.bookmarkCount(),
+                                item.sourceUrl(),
+                                item.mainImgUrl(),
+                                item.recipeSource(),
+                                item.authorName(),
+                                item.authorProfileImgUrl(),
+                                item.platform(),
+                                item.creatorName(),
+                                item.creatorProfileImgUrl()
+                        )
+                ).toList();
 
         return RecipeSearchResponse.builder()
                 .searchResult(result)
