@@ -1,7 +1,8 @@
 package com.shortkki.api.recipe.dto.response;
 
-import com.shortkki.api.recipe.entity.Recipe;
+import lombok.Builder;
 
+@Builder
 public record RecipeSummaryResponse(
         Long id,
         String title,
@@ -10,13 +11,4 @@ public record RecipeSummaryResponse(
         String authorName
 ) {
 
-    public static RecipeSummaryResponse from(Recipe recipe) {
-        return new RecipeSummaryResponse(
-                recipe.getId(),
-                recipe.getTitle(),
-                recipe.getBookmarkCount(),
-                null,
-                null
-        );
-    }
 }

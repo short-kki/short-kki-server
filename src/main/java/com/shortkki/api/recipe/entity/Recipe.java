@@ -1,5 +1,6 @@
 package com.shortkki.api.recipe.entity;
 
+import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
@@ -18,10 +19,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,9 +43,6 @@ public class Recipe extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recipe")
-    private List<RecipeIngredient> ingredients;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_content_id")
@@ -84,8 +80,9 @@ public class Recipe extends BaseEntity {
     @ColumnDefault("0")
     private Integer bookmarkCount = 0;
 
-    @Column(name = "main_img_file_id")
-    private Long mainImgFileId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_img_file_id")
+    private FileMetadata mainImgFile;
 
     @Builder.Default
     @Column(nullable = false)
@@ -158,7 +155,7 @@ public class Recipe extends BaseEntity {
         return RecipeSource.IMPORT == sourceType ? sourceContent.getContentType() : null;
     }
 
-    public void setMainImgFileId(Long imageFileId) {
-        this.mainImgFileId = imageFileId;
+    public void setMainImgFile(FileMetadata mainImgFile) {
+        this.mainImgFile = mainImgFile;
     }
 }

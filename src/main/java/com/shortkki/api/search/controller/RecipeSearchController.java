@@ -1,10 +1,10 @@
 package com.shortkki.api.search.controller;
 
-import com.shortkki.api.recipe.dto.response.RecipeSearchResponse;
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
-import com.shortkki.api.search.service.RecipeSearchService;
+import com.shortkki.api.search.application.service.RecipeSearchService;
+import com.shortkki.api.search.controller.dto.RecipeSearchResponse;
 import com.shortkki.global.response.BaseResponse;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;

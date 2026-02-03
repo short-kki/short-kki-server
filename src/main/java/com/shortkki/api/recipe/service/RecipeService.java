@@ -1,8 +1,8 @@
 package com.shortkki.api.recipe.service;
 
+import com.shortkki.api.file.application.service.FileMetadataQueryService;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
-import com.shortkki.api.file.service.FileMetadataService;
 import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
@@ -15,10 +15,12 @@ import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RecipeService {
 
-    private final RecipeRepository recipeRepository;
-    private final RecipeStepService recipeStepService;
-    private final RecipeIngredientService recipeIngredientService;
-    private final MemberRepository memberRepository;
     private final RecipeBookService recipeBookService;
     private final RecipeBookQueryService recipeBookQueryService;
-    private final FileMetadataService fileMetadataService;
+    private final RecipeStepService recipeStepService;
+    private final RecipeIngredientService recipeIngredientService;
+    private final FileMetadataQueryService fileMetadataQueryService;
+
+    private final DomainEventPublisher domainEventPublisher;
+
+    private final RecipeRepository recipeRepository;
+    private final MemberRepository memberRepository;
 
     public void create(Long memberId, RecipeCreateRequest request) {
         validateRecipeRequest(request);
@@ -51,6 +56,8 @@ public class RecipeService {
         recipeIngredientService.createIngredients(saved, request.ingredients());
 
         addToDefaultRecipeBook(memberId, saved.getId());
+        
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(saved.getId()));
     }
 
     public void update(Long memberId, Long id, RecipeUpdateRequest request) {
@@ -63,7 +70,6 @@ public class RecipeService {
         Member member = findMemberById(memberId);
 
         updateRecipeImage(recipe, member, request.basicInfo().imageFileId());
-
         recipe.update(request.basicInfo(), request.categoryInfo());
 
         recipeStepService.deleteByRecipeId(id);
@@ -71,6 +77,8 @@ public class RecipeService {
 
         recipeStepService.createSteps(recipe, request.steps());
         recipeIngredientService.createIngredients(recipe, request.ingredients());
+        
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
     }
 
     public void delete(Long id) {
@@ -82,6 +90,8 @@ public class RecipeService {
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);
         recipeRepository.delete(recipe);
+        
+        // TODO: 레시피 서치 인덱스 삭제
     }
 
     private Recipe createRecipe(
@@ -99,10 +109,10 @@ public class RecipeService {
         Recipe saved = recipeRepository.save(created);
 
         if (basicInfo.imageFileId() != null) {
-            FileMetadata file = fileMetadataService.getById(basicInfo.imageFileId());
+            FileMetadata file = fileMetadataQueryService.findById(basicInfo.imageFileId());
             validateFileOwnership(file, member);
             file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
-            saved.setMainImgFileId(basicInfo.imageFileId());
+            saved.setMainImgFile(file);
         }
 
         // TODO: 태그 저장 로직 추가
@@ -160,16 +170,18 @@ public class RecipeService {
     }
 
     private void updateRecipeImage(Recipe recipe, Member member, Long newImageFileId) {
-        if (Objects.equals(recipe.getMainImgFileId(), newImageFileId)) {
+        if (Objects.equals(recipe.getMainImgFile().getId(), newImageFileId)) {
             return;
         }
 
-        if (newImageFileId != null) {
-            FileMetadata file = fileMetadataService.getById(newImageFileId);
-            validateFileOwnership(file, member);
-            file.bindTarget(FileTargetType.RECIPE_IMG, recipe.getId());
+        if (newImageFileId == null) {
+            return;
         }
-
-        recipe.setMainImgFileId(newImageFileId);
+        
+        FileMetadata file = fileMetadataQueryService.findById(newImageFileId);
+        validateFileOwnership(file, member);
+        file.bindTarget(FileTargetType.RECIPE_IMG, recipe.getId());
+        
+        recipe.setMainImgFile(file);
     }
 }

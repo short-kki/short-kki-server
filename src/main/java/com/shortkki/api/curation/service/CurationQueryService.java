@@ -6,7 +6,8 @@ import com.shortkki.api.curation.entity.DayType;
 import com.shortkki.api.curation.entity.TimeType;
 import com.shortkki.api.curation.repository.CurationRepository;
 import com.shortkki.api.recipe.dto.response.RecipeSummaryResponse;
-import com.shortkki.api.search.repository.RecipeSearchRepository;
+import com.shortkki.api.search.application.port.RecipeSearchPort;
+import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class CurationQueryService {
     private static final int RECIPES_PER_CURATION = 10;
 
     private final CurationRepository curationRepository;
-    private final RecipeSearchRepository recipeSearchRepository;
+    private final RecipeSearchPort recipeSearchPort;
 
     public List<CurationRecommendResponse> getRecommendedCurations(LocalDateTime now) {
         List<Curation> curations = getCurrentCurations(now, CURATION_COUNT);
@@ -49,16 +50,16 @@ public class CurationQueryService {
     }
 
     private CurationRecommendResponse toCurationRecommendResponse(Curation curation) {
-        Set<String> searchKeywords = mergeKeywords(curation);
+        String searchWord = mergeKeywordsToSearchWord(curation);
 
-        List<RecipeSummaryResponse> recipes = recipeSearchRepository.search(
+        List<RecipeSummaryResponse> recipes = recipeSearchPort.search(
                         PageRequest.of(0, RECIPES_PER_CURATION),
-                        searchKeywords,
+                        searchWord,
                         curation.getCuisineTypes(),
                         curation.getMealTypes(),
                         curation.getDifficulties()
                 ).stream()
-                .map(RecipeSummaryResponse::from)
+                .map(this::toRecipeSummaryResponse)
                 .toList();
 
         return CurationRecommendResponse.builder()
@@ -69,12 +70,22 @@ public class CurationQueryService {
                 .build();
     }
 
-    private Set<String> mergeKeywords(Curation curation) {
+    private RecipeSummaryResponse toRecipeSummaryResponse(RecipeSearchItem item) {
+        return RecipeSummaryResponse.builder()
+                .id(item.id())
+                .title(item.title())
+                .bookmarkCount(item.bookmarkCount())
+                .thumbnailUrl(item.thumbnailUrl())
+                .authorName(item.authorName())
+                .build();
+    }
+
+    private String mergeKeywordsToSearchWord(Curation curation) {
         Set<String> merged = new HashSet<>();
         addAll(merged, curation.getKeywords());
         addAll(merged, curation.getTags());
         addAll(merged, curation.getIngredients());
-        return merged;
+        return String.join(" ", merged);
     }
 
     private void addAll(Set<String> target, Set<String> source) {

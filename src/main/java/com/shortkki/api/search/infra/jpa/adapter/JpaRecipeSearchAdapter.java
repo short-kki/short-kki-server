@@ -1,10 +1,11 @@
-package com.shortkki.api.search.repository;
+package com.shortkki.api.search.infra.jpa.adapter;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.shortkki.api.file.application.service.FileUrlResolver;
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
@@ -13,6 +14,9 @@ import com.shortkki.api.recipe.entity.QRecipeIngredient;
 import com.shortkki.api.recipe.entity.QRecipeTag;
 import com.shortkki.api.recipe.entity.QTag;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.search.application.port.RecipeSearchPort;
+import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
+import com.shortkki.api.search.util.SearchWordTokenizer;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +27,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
+public class JpaRecipeSearchAdapter implements RecipeSearchPort {
 
     private final JPAQueryFactory query;
 
@@ -32,17 +36,20 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
     private final QRecipeTag recipeTag = QRecipeTag.recipeTag;
     private final QTag tag = QTag.tag;
 
+    private final FileUrlResolver fileUrlResolver;
+
     @Override
-    public Slice<Recipe> search(
-            Pageable pageable, Set<String> keywords,
+    public Slice<RecipeSearchItem> search(
+            Pageable pageable, String searchWord,
             Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     ) {
+        Set<String> keywords = SearchWordTokenizer.tokenize(searchWord);
         int pageSize = pageable.getPageSize();
 
         List<Recipe> results = query
                 .selectDistinct(recipe)
                 .from(recipe)
-                .leftJoin(recipe.ingredients, recipeIngredient)
+                .leftJoin(recipeIngredient).on(recipeIngredient.recipe.eq(recipe))
                 .leftJoin(recipeTag).on(recipeTag.recipeId.eq(recipe.id))
                 .leftJoin(tag).on(tag.id.eq(recipeTag.tagId))
                 .where(where(keywords, cuisineTypes, mealTypes, difficulties))
@@ -56,7 +63,21 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
             results = results.subList(0, pageSize);
         }
 
-        return new SliceImpl<>(results, pageable, hasNext);
+        List<RecipeSearchItem> items = results.stream()
+                .map(this::toSearchItem)
+                .toList();
+
+        return new SliceImpl<>(items, pageable, hasNext);
+    }
+
+    private RecipeSearchItem toSearchItem(Recipe recipe) {
+        return new RecipeSearchItem(
+                recipe.getId(),
+                recipe.getTitle(),
+                recipe.getBookmarkCount(),
+                fileUrlResolver.getUrl(recipe.getMainImgFile()),
+                recipe.getMember().getName()
+        );
     }
 
     private BooleanBuilder where(
@@ -65,7 +86,7 @@ public class RecipeSearchRepositoryImpl implements RecipeSearchRepository {
             Set<MealType> mealTypes,
             Set<Difficulty> difficulties
     ) {
-        BooleanBuilder where = new BooleanBuilder(recipe.isDeleted.isFalse());
+        BooleanBuilder where = new BooleanBuilder(recipe.isActive.isFalse());
 
         if (!isEmpty(cuisineTypes)) {
             where.and(recipe.cuisineType.in(cuisineTypes));
