@@ -10,6 +10,7 @@ import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
 import com.shortkki.api.recipe.entity.RecipeTag;
 import com.shortkki.api.recipe.entity.Tag;
+import com.shortkki.api.recipe.entity.TagSource;
 import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
 import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
@@ -24,6 +25,7 @@ import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
 import com.shortkki.api.source.domain.SourceContent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -43,13 +45,17 @@ public class RecipeImportTransactionalService {
     private final RecipeTagRepository recipeTagRepository;
 
     @Transactional
-    public Recipe saveRecipeWithRelations(Member member, SourceContent sourceContent,
-            RecipeParseResult parseResult) {
+    public Recipe saveRecipeWithRelations(
+            Member member,
+            SourceContent sourceContent,
+            RecipeParseResult parseResult,
+            Set<String> originalParsedTags
+    ) {
         Recipe recipe = saveRecipe(member, sourceContent, parseResult);
 
         saveIngredients(recipe, safeList(parseResult.ingredients()));
         saveSteps(recipe, safeList(parseResult.steps()));
-        saveTags(recipe, safeList(parseResult.tags()));
+        saveTags(recipe, safeList(parseResult.tags()), originalParsedTags);
 
         return recipe;
     }
@@ -76,6 +82,7 @@ public class RecipeImportTransactionalService {
 
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         List<RecipeIngredient> entities = ingredients.stream()
+                .filter(ing -> ing.name() != null && !ing.name().isBlank()) // ✅ 빈 이름 필터
                 .map(ing -> toRecipeIngredient(recipe, ing))
                 .toList();
 
@@ -101,15 +108,18 @@ public class RecipeImportTransactionalService {
         }
     }
 
-    private void saveTags(Recipe recipe, List<String> tags) {
+    private void saveTags(Recipe recipe, List<String> tags, Set<String> originalParsedTags) {
         List<String> normalized = normalizeTags(tags);
         if (normalized.isEmpty()) {
             return;
         }
 
+        Set<String> original = normalizeTagSet(originalParsedTags);
+
         List<RecipeTag> recipeTags = new ArrayList<>(normalized.size());
         for (String name : normalized) {
-            Tag tag = getOrCreateSystemTag(name);
+            TagSource source = original.contains(name) ? TagSource.SYSTEM : TagSource.USER;
+            Tag tag = getOrCreateTag(name, source);
             recipeTags.add(RecipeTag.of(recipe.getId(), tag.getId()));
         }
 
@@ -124,11 +134,26 @@ public class RecipeImportTransactionalService {
                 .toList();
     }
 
-    private Tag getOrCreateSystemTag(String name) {
+    private Set<String> normalizeTagSet(Set<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return Set.of();
+        }
+        return tags.stream()
+                .filter(t -> t != null && !t.isBlank())
+                .map(String::trim)
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private Tag getOrCreateTag(String name, TagSource source) {
         try {
             return tagRepository.findByName(name)
-                    .orElseGet(() -> tagRepository.save(Tag.createSystemTag(name)));
-        } catch (DataIntegrityViolationException e) {   // 동시성 해결 위해
+                    .orElseGet(() -> {
+                        Tag newTag = (source == TagSource.SYSTEM)
+                                ? Tag.createSystemTag(name)
+                                : Tag.createUserTag(name);
+                        return tagRepository.save(newTag);
+                    });
+        } catch (DataIntegrityViolationException e) { // 동시성 경합 대비
             return tagRepository.findByName(name).orElseThrow(() -> e);
         }
     }

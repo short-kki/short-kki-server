@@ -55,8 +55,8 @@ public class Recipe extends BaseEntity {
     private RecipeCategoryInfo categoryInfo;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
-    private Integer bookmarkCount;
+    @Builder.Default
+    private Integer bookmarkCount = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
@@ -66,8 +66,8 @@ public class Recipe extends BaseEntity {
     private Long imageFileId;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
 
     @Builder
     private Recipe(
