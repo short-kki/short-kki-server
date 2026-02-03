@@ -14,6 +14,7 @@ import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipe.repository.RecipeStepRepository;
+import com.shortkki.api.recipe.service.IngredientQueryService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
@@ -32,6 +33,9 @@ public class RecipeImportTransactionalService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
 
+    private final IngredientQueryService ingredientQueryService;
+
+
     @Transactional
     public Recipe saveRecipeWithRelations(
             Member member,
@@ -43,7 +47,8 @@ public class RecipeImportTransactionalService {
         return recipe;
     }
 
-    private Recipe saveRecipe(Member member, SourceContent sourceContent, RecipeParseResult parseResult) {
+    private Recipe saveRecipe(Member member, SourceContent sourceContent,
+            RecipeParseResult parseResult) {
         RecipeBasicInfo basicInfo = new RecipeBasicInfo(
                 parseResult.title() != null ? parseResult.title() : sourceContent.getTitle(),
                 parseResult.description(),
@@ -68,16 +73,24 @@ public class RecipeImportTransactionalService {
     }
 
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
-        for (IngredientParseResult ing : ingredients) {
-            Ingredient ingredient = ingredientRepository.findByName(ing.name())
-                    .orElseGet(() -> ingredientRepository.save(
-                            Ingredient.create(ing.name())));
-            Double amount = parseAmount(ing.amount());
-            String unit = ing.unit() != null ? ing.unit() : "";
-            RecipeIngredient recipeIngredient = RecipeIngredient.create(
-                    ingredient, recipe, amount, unit);
-            recipeIngredientRepository.save(recipeIngredient);
-        }
+        List<RecipeIngredient> entities = ingredients.stream()
+                .map(ing -> {
+
+                    String rawName = ing.name() == null ? "" : ing.name().trim();
+                    Ingredient ingredient = ingredientQueryService.findStandardByNameOrNull(
+                            rawName);
+                    String name = ingredient != null ? ingredient.getName() : rawName;
+
+                    Double amount = parseAmount(ing.amount());
+                    String unit = (ing.unit() != null && !ing.unit().isBlank())
+                            ? ing.unit().trim()
+                            : "단위없음";
+
+                    return RecipeIngredient.create(ingredient, recipe, name, amount, unit);
+                })
+                .toList();
+
+        recipeIngredientRepository.saveAll(entities);
     }
 
     private void saveSteps(Recipe recipe, List<StepParseResult> steps) {
