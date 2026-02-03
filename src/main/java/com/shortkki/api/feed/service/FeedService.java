@@ -6,9 +6,10 @@ import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
 import com.shortkki.api.feed.repository.FeedLikeRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
+import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
-import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.group.repository.GroupMemberRepository;
+import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.global.error.ErrorCode;
@@ -27,15 +28,16 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class FeedService {
 
+    private final GroupMemberValidationService groupMemberValidationService;
+    private final GroupMemberRepository groupMemberRepository;
     private final FeedRepository feedRepository;
     private final FeedLikeRepository feedLikeRepository;
     private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final MemberRepository memberRepository;
 
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
         Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feeds);
         return feeds.stream()
@@ -47,7 +49,7 @@ public class FeedService {
     public void createFeed(Long memberId, Long groupId, CreateFeedRequest request) {
         Member member = findMemberById(memberId);
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         Feed feed = Feed.create(group, member, request.content(), request.feedType());
         feedRepository.save(feed);
     }
@@ -55,7 +57,7 @@ public class FeedService {
     @Transactional
     public void deleteFeed(Long memberId, Long groupId, Long feedId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        validateGroupMember(memberId, groupId);
         Feed feed = findFeedById(feedId);
         validateFeedOwner(memberId, feed);
         validateFeedBelongsToGroup(feed, group);
@@ -66,7 +68,7 @@ public class FeedService {
     @Transactional
     public void likeFeed(Long memberId, Long groupId, Long feedId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        validateGroupMember(memberId, groupId);
         Feed feed = findFeedById(feedId);
         validateFeedBelongsToGroup(feed, group);
         Member member = findMemberById(memberId);
@@ -79,7 +81,7 @@ public class FeedService {
     @Transactional
     public void unlikeFeed(Long memberId, Long groupId, Long feedId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        validateGroupMember(memberId, groupId);
         Feed feed = findFeedById(feedId);
         validateFeedBelongsToGroup(feed, group);
         Member member = findMemberById(memberId);
@@ -108,8 +110,8 @@ public class FeedService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
+    private void validateGroupMember(Long memberId, Long groupId) {
+        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, groupId)) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }

@@ -20,7 +20,6 @@ import com.shortkki.api.shopping_list.repository.ShoppingListRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
-import com.shortkki.global.error.exception.ConflictException;
 import com.shortkki.global.error.exception.InternalServerException;
 import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.utils.CodeGenerator;
@@ -34,6 +33,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GroupService {
+
+    private final GroupMemberValidationService groupMemberValidationService;
 
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
@@ -83,7 +84,7 @@ public class GroupService {
 
     public GroupResponse getGroup(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
     }
@@ -97,7 +98,7 @@ public class GroupService {
 
     public List<GroupMemberResponse> getGroupMembers(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         List<GroupMember> groupMembers = groupMemberRepository.findAllByGroupWithMember(group);
         return groupMembers.stream()
                 .map(GroupMemberResponse::from)
@@ -107,12 +108,16 @@ public class GroupService {
     @Transactional
     public GroupResponse joinGroup(Long memberId, String inviteCode) {
         Member member = findMemberById(memberId);
+
         InviteLink inviteLink = findInviteLinkByCode(inviteCode);
         validateInviteLinkNotExpired(inviteLink);
+
         Group group = inviteLink.getGroup();
-        validateNotAlreadyJoined(memberId, group);
+        groupMemberValidationService.validateNotAlreadyJoined(memberId, group.getId());
+
         GroupMember groupMember = GroupMember.createMember(member, group);
         groupMemberRepository.save(groupMember);
+
         long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
     }
@@ -128,7 +133,7 @@ public class GroupService {
     @Transactional
     public InviteCodeResponse getOrGenerateInviteCode(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         InviteLink inviteLink = getOrCreateValidInviteLink(group);
         return InviteCodeResponse.from(inviteLink);
     }
@@ -166,12 +171,6 @@ public class GroupService {
         }
     }
 
-    private void validateNotAlreadyJoined(Long memberId, Group group) {
-        if (groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new ConflictException(ErrorCode.GROUP_ALREADY_JOINED);
-        }
-    }
-
     private void validateNotKickingSelf(Long requesterId, Long targetMemberId) {
         if (requesterId.equals(targetMemberId)) {
             throw new BadRequestException(ErrorCode.GROUP_CANNOT_KICK_SELF);
@@ -201,12 +200,6 @@ public class GroupService {
     private void validateGroupMemberAdmin(GroupMember groupMember) {
         if (!groupMember.checkIsAdmin()) {
             throw new AccessDeniedException(ErrorCode.GROUP_ADMIN_REQUIRED);
-        }
-    }
-
-    private void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
         }
     }
 
