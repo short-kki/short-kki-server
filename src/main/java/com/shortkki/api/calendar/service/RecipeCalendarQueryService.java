@@ -4,7 +4,7 @@ import com.shortkki.api.calendar.controller.dto.response.RecipeCalendarDetailRes
 import com.shortkki.api.calendar.controller.dto.response.RecipeCalendarsResponse;
 import com.shortkki.api.calendar.entity.RecipeCalendar;
 import com.shortkki.api.calendar.repository.RecipeCalendarRepository;
-import com.shortkki.api.group.service.GroupMemberValidationService;
+import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import java.util.Map;

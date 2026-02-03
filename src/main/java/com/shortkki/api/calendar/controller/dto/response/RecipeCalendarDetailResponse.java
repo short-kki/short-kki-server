@@ -16,7 +16,7 @@ public record RecipeCalendarDetailResponse(
         return new RecipeCalendarDetailResponse(
                 calendar.getId(),
                 calendar.getRecipe().getId(),
-                calendar.getRecipe().getTitle(),
+                calendar.getRecipe().getBasicInfo().getTitle(),
                 calendar.getScheduledDate(),
                 calendar.getSortOrder(),
                 calendar.getGroup() != null ? calendar.getGroup().getId() : null

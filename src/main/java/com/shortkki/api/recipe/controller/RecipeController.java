@@ -32,14 +32,14 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeResponse>> findById(@PathVariable Long id) {
-        RecipeResponse response = recipeQueryService.getRecipeDetail(id);
+        RecipeResponse response = recipeQueryService.findById(id);
         return ResponseEntity.ok(BaseResponse.success("레시피가 조회되었습니다.", response));
     }
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeResponse>>> findAll() {
         // TODO : 페이지네이션
-        List<RecipeResponse> responses = recipeQueryService.getAll();
+        List<RecipeResponse> responses = recipeQueryService.findAll();
         return ResponseEntity.ok(BaseResponse.success("레시피 목록이 조회되었습니다.", responses));
     }
 

@@ -15,7 +15,7 @@ public record RecipeQueueDetailResponse(
         return new RecipeQueueDetailResponse(
                 queue.getId(),
                 queue.getRecipe().getId(),
-                queue.getRecipe().getTitle(),
+                queue.getRecipe().getBasicInfo().getTitle(),
                 queue.getCreatedAt()
         );
     }
