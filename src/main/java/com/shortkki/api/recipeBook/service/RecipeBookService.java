@@ -69,7 +69,7 @@ public class RecipeBookService {
         RecipeBook recipeBook = recipeBookValidationService.findRecipeBookById(id);
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
 
-        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
+        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookIdWithRecipe(id);
         List<RecipeSummaryResponse> recipes = items.stream()
                 .map(item -> RecipeSummaryResponse.from(item.getRecipe()))
                 .toList();
@@ -93,6 +93,11 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeBookOwnership(recipeBook, memberId);
         recipeBookValidationService.validateNotDefaultRecipeBook(recipeBook);
 
+        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookIdWithRecipe(id);
+        for (RecipeBookItem item : items) {
+            item.getRecipe().decrementBookmarkCount();
+        }
+
         recipeBookItemRepository.deleteAllByRecipeBookId(id);
         recipeBookRepository.delete(recipeBook);
     }
@@ -107,6 +112,8 @@ public class RecipeBookService {
 
         RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
         recipeBookItemRepository.save(item);
+
+        recipe.incrementBookmarkCount();
     }
 
     @Transactional
@@ -121,6 +128,8 @@ public class RecipeBookService {
 
         RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
         recipeBookItemRepository.save(item);
+
+        recipe.incrementBookmarkCount();
     }
 
     @Transactional
@@ -130,6 +139,13 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeInBook(recipeBookId, recipeId);
 
         recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
+
+        Recipe recipe = recipeBookValidationService.findRecipeById(recipeId);
+        long deleted = recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId,
+                recipeId);
+        if (deleted > 0) {
+            recipe.decrementBookmarkCount();
+        }
     }
 
     @Transactional

@@ -51,6 +51,7 @@ public class Recipe extends BaseEntity {
     @Embedded
     private RecipeCategoryInfo categoryInfo;
 
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer bookmarkCount = 0;
 
@@ -134,5 +135,15 @@ public class Recipe extends BaseEntity {
 
     public void setImageFileId(Long imageFileId) {
         this.imageFileId = imageFileId;
+    }
+
+    public void incrementBookmarkCount() {
+        this.bookmarkCount++;
+    }
+
+    public void decrementBookmarkCount() {
+        if (this.bookmarkCount > 0) {
+            this.bookmarkCount--;
+        }
     }
 }
