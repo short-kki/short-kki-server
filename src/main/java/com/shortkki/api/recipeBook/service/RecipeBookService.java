@@ -214,7 +214,7 @@ public class RecipeBookService {
 
         recipeBookValidationService.validateRecipeInBook(fromBookId, recipeId);
 
-        long updated = recipeBookItemRepository.moveRecipe(fromBookId, toBookId, recipeId);
+        long updated = recipeBookItemRepository.moveRecipe(fromBook, toBook, recipeId);
 
         if (updated == 0) {
             throw new NotFoundException(ErrorCode.RECIPE_NOT_IN_BOOK);
