@@ -73,6 +73,7 @@ public enum ErrorCode {
     SOURCE_CONTENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "SOURCE_003", "이미 등록된 외부 컨텐츠입니다."),
     SOURCE_URL_PLATFORM_MISMATCH(HttpStatus.BAD_REQUEST, "SOURCE_004", "URL이 지정된 플랫폼과 일치하지 않습니다."),
     SOURCE_INFO_REQUIRED_FOR_IMPORTED(HttpStatus.BAD_REQUEST, "SOURCE_005", "외부 레시피는 출처 정보가 필수입니다."),
+    SOURCE_CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "SOURCE_006", "외부 컨텐츠를 찾을 수 없습니다."),
 
     // RecipeQueue
     RECIPE_QUEUE_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_QUEUE_001", "레시피 대기열을 찾을 수 없습니다."),

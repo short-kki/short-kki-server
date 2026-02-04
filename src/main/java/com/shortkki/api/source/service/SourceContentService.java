@@ -44,8 +44,7 @@ public class SourceContentService {
                 .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
     }
 
-    private SourceContent getOrCreateContent(
-            SourcePlatform platform, String externalKey) {
+    private SourceContent getOrCreateContent(SourcePlatform platform, String externalKey) {
         return sourceContentRepository
                 .findByPlatformAndExternalKey(platform, externalKey)
                 .orElseGet(() -> {

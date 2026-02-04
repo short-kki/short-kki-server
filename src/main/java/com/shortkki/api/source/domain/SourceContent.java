@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
@@ -25,6 +27,10 @@ import lombok.NoArgsConstructor;
                 name = "UK_SOURCE_CONTENT_PLATFORM_KEY",
                 columnNames = {"platform", "external_key"}
         ))
+@NamedEntityGraph(
+        name = "SourceContent.withCreator",
+        attributeNodes = @NamedAttributeNode("sourceCreator")
+)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder

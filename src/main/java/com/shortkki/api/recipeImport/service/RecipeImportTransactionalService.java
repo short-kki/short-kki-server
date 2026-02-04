@@ -58,8 +58,9 @@ public class RecipeImportTransactionalService {
         return recipe;
     }
 
-    private Recipe saveRecipe(Member member, SourceContent sourceContent,
-            RecipeParseResult parseResult) {
+    private Recipe saveRecipe(
+            Member member, SourceContent sourceContent, RecipeParseResult parseResult
+    ) {
         RecipeBasicInfo basicInfo = new RecipeBasicInfo(
                 orDefault(parseResult.title(), sourceContent.getTitle()),
                 orDefault(parseResult.description(), ""),
@@ -80,7 +81,7 @@ public class RecipeImportTransactionalService {
 
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         List<RecipeIngredient> entities = ingredients.stream()
-                .filter(ing -> ing.name() != null && !ing.name().isBlank()) // ✅ 빈 이름 필터
+                .filter(ing -> ing.name() != null && !ing.name().isBlank())
                 .map(ing -> toRecipeIngredient(recipe, ing))
                 .toList();
 

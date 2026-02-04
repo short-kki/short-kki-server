@@ -5,14 +5,13 @@ public record RecipeImportResponse(
         Long recipeId,
         String title,
         String sourceUrl,
-        RecipeImportPreview preview,
+        RecipeImportPreviewResponse preview,
         String message
 ) {
 
     public static RecipeImportResponse accepted(
-            Long importHistoryId,
-            String sourceUrl,
-            RecipeImportPreview preview) {
+            Long importHistoryId, String sourceUrl, RecipeImportPreviewResponse preview
+    ) {
         return new RecipeImportResponse(
                 importHistoryId,
                 null,
@@ -22,7 +21,9 @@ public record RecipeImportResponse(
                 "외부 레시피 파싱을 요청했습니다.");
     }
 
-    public static RecipeImportResponse success(Long recipeId, String title, String sourceUrl) {
+    public static RecipeImportResponse success(
+            Long recipeId, String title, String sourceUrl
+    ) {
         return new RecipeImportResponse(
                 null,
                 recipeId,

@@ -5,7 +5,7 @@ import com.shortkki.api.source.domain.SourceContentCreator;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
 
-public record RecipeImportPreview(
+public record RecipeImportPreviewResponse(
         Long sourceContentId,
         SourcePlatform platform,
         SourceContentType contentType,
@@ -16,9 +16,9 @@ public record RecipeImportPreview(
         String creatorThumbnailUrl
 ) {
 
-    public static RecipeImportPreview from(SourceContent content) {
+    public static RecipeImportPreviewResponse from(SourceContent content) {
         SourceContentCreator creator = content.getSourceCreator();
-        return new RecipeImportPreview(
+        return new RecipeImportPreviewResponse(
                 content.getId(),
                 content.getPlatform(),
                 content.getContentType(),
