@@ -40,6 +40,19 @@ jwt:
   access-token-validity: 86400000
   refresh-token-validity: 604800000
 
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    try-it-out-enabled: true
+    filter: true
+
+logging:
+  level:
+    #    org.hibernate.SQL: debug
+    #    org.hibernate.orm.jdbc.bind: trace
+    org.elasticsearch.client.RestClient: DEBUG
+
 oauth2:
   provider:
     google-ios:
@@ -70,19 +83,6 @@ google:
   services:
     gemini:
       model-name: gemini-3-flash-preview
-
-springdoc:
-  swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: method
-    try-it-out-enabled: true
-    filter: true
-
-logging:
-  level:
-#    org.hibernate.SQL: debug
-#    org.hibernate.orm.jdbc.bind: trace
-    org.elasticsearch.client.RestClient: DEBUG
 
 public-data:
   ingredient:
