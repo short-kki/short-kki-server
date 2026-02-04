@@ -13,7 +13,25 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
 
     boolean existsByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
-    void deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
+    long deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
-    void deleteAllByRecipeBookId(Long recipeBookId);
+    long deleteAllByRecipeBookId(Long recipeBookId);
+
+    @Query("""
+            select i from RecipeBookItem i
+            join fetch i.recipe 
+            where i.recipeBook.id = :recipeBookId
+            """)
+    List<RecipeBookItem> findAllByRecipeBookIdWithRecipe(@Param("recipeBookId") Long recipeBookId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+                update RecipeBookItem rbi
+                   set rbi.recipeBook.id = :toBookId
+                 where rbi.recipeBook.id = :fromBookId
+                   and rbi.recipe.id = :recipeId
+            """)
+    long moveRecipe(@Param("fromBookId") Long fromBookId,
+            @Param("toBookId") Long toBookId,
+            @Param("recipeId") Long recipeId);
 }

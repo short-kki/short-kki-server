@@ -28,6 +28,8 @@ public record RecipeEditRequest(
         String mealType,
         String difficulty,
 
+        List<String> tags,
+
         @NotEmpty(message = "재료는 최소 1개 이상이어야 합니다")
         @Valid
         List<IngredientEditDto> ingredients,
@@ -42,12 +44,15 @@ public record RecipeEditRequest(
             @Size(max = 100, message = "재료명은 100자를 초과할 수 없습니다")
             String name,
 
-            String amount,
+            @NotNull(message = "수량은 필수입니다")
+            @Min(value = 0, message = "수량은 0 이상이어야 합니다(소수점 가능)")
+            Double amount,
 
             @NotBlank(message = "단위는 필수입니다")
             @Size(max = 50, message = "단위는 50자를 초과할 수 없습니다")
             String unit
     ) {
+
     }
 
     public record StepEditDto(
@@ -59,5 +64,6 @@ public record RecipeEditRequest(
             @Size(max = 1000, message = "조리 설명은 1000자를 초과할 수 없습니다")
             String description
     ) {
+
     }
 }

@@ -26,7 +26,9 @@ public record RecipeCreateRequest(
         List<StepRequest> steps,
 
         @NotNull(message = "출처 타입은 필수입니다.")
-        RecipeSource recipeSource
+        RecipeSource recipeSource,
+
+        List<String> tags
 ) {
 
 }

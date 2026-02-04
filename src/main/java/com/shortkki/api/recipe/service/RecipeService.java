@@ -4,6 +4,7 @@ import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
 import com.shortkki.api.file.service.FileMetadataService;
 import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.recipe.entity.TagSource;
 import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
 import com.shortkki.api.recipe.dto.request.RecipeCreateRequest;
@@ -12,6 +13,7 @@ import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
 import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.recipe.repository.RecipeRepository;
+import com.shortkki.api.recipe.repository.RecipeTagRepository;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
@@ -38,6 +40,8 @@ public class RecipeService {
     private final RecipeBookService recipeBookService;
     private final RecipeBookQueryService recipeBookQueryService;
     private final FileMetadataService fileMetadataService;
+    private final TagService tagService;
+    private final RecipeTagRepository recipeTagRepository;
 
     public void create(Long memberId, RecipeCreateRequest request) {
         validateRecipeRequest(request);
@@ -62,6 +66,7 @@ public class RecipeService {
 
         recipeStepService.createSteps(saved, request.steps());
         recipeIngredientService.createIngredients(saved, request.ingredients());
+        tagService.saveRecipeTags(saved.getId(), request.tags(), TagSource.USER);
 
         addToDefaultRecipeBook(memberId, saved.getId());
     }
@@ -95,15 +100,18 @@ public class RecipeService {
 
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);
+        recipeTagRepository.deleteByRecipeId(id);
 
         recipeStepService.createSteps(recipe, request.steps());
         recipeIngredientService.createIngredients(recipe, request.ingredients());
+        tagService.saveRecipeTags(recipe.getId(), request.tags(), TagSource.USER);
     }
 
     public void delete(Long id) {
         recipeRepository.findById(id).ifPresent(recipe -> {
             recipeStepService.deleteByRecipeId(id);
             recipeIngredientService.deleteByRecipeId(id);
+            recipeTagRepository.deleteByRecipeId(id);
             recipeRepository.delete(recipe);
         });
     }
@@ -120,8 +128,6 @@ public class RecipeService {
             file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
             saved.setImageFileId(imageFileId);
         }
-
-        // TODO: 태그 저장 로직 추가
 
         return saved;
     }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RecipeImportAsyncService {
 
+
     private final SourceContentRepository sourceContentRepository;
     private final MemberRepository memberRepository;
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
@@ -54,6 +55,7 @@ public class RecipeImportAsyncService {
         try {
             history.updateStatus(ImportStatus.PARSING);
             sourceImportHistoryRepository.save(history);
+
             log.info("AI 레시피 파싱 시작: {}", sourceUrl);
             parseResult = recipeParserPort.parseRecipeFromUrl(sourceUrl);
             aiRawResponse = parseResult.rawResponse();
@@ -62,12 +64,12 @@ public class RecipeImportAsyncService {
                     parseResult.ingredients().size(),
                     parseResult.steps().size());
         } catch (Exception e) {
+
             history.fail("AI parsing failed: " + e.getMessage(), aiRawResponse);
             sourceImportHistoryRepository.save(history);
             return;
         }
-
-        // Store parsed result as JSON for user review and editing
+        // TODO : 예외 발생한 PARSING 상태된 기록 정리
         try {
             String parsedContentJson = objectMapper.writeValueAsString(parseResult);
             history.markAsParsed(aiRawResponse, parsedContentJson);
@@ -81,3 +83,4 @@ public class RecipeImportAsyncService {
         }
     }
 }
+

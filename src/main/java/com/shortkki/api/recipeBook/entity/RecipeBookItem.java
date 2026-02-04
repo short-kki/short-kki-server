@@ -11,14 +11,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 
+
 @Entity
-@Table(name = "recipe_book_item")
+@Table(name = "recipe_book_item",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"book_id", "recipe_id"})
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeBookItem extends BaseEntity {

@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Table(name = "recipe")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recipe extends BaseEntity {
 
@@ -51,7 +54,8 @@ public class Recipe extends BaseEntity {
     @Embedded
     private RecipeCategoryInfo categoryInfo;
 
-    @ColumnDefault("0")
+    @Column(nullable = false)
+    @Builder.Default
     private Integer bookmarkCount = 0;
 
     @Enumerated(EnumType.STRING)
@@ -62,6 +66,7 @@ public class Recipe extends BaseEntity {
     private Long imageFileId;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @Builder
@@ -134,5 +139,15 @@ public class Recipe extends BaseEntity {
 
     public void setImageFileId(Long imageFileId) {
         this.imageFileId = imageFileId;
+    }
+
+    public void incrementBookmarkCount() {
+        this.bookmarkCount++;
+    }
+
+    public void decrementBookmarkCount() {
+        if (this.bookmarkCount > 0) {
+            this.bookmarkCount--;
+        }
     }
 }

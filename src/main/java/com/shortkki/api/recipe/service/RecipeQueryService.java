@@ -4,9 +4,13 @@ import com.shortkki.api.recipe.dto.response.RecipeResponse;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.RecipeIngredient;
 import com.shortkki.api.recipe.entity.RecipeStep;
+import com.shortkki.api.recipe.entity.RecipeTag;
+import com.shortkki.api.recipe.entity.Tag;
 import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipe.repository.RecipeStepRepository;
+import com.shortkki.api.recipe.repository.RecipeTagRepository;
+import com.shortkki.api.recipe.repository.TagRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BusinessException;
 import java.util.List;
@@ -23,6 +27,9 @@ public class RecipeQueryService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
+    private final RecipeTagRepository recipeTagRepository;
+    private final TagRepository tagRepository;
+
     public Recipe findRecipe(Long id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
@@ -37,7 +44,8 @@ public class RecipeQueryService {
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(
                 recipe.getId());
 
-        return RecipeResponse.toDto(recipe, steps, ingredients);
+        List<String> tagNames = findTagNamesByRecipeId(recipe.getId());
+        return RecipeResponse.toDto(recipe, steps, ingredients, tagNames);
     }
 
     // TODO: N+1 문제 해결 (Fetch Join 고려)
@@ -51,8 +59,13 @@ public class RecipeQueryService {
                     List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
                     List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(
                             recipe.getId());
-                    return RecipeResponse.toDto(recipe, steps, ingredients);
+                    List<String> tagNames = findTagNamesByRecipeId(recipe.getId());
+                    return RecipeResponse.toDto(recipe, steps, ingredients, tagNames);
                 })
                 .toList();
+    }
+
+    private List<String> findTagNamesByRecipeId(Long recipeId) {
+        return recipeTagRepository.findTagNamesByRecipeId(recipeId);
     }
 }

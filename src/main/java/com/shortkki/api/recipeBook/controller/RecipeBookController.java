@@ -5,6 +5,7 @@ import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeMoveRequest;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
@@ -115,4 +116,21 @@ public class RecipeBookController {
         recipeBookService.removeRecipe(loginMember.getId(), id, recipeId);
         return ResponseEntity.ok(BaseResponse.success());
     }
+
+    @PatchMapping("/{fromBookId}/recipes/{recipeId}")
+    public ResponseEntity<BaseResponse<Void>> moveRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long fromBookId,
+            @PathVariable Long recipeId,
+            @Valid @RequestBody RecipeMoveRequest request
+    ) {
+        recipeBookService.moveRecipe(
+                loginMember.getId(),
+                fromBookId,
+                request.toRecipeBookId(),
+                recipeId
+        );
+        return ResponseEntity.ok(BaseResponse.success());
+    }
+
 }
