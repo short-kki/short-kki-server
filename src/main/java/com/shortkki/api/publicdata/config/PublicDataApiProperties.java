@@ -2,7 +2,7 @@ package com.shortkki.api.publicdata.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "publicdata.ingredient")
+@ConfigurationProperties(prefix = "public-data.ingredient")
 public record PublicDataApiProperties(
         boolean enabled,
         String apiKey,
