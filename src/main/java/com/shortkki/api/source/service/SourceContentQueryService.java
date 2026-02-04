@@ -2,8 +2,15 @@ package com.shortkki.api.source.service;
 
 import com.shortkki.api.recipeImport.dto.RecipeImportPreviewResponse;
 import com.shortkki.api.source.domain.SourceContent;
+import com.shortkki.api.source.domain.SourceContentType;
+import com.shortkki.api.source.domain.SourcePlatform;
 import com.shortkki.api.source.repository.SourceContentRepository;
+import com.shortkki.api.source.service.dto.SourceContentInfo;
+import com.shortkki.api.source.service.dto.SourceCreatorInfo;
+import com.shortkki.api.source.service.port.SourceDataProvider;
+import com.shortkki.api.source.support.ExternalKeyExtractorRegistry;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SourceContentQueryService {
 
-    private final SourceContentService sourceContentService;
+    private final SourceDataProvider sourceDataProvider;
+    private final ExternalKeyExtractorRegistry extractorRegistry;
 
     private final SourceContentRepository sourceContentRepository;
 
@@ -23,9 +31,24 @@ public class SourceContentQueryService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SOURCE_CONTENT_NOT_FOUND));
     }
 
-    public RecipeImportPreviewResponse getSourceContentPreview(String url) {
-        SourceContent sourceContent = sourceContentService.resolveSourceContent(url);
-        return RecipeImportPreviewResponse.from(sourceContent);
+    public RecipeImportPreviewResponse getSourceContentPreview(String sourceUrl) {
+        SourcePlatform platform =  extractorRegistry.detectPlatform(sourceUrl)
+                .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
+        String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
+
+        SourceContentInfo contentInfo = sourceDataProvider.getSourceInfo(externalKey);
+        SourceCreatorInfo creatorInfo = sourceDataProvider.getSourceCreatorInfo(contentInfo.channelId());
+
+        return new RecipeImportPreviewResponse(
+                null,
+                platform,
+                SourceContentType.VIDEO,
+                contentInfo.canonicalUrl(),
+                contentInfo.title(),
+                contentInfo.thumbnailUrl(),
+                creatorInfo.displayName(),
+                creatorInfo.thumbnailUrl()
+        );
     }
 }
 
