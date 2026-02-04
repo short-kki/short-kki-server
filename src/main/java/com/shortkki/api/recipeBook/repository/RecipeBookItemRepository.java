@@ -1,6 +1,5 @@
 package com.shortkki.api.recipeBook.repository;
 
-import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
