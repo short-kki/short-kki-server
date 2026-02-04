@@ -34,4 +34,7 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
     long moveRecipe(@Param("fromBookId") Long fromBookId,
             @Param("toBookId") Long toBookId,
             @Param("recipeId") Long recipeId);
+
+    @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
+    List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
 }
