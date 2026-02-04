@@ -1,7 +1,7 @@
 package com.shortkki.api.file.infra.storage.aws.s3;
 
-import com.shortkki.api.file.service.dto.UploadUrlDto;
-import com.shortkki.api.file.service.port.FileUploadPort;
+import com.shortkki.api.file.application.dto.UploadUrlDto;
+import com.shortkki.api.file.application.port.FileUploadPort;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;

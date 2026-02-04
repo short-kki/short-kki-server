@@ -20,6 +20,7 @@ public class SourceContentRepositoryImpl implements SourceContentRepositoryCusto
     public Optional<SourceContent> findByPlatformAndExternalKey(SourcePlatform platform, String externalKey) {
         SourceContent result = queryFactory
                 .selectFrom(sourceContent)
+                .join(sourceContent.sourceCreator).fetchJoin()
                 .where(
                         sourceContent.platform.eq(platform),
                         sourceContent.externalKey.eq(externalKey)

@@ -35,7 +35,7 @@ public class SourceImportHistory extends BaseEntity {
     private Long recipeId;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 2000)
     private String requestedSourceUrl;
 
     @Enumerated(EnumType.STRING)
@@ -46,7 +46,7 @@ public class SourceImportHistory extends BaseEntity {
      * 외부 응답 원본 문자열 - 파싱 성공/실패와 무관 - 디버깅 및 재처리 용도
      */
     @Lob
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(length = 2000)
     private String rawResponse;
 
     /**
@@ -57,7 +57,7 @@ public class SourceImportHistory extends BaseEntity {
     private String parsedContent;
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 2000)
     private String errorMessage;
 
     @Enumerated(EnumType.STRING)

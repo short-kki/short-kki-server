@@ -33,20 +33,19 @@ public record RecipeResponse(
         List<String> tags
 ) {
 
-    public static RecipeResponse toDto(Recipe recipe, List<RecipeStep> steps,
-            List<RecipeIngredient> ingredients,
-            List<String> tags
+    public static RecipeResponse toDto(
+            Recipe recipe, List<RecipeStep> steps, List<RecipeIngredient> ingredients, List<String> tags
     ) {
-
         List<StepResponse> stepResponses = steps.stream()
                 .map(s -> new StepResponse(s.getStepOrder(), s.getDescription()))
                 .toList();
 
         List<IngredientResponse> ingredientResponses = ingredients.stream()
                 .map(i -> new IngredientResponse(
-                        i.getIngredient().getName(),
+                        i.getName(),
                         i.getUnit(),
-                        i.getAmount()))
+                        i.getAmount())
+                )
                 .toList();
 
         return new RecipeResponse(

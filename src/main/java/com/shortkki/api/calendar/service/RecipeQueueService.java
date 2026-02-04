@@ -27,7 +27,7 @@ public class RecipeQueueService {
     // TODO: 생성 개수 제한 두기
     public RecipeQueueDetailResponse create(Long memberId, CreateRecipeQueueRequest request) {
         Member member = memberQueryService.findMember(memberId);
-        Recipe recipe = recipeQueryService.findRecipe(request.recipeId());
+        Recipe recipe = recipeQueryService.findById(request.recipeId());
 
         RecipeQueue queue = RecipeQueue.create(recipe, member);
         recipeQueueRepository.save(queue);

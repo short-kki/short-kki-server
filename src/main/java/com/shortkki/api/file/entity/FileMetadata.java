@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,10 @@ public class FileMetadata extends BaseEntity {
     @Column(nullable = false)
     private long size;
 
+    @Lob
+    @Column(length = 2000, nullable = false)
+    private String baseUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "target_type")
     private FileTargetType targetType;
@@ -66,6 +71,7 @@ public class FileMetadata extends BaseEntity {
             String originalName,
             String extension,
             long size,
+            String baseUrl,
             FileTargetType targetType,
             UploaderType uploaderType,
             Long uploaderId,
@@ -76,6 +82,7 @@ public class FileMetadata extends BaseEntity {
                 .originalName(originalName)
                 .extension(extension)
                 .size(size)
+                .baseUrl(baseUrl)
                 .targetType(targetType)
                 .uploaderType(uploaderType)
                 .uploaderId(uploaderId)
@@ -95,5 +102,9 @@ public class FileMetadata extends BaseEntity {
     public void bindTarget(FileTargetType targetType, Long targetId) {
         this.targetType = targetType;
         this.targetId = targetId;
+    }
+
+    public String getUrl() {
+        return this.baseUrl + objectKey;
     }
 }

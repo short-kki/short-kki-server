@@ -21,7 +21,9 @@ import com.shortkki.api.recipe.service.TagService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
+import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.api.source.domain.SourceContent;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,9 +40,10 @@ public class RecipeImportTransactionalService {
     private final RecipeStepRepository recipeStepRepository;
 
     private final IngredientQueryService ingredientQueryService;
-
     private final TagService tagService;
     private final RecipeTagRepository recipeTagRepository;
+
+    private final DomainEventPublisher domainEventPublisher;
 
     @Transactional
     public Recipe saveRecipeWithRelations(
@@ -55,11 +58,13 @@ public class RecipeImportTransactionalService {
         saveSteps(recipe, safeList(parseResult.steps()));
         saveTags(recipe, safeList(parseResult.tags()), originalParsedTags);
 
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
         return recipe;
     }
 
-    private Recipe saveRecipe(Member member, SourceContent sourceContent,
-            RecipeParseResult parseResult) {
+    private Recipe saveRecipe(
+            Member member, SourceContent sourceContent, RecipeParseResult parseResult
+    ) {
         RecipeBasicInfo basicInfo = new RecipeBasicInfo(
                 orDefault(parseResult.title(), sourceContent.getTitle()),
                 orDefault(parseResult.description(), ""),
@@ -80,7 +85,7 @@ public class RecipeImportTransactionalService {
 
     private void saveIngredients(Recipe recipe, List<IngredientParseResult> ingredients) {
         List<RecipeIngredient> entities = ingredients.stream()
-                .filter(ing -> ing.name() != null && !ing.name().isBlank()) // ✅ 빈 이름 필터
+                .filter(ing -> ing.name() != null && !ing.name().isBlank())
                 .map(ing -> toRecipeIngredient(recipe, ing))
                 .toList();
 

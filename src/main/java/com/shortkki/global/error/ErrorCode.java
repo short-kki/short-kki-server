@@ -34,8 +34,7 @@ public enum ErrorCode {
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_001", "레시피를 찾을 수 없습니다."),
     INGREDIENT_REQUIRED(HttpStatus.BAD_REQUEST, "RECIPE_002", "재료는 최소 1개 이상이어야 합니다."),
     STEP_REQUIRED(HttpStatus.BAD_REQUEST, "RECIPE_003", "조리 순서는 최소 1개 이상이어야 합니다."),
-    IMPORTED_RECIPE_NOT_MODIFIABLE(HttpStatus.FORBIDDEN, "RECIPE_004",
-            "외부에서 가져온 레시피는 수정하거나 삭제할 수 없습니다."),
+    IMPORTED_RECIPE_NOT_MODIFIABLE(HttpStatus.FORBIDDEN, "RECIPE_004", "외부에서 가져온 레시피는 수정하거나 삭제할 수 없습니다."),
 
     // RecipeBook
     RECIPE_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_BOOK_001", "레시피북을 찾을 수 없습니다."),
@@ -74,6 +73,7 @@ public enum ErrorCode {
     SOURCE_CONTENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "SOURCE_003", "이미 등록된 외부 컨텐츠입니다."),
     SOURCE_URL_PLATFORM_MISMATCH(HttpStatus.BAD_REQUEST, "SOURCE_004", "URL이 지정된 플랫폼과 일치하지 않습니다."),
     SOURCE_INFO_REQUIRED_FOR_IMPORTED(HttpStatus.BAD_REQUEST, "SOURCE_005", "외부 레시피는 출처 정보가 필수입니다."),
+    SOURCE_CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "SOURCE_006", "외부 컨텐츠를 찾을 수 없습니다."),
 
     // RecipeQueue
     RECIPE_QUEUE_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_QUEUE_001", "레시피 대기열을 찾을 수 없습니다."),
@@ -83,11 +83,11 @@ public enum ErrorCode {
     INVALID_CALENDAR_REORDER_REQUEST(HttpStatus.BAD_REQUEST, "RECIPE_CALENDAR_002", "전체 레시피 캘린더 목록을 전송해야 합니다."),
 
     // Curation
-    CURATION_TITLE_DUPLICATE(HttpStatus.CONFLICT, "CURATION_001", "이미 존재하는 큐레이션 제목입니다.")
+    CURATION_TITLE_DUPLICATE(HttpStatus.CONFLICT, "CURATION_001", "이미 존재하는 큐레이션 제목입니다."),
+    CURATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CURATION_002", "큐레이션을 찾을 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
-
 }

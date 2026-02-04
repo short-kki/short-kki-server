@@ -1,7 +1,7 @@
 package com.shortkki.api.curation.service;
 
-import com.shortkki.api.curation.dto.request.CreateCurationRequest;
-import com.shortkki.api.curation.dto.response.CurationResponse;
+import com.shortkki.api.curation.controller.dto.request.CreateCurationRequest;
+import com.shortkki.api.curation.controller.dto.response.CurationResponse;
 import com.shortkki.api.curation.entity.Curation;
 import com.shortkki.api.curation.repository.CurationRepository;
 import com.shortkki.global.error.ErrorCode;

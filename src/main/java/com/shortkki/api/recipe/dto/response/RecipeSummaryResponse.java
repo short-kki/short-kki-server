@@ -1,22 +1,36 @@
 package com.shortkki.api.recipe.dto.response;
 
-import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
+import com.shortkki.api.source.domain.SourcePlatform;
 
 public record RecipeSummaryResponse(
         Long id,
         String title,
-        Integer bookmarkCount,
-        String thumbnailUrl,
-        String authorName
+        int bookmarkCount,
+        String sourceUrl,
+        String mainImgUrl,
+        RecipeSource recipeSource,
+        String authorName,
+        String authorProfileImgUrl,
+        SourcePlatform platform,
+        String creatorName,
+        String creatorProfileImgUrl
 ) {
 
-    public static RecipeSummaryResponse from(Recipe recipe) {
+    public static RecipeSummaryResponse from(RecipeSearchItem item) {
         return new RecipeSummaryResponse(
-                recipe.getId(),
-                recipe.getBasicInfo().getTitle(),
-                recipe.getBookmarkCount(),
-                null,
-                null
+                item.id(),
+                item.title(),
+                item.bookmarkCount(),
+                item.sourceUrl(),
+                item.mainImgUrl(),
+                item.recipeSource(),
+                item.authorName(),
+                item.authorProfileImgUrl(),
+                item.platform(),
+                item.creatorName(),
+                item.creatorProfileImgUrl()
         );
     }
 }

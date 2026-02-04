@@ -1,5 +1,6 @@
 package com.shortkki.api.recipe.entity;
 
+import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
 import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
@@ -30,10 +31,10 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "recipe")
-@Getter
-@Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class Recipe extends BaseEntity {
 
     @Id
@@ -41,11 +42,11 @@ public class Recipe extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_content_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_content_id", unique = true)
     private SourceContent sourceContent;
 
     @Embedded
@@ -54,36 +55,23 @@ public class Recipe extends BaseEntity {
     @Embedded
     private RecipeCategoryInfo categoryInfo;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer bookmarkCount = 0;
-
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private RecipeSource sourceType;
 
-    @Column(name = "image_file_id")
-    private Long imageFileId;
-
-    @Column(nullable = false)
     @Builder.Default
-    private Boolean isDeleted = false;
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Integer bookmarkCount = 0;
 
-    @Builder
-    private Recipe(
-            Member member,
-            RecipeBasicInfo basicInfo,
-            RecipeCategoryInfo categoryInfo,
-            Integer bookmarkCount,
-            RecipeSource sourceType, SourceContent sourceContent, Boolean isDeleted) {
-        this.member = member;
-        this.basicInfo = basicInfo;
-        this.categoryInfo = categoryInfo;
-        this.sourceType = sourceType;
-        this.sourceContent = sourceContent;
-        this.bookmarkCount = bookmarkCount;
-        this.isDeleted = isDeleted;
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_img_file_id")
+    private FileMetadata mainImgFile;
+
+    @Builder.Default
+    @ColumnDefault("true")
+    @Column(nullable = false)
+    private Boolean isActive = true;
 
     public static Recipe createManual(
             Member member,
@@ -111,8 +99,6 @@ public class Recipe extends BaseEntity {
                 .basicInfo(basicInfo)
                 .categoryInfo(categoryInfo)
                 .sourceType(RecipeSource.IMPORT)
-                .isDeleted(false)
-                .bookmarkCount(0)
                 .sourceContent(sourceContent)
                 .build();
     }
@@ -125,29 +111,50 @@ public class Recipe extends BaseEntity {
         this.categoryInfo = categoryInfo;
     }
 
+    public void updateMainImgFile(FileMetadata mainImgFile) {
+        this.mainImgFile = mainImgFile;
+    }
+
     public String getSourceUrl() {
-        return RecipeSource.IMPORT == sourceType ? sourceContent.getCanonicalUrl() : null;
+        return isImported() ? sourceContent.getCanonicalUrl() : null;
     }
 
     public SourcePlatform getSourcePlatform() {
-        return RecipeSource.IMPORT == sourceType ? sourceContent.getPlatform() : null;
+        return isImported() ? sourceContent.getPlatform() : null;
     }
 
     public SourceContentType getSourceContentType() {
-        return RecipeSource.IMPORT == sourceType ? sourceContent.getContentType() : null;
+        return isImported() ? sourceContent.getContentType() : null;
     }
 
-    public void setImageFileId(Long imageFileId) {
-        this.imageFileId = imageFileId;
+    public String getAuthorName() {
+        return this.getMember().getName();
     }
 
-    public void incrementBookmarkCount() {
-        this.bookmarkCount++;
+    public String getAuthorProfileImgUrl() {
+        // TODO: 멤버 프로필 이미지 url 추가
+        return null;
     }
 
-    public void decrementBookmarkCount() {
-        if (this.bookmarkCount > 0) {
-            this.bookmarkCount--;
+    public String getCreatorName() {
+        return isImported() ? this.getSourceContent().getSourceCreator().getDisplayName() : null;
+    }
+
+    public String getCreatorProfileImgUrl() {
+        return isImported() ? this.getSourceContent().getSourceCreator().getProfileImgUrl() : null;
+    }
+
+    public String getMainImgUrl() {
+        if (isImported()) {
+            return sourceContent.getThumbnailUrl();
         }
+        if (mainImgFile != null) {
+            return mainImgFile.getUrl();
+        }
+        return null;
+    }
+
+    public boolean isImported() {
+        return RecipeSource.IMPORT.equals(this.sourceType);
     }
 }

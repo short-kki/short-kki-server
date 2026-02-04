@@ -10,22 +10,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
-        format_sql: true
         default_batch_fetch_size: 100
     open-in-view: false
-
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
 
 oauth2:
   provider:
@@ -49,19 +38,20 @@ aws:
       bucket: ${AWS_S3_BUCKET:shortkki-dev-storage}
 
 file:
+  cdn:
+    public-base-url: https://d36jasu56jneaq.cloudfront.net/
   upload:
     public-prefix: ${FILE_PUBLIC_PREFIX:public/uploads}
     private-prefix: ${FILE_PRIVATE_PREFIX:private/uploads}
     expire-seconds: ${FILE_UPLOAD_EXPIRE_SECONDS:300}
     max-bytes: ${FILE_UPLOAD_MAX_BYTES:10485760} # 10MB
 
-youtube:
-  api:
-    base-url: https://www.googleapis.com/youtube/v3
+google:
+  services:
+    youtube:
+      api:
+        base-url: https://www.googleapis.com/youtube/v3
 
-gemini:
-  model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
-
-publicdata:
+public-data:
   ingredient:
     enabled: false

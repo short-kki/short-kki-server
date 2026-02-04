@@ -1,7 +1,6 @@
 package com.shortkki.api.curation.entity;
 
 import java.time.LocalTime;
-import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 public enum TimeType {
 
     MORNING("아침", LocalTime.of(6, 0), LocalTime.of(11, 0)),
-    LUNCH("점심", LocalTime.of(11, 0), LocalTime.of(14, 0)),
-    DINNER("저녁", LocalTime.of(17, 0), LocalTime.of(21, 0)),
-    LATE_NIGHT("야식", LocalTime.of(21, 0), LocalTime.of(2, 0));
+    LUNCH("점심", LocalTime.of(11, 0), LocalTime.of(16, 0)),
+    DINNER("저녁", LocalTime.of(16, 0), LocalTime.of(22, 0)),
+    LATE_NIGHT("야식", LocalTime.of(22, 0), LocalTime.of(6, 0));
 
     private final String displayName;
     private final LocalTime startTime;

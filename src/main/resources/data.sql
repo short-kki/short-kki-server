@@ -1,439 +1,1 @@
--- 멤버
-INSERT IGNORE INTO member (email, name, oauth_id, oauth_provider, role, created_at, updated_at)
-VALUES ('test@example.com', '테스트유저', 'test-oauth-id-001', 'GOOGLE', 'USER', NOW(6), NOW(6));
-
-
--- 재료
-INSERT IGNORE INTO ingredient (name, created_at, updated_at)
-VALUES ('김치', NOW(6), NOW(6)),
-       ('돼지고기 앞다리살', NOW(6), NOW(6)),
-       ('두부', NOW(6), NOW(6)),
-       ('양파', NOW(6), NOW(6)),
-       ('대파', NOW(6), NOW(6)),
-       ('마늘', NOW(6), NOW(6)),
-       ('고추장', NOW(6), NOW(6)),
-       ('된장', NOW(6), NOW(6)),
-       ('간장', NOW(6), NOW(6)),
-       ('스파게티면', NOW(6), NOW(6));
-
-SET @ing_kimchi := (SELECT id
-                    FROM ingredient
-                    WHERE name = '김치'
-                    LIMIT 1);
-SET @ing_pork := (SELECT id
-                  FROM ingredient
-                  WHERE name = '돼지고기 앞다리살'
-                  LIMIT 1);
-SET @ing_tofu := (SELECT id
-                  FROM ingredient
-                  WHERE name = '두부'
-                  LIMIT 1);
-SET @ing_onion := (SELECT id
-                   FROM ingredient
-                   WHERE name = '양파'
-                   LIMIT 1);
-SET @ing_greenonion := (SELECT id
-                        FROM ingredient
-                        WHERE name = '대파'
-                        LIMIT 1);
-SET @ing_garlic := (SELECT id
-                    FROM ingredient
-                    WHERE name = '마늘'
-                    LIMIT 1);
-SET @ing_gochujang := (SELECT id
-                       FROM ingredient
-                       WHERE name = '고추장'
-                       LIMIT 1);
-SET @ing_doenjang := (SELECT id
-                      FROM ingredient
-                      WHERE name = '된장'
-                      LIMIT 1);
-SET @ing_soysauce := (SELECT id
-                      FROM ingredient
-                      WHERE name = '간장'
-                      LIMIT 1);
-SET @ing_pasta := (SELECT id
-                   FROM ingredient
-                   WHERE name = '스파게티면'
-                   LIMIT 1);
-
-
--- 태그
-INSERT IGNORE INTO tag (name, source_type, created_at, updated_at)
-VALUES ('집밥', 'SYSTEM', NOW(6), NOW(6)),
-       ('간단요리', 'SYSTEM', NOW(6), NOW(6)),
-       ('혼밥', 'SYSTEM', NOW(6), NOW(6)),
-       ('초보추천', 'SYSTEM', NOW(6), NOW(6)),
-       ('주말요리', 'SYSTEM', NOW(6), NOW(6)),
-       ('매운요리', 'SYSTEM', NOW(6), NOW(6)),
-       ('찌개', 'SYSTEM', NOW(6), NOW(6)),
-       ('볶음', 'SYSTEM', NOW(6), NOW(6)),
-       ('밥반찬', 'SYSTEM', NOW(6), NOW(6)),
-       ('고기요리', 'SYSTEM', NOW(6), NOW(6)),
-       ('두부요리', 'SYSTEM', NOW(6), NOW(6)),
-       ('김치요리', 'SYSTEM', NOW(6), NOW(6)),
-       ('파스타', 'SYSTEM', NOW(6), NOW(6)),
-       ('간장베이스', 'SYSTEM', NOW(6), NOW(6)),
-       ('된장베이스', 'SYSTEM', NOW(6), NOW(6)),
-       ('칼칼한맛', 'USER', NOW(6), NOW(6)),
-       ('밥도둑', 'USER', NOW(6), NOW(6)),
-       ('야식', 'USER', NOW(6), NOW(6));
-
-SET @tag_home := (SELECT id
-                  FROM tag
-                  WHERE name = '집밥'
-                  LIMIT 1);
-SET @tag_easy := (SELECT id
-                  FROM tag
-                  WHERE name = '간단요리'
-                  LIMIT 1);
-SET @tag_solo := (SELECT id
-                  FROM tag
-                  WHERE name = '혼밥'
-                  LIMIT 1);
-SET @tag_beginner := (SELECT id
-                      FROM tag
-                      WHERE name = '초보추천'
-                      LIMIT 1);
-SET @tag_weekend := (SELECT id
-                     FROM tag
-                     WHERE name = '주말요리'
-                     LIMIT 1);
-SET @tag_spicy := (SELECT id
-                   FROM tag
-                   WHERE name = '매운요리'
-                   LIMIT 1);
-SET @tag_stew := (SELECT id
-                  FROM tag
-                  WHERE name = '찌개'
-                  LIMIT 1);
-SET @tag_stirfry := (SELECT id
-                     FROM tag
-                     WHERE name = '볶음'
-                     LIMIT 1);
-SET @tag_side := (SELECT id
-                  FROM tag
-                  WHERE name = '밥반찬'
-                  LIMIT 1);
-SET @tag_meat := (SELECT id
-                  FROM tag
-                  WHERE name = '고기요리'
-                  LIMIT 1);
-SET @tag_tofu := (SELECT id
-                  FROM tag
-                  WHERE name = '두부요리'
-                  LIMIT 1);
-SET @tag_kimchiTag := (SELECT id
-                       FROM tag
-                       WHERE name = '김치요리'
-                       LIMIT 1);
-SET @tag_pastaTag := (SELECT id
-                      FROM tag
-                      WHERE name = '파스타'
-                      LIMIT 1);
-SET @tag_soyBase := (SELECT id
-                     FROM tag
-                     WHERE name = '간장베이스'
-                     LIMIT 1);
-SET @tag_doenBase := (SELECT id
-                      FROM tag
-                      WHERE name = '된장베이스'
-                      LIMIT 1);
-SET @tag_kal := (SELECT id
-                 FROM tag
-                 WHERE name = '칼칼한맛'
-                 LIMIT 1);
-SET @tag_riceThief := (SELECT id
-                       FROM tag
-                       WHERE name = '밥도둑'
-                       LIMIT 1);
-SET @tag_latenight := (SELECT id
-                       FROM tag
-                       WHERE name = '야식'
-                       LIMIT 1);
-
-
--- 레시피
-INSERT IGNORE INTO recipe (title, description, cooking_time, serving_size, difficulty,
-                           cuisine_type, meal_type, source_type, is_deleted, bookmark_count,
-                           created_at, updated_at)
-VALUES ('돼지고기 김치찌개', '돼지고기와 김치를 볶아 깊은 맛을 낸 얼큰한 김치찌개', 35, 2, 'INTERMEDIATE', 'KOREAN', 'MAIN',
-        'USER', false, 0, NOW(6), NOW(6)),
-       ('두부 된장찌개', '된장 베이스에 두부와 채소를 넣어 구수하게 끓인 찌개', 25, 2, 'BEGINNER', 'KOREAN', 'MAIN', 'USER',
-        false, 0, NOW(6), NOW(6)),
-       ('간장 불고기', '간장 양념에 재워 달달하게 볶아내는 불고기', 30, 3, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER', false,
-        0, NOW(6), NOW(6)),
-       ('매콤 제육볶음', '고추장 양념으로 빠르게 볶아내는 제육볶음', 25, 3, 'INTERMEDIATE', 'KOREAN', 'MAIN', 'USER', false,
-        0, NOW(6), NOW(6)),
-       ('두부조림', '간장 양념으로 졸여 밥반찬으로 좋은 두부조림', 20, 2, 'BEGINNER', 'KOREAN', 'SIDE_DISH', 'USER', false,
-        0, NOW(6), NOW(6)),
-       ('대파 돼지고기 볶음', '대파 향을 살려 담백하게 볶아내는 돼지고기 볶음', 20, 2, 'BEGINNER', 'KOREAN', 'MAIN', 'USER',
-        false, 0, NOW(6), NOW(6)),
-       ('김치볶음', '김치를 달달하게 볶아 다양한 반찬에 활용하기 좋은 김치볶음', 15, 2, 'BEGINNER', 'KOREAN', 'SIDE_DISH',
-        'USER', false, 0, NOW(6), NOW(6)),
-       ('된장국', '된장으로 간을 맞춰 가볍게 끓인 기본 국', 15, 2, 'BEGINNER', 'KOREAN', 'MAIN', 'USER', false, 0,
-        NOW(6), NOW(6)),
-       ('마늘 간장 파스타', '마늘과 간장으로 감칠맛을 살린 간단 파스타', 15, 1, 'BEGINNER', 'WESTERN', 'MAIN', 'USER', false,
-        0, NOW(6), NOW(6)),
-       ('대파 간장 파스타', '대파 향과 간장 풍미로 만드는 부담 없는 파스타', 18, 1, 'BEGINNER', 'WESTERN', 'MAIN', 'USER',
-        false, 0, NOW(6), NOW(6));
-
--- recipe id 변수 바인딩
-SET @r_kimchi_stew := (SELECT id
-                       FROM recipe
-                       WHERE title = '돼지고기 김치찌개'
-                       LIMIT 1);
-SET @r_doenjang_stew := (SELECT id
-                         FROM recipe
-                         WHERE title = '두부 된장찌개'
-                         LIMIT 1);
-SET @r_bulgogi := (SELECT id
-                   FROM recipe
-                   WHERE title = '간장 불고기'
-                   LIMIT 1);
-SET @r_jeyuk := (SELECT id
-                 FROM recipe
-                 WHERE title = '매콤 제육볶음'
-                 LIMIT 1);
-SET @r_tofu_braise := (SELECT id
-                       FROM recipe
-                       WHERE title = '두부조림'
-                       LIMIT 1);
-SET @r_pork_scallion := (SELECT id
-                         FROM recipe
-                         WHERE title = '대파 돼지고기 볶음'
-                         LIMIT 1);
-SET @r_kimchi_stir := (SELECT id
-                       FROM recipe
-                       WHERE title = '김치볶음'
-                       LIMIT 1);
-SET @r_doenjang_soup := (SELECT id
-                         FROM recipe
-                         WHERE title = '된장국'
-                         LIMIT 1);
-SET @r_garlic_pasta := (SELECT id
-                        FROM recipe
-                        WHERE title = '마늘 간장 파스타'
-                        LIMIT 1);
-SET @r_scallion_pasta := (SELECT id
-                          FROM recipe
-                          WHERE title = '대파 간장 파스타'
-                          LIMIT 1);
-
-
--- 레시피 재료
-INSERT IGNORE INTO recipe_ingredient (recipe_id, ingredient_id, amount, created_at, updated_at)
-VALUES (@r_kimchi_stew, @ing_kimchi, 250, NOW(6), NOW(6)),
-       (@r_kimchi_stew, @ing_pork, 180, NOW(6), NOW(6)),
-       (@r_kimchi_stew, @ing_tofu, 120, NOW(6), NOW(6)),
-       (@r_kimchi_stew, @ing_onion, 60, NOW(6), NOW(6)),
-       (@r_kimchi_stew, @ing_greenonion, 40, NOW(6), NOW(6)),
-       (@r_kimchi_stew, @ing_garlic, 10, NOW(6), NOW(6)),
-       (@r_kimchi_stew, @ing_soysauce, 15, NOW(6), NOW(6)),
-
-       (@r_doenjang_stew, @ing_doenjang, 35, NOW(6), NOW(6)),
-       (@r_doenjang_stew, @ing_tofu, 180, NOW(6), NOW(6)),
-       (@r_doenjang_stew, @ing_onion, 60, NOW(6), NOW(6)),
-       (@r_doenjang_stew, @ing_greenonion, 30, NOW(6), NOW(6)),
-       (@r_doenjang_stew, @ing_garlic, 10, NOW(6), NOW(6)),
-       (@r_doenjang_stew, @ing_soysauce, 10, NOW(6), NOW(6)),
-
-       (@r_bulgogi, @ing_pork, 320, NOW(6), NOW(6)),
-       (@r_bulgogi, @ing_onion, 90, NOW(6), NOW(6)),
-       (@r_bulgogi, @ing_greenonion, 50, NOW(6), NOW(6)),
-       (@r_bulgogi, @ing_garlic, 12, NOW(6), NOW(6)),
-       (@r_bulgogi, @ing_soysauce, 35, NOW(6), NOW(6)),
-       (@r_bulgogi, @ing_kimchi, 60, NOW(6), NOW(6)),
-
-       (@r_jeyuk, @ing_pork, 330, NOW(6), NOW(6)),
-       (@r_jeyuk, @ing_gochujang, 40, NOW(6), NOW(6)),
-       (@r_jeyuk, @ing_onion, 90, NOW(6), NOW(6)),
-       (@r_jeyuk, @ing_greenonion, 60, NOW(6), NOW(6)),
-       (@r_jeyuk, @ing_garlic, 12, NOW(6), NOW(6)),
-       (@r_jeyuk, @ing_soysauce, 15, NOW(6), NOW(6)),
-       (@r_jeyuk, @ing_kimchi, 80, NOW(6), NOW(6)),
-
-       (@r_tofu_braise, @ing_tofu, 280, NOW(6), NOW(6)),
-       (@r_tofu_braise, @ing_soysauce, 25, NOW(6), NOW(6)),
-       (@r_tofu_braise, @ing_onion, 70, NOW(6), NOW(6)),
-       (@r_tofu_braise, @ing_greenonion, 50, NOW(6), NOW(6)),
-       (@r_tofu_braise, @ing_garlic, 10, NOW(6), NOW(6)),
-       (@r_tofu_braise, @ing_gochujang, 10, NOW(6), NOW(6)),
-
-       (@r_pork_scallion, @ing_pork, 260, NOW(6), NOW(6)),
-       (@r_pork_scallion, @ing_greenonion, 120, NOW(6), NOW(6)),
-       (@r_pork_scallion, @ing_onion, 60, NOW(6), NOW(6)),
-       (@r_pork_scallion, @ing_garlic, 10, NOW(6), NOW(6)),
-       (@r_pork_scallion, @ing_soysauce, 20, NOW(6), NOW(6)),
-       (@r_pork_scallion, @ing_gochujang, 8, NOW(6), NOW(6)),
-
-       (@r_kimchi_stir, @ing_kimchi, 300, NOW(6), NOW(6)),
-       (@r_kimchi_stir, @ing_onion, 60, NOW(6), NOW(6)),
-       (@r_kimchi_stir, @ing_greenonion, 50, NOW(6), NOW(6)),
-       (@r_kimchi_stir, @ing_garlic, 10, NOW(6), NOW(6)),
-       (@r_kimchi_stir, @ing_soysauce, 10, NOW(6), NOW(6)),
-
-       (@r_doenjang_soup, @ing_doenjang, 30, NOW(6), NOW(6)),
-       (@r_doenjang_soup, @ing_onion, 70, NOW(6), NOW(6)),
-       (@r_doenjang_soup, @ing_greenonion, 40, NOW(6), NOW(6)),
-       (@r_doenjang_soup, @ing_garlic, 8, NOW(6), NOW(6)),
-       (@r_doenjang_soup, @ing_tofu, 120, NOW(6), NOW(6)),
-
-       (@r_garlic_pasta, @ing_pasta, 110, NOW(6), NOW(6)),
-       (@r_garlic_pasta, @ing_garlic, 14, NOW(6), NOW(6)),
-       (@r_garlic_pasta, @ing_onion, 40, NOW(6), NOW(6)),
-       (@r_garlic_pasta, @ing_soysauce, 18, NOW(6), NOW(6)),
-       (@r_garlic_pasta, @ing_greenonion, 20, NOW(6), NOW(6)),
-       (@r_garlic_pasta, @ing_kimchi, 30, NOW(6), NOW(6)),
-
-       (@r_scallion_pasta, @ing_pasta, 110, NOW(6), NOW(6)),
-       (@r_scallion_pasta, @ing_greenonion, 90, NOW(6), NOW(6)),
-       (@r_scallion_pasta, @ing_garlic, 12, NOW(6), NOW(6)),
-       (@r_scallion_pasta, @ing_onion, 40, NOW(6), NOW(6)),
-       (@r_scallion_pasta, @ing_soysauce, 20, NOW(6), NOW(6)),
-       (@r_scallion_pasta, @ing_pork, 80, NOW(6), NOW(6));
-
-
--- 조리 순서
-INSERT IGNORE INTO recipe_step (recipe_id, step_order, description)
-VALUES (@r_kimchi_stew, 1, '냄비에 돼지고기를 넣고 중불에서 겉면이 익을 때까지 볶는다'),
-       (@r_kimchi_stew, 2, '김치를 넣고 3~4분 더 볶아 신맛을 날린다'),
-       (@r_kimchi_stew, 3, '양파와 마늘을 넣고 한 번 섞어 향을 올린다'),
-       (@r_kimchi_stew, 4, '물을 붓고 끓기 시작하면 약불로 줄여 15~20분 끓인다'),
-       (@r_kimchi_stew, 5, '두부를 넣고 5분 더 끓인 뒤 대파를 올려 마무리한다'),
-
-       (@r_doenjang_stew, 1, '냄비에 물을 올리고 된장을 풀어 끓인다'),
-       (@r_doenjang_stew, 2, '양파와 마늘을 넣고 5분 정도 끓인다'),
-       (@r_doenjang_stew, 3, '두부를 넣고 7~8분 더 끓인다'),
-       (@r_doenjang_stew, 4, '간으로 간장을 소량 더하고 대파를 넣어 마무리한다'),
-
-       (@r_bulgogi, 1, '돼지고기에 간장과 마늘을 넣고 10분 정도 재운다'),
-       (@r_bulgogi, 2, '달군 팬에 고기를 넣고 중불에서 볶기 시작한다'),
-       (@r_bulgogi, 3, '고기가 반쯤 익으면 양파를 넣고 함께 볶는다'),
-       (@r_bulgogi, 4, '수분이 자작해지면 대파를 넣고 1~2분 더 볶아 마무리한다'),
-
-       (@r_jeyuk, 1, '돼지고기에 고추장, 간장, 마늘을 넣고 고루 섞어 10분 재운다'),
-       (@r_jeyuk, 2, '팬을 달군 뒤 고기를 넣고 중불에서 볶는다'),
-       (@r_jeyuk, 3, '고기가 익기 시작하면 양파를 넣고 함께 볶는다'),
-       (@r_jeyuk, 4, '양념이 졸아들면 김치를 넣고 2~3분 더 볶는다'),
-       (@r_jeyuk, 5, '마지막에 대파를 넣고 불을 끈 뒤 한 번 더 섞는다'),
-
-       (@r_tofu_braise, 1, '두부를 두툼하게 썰어 키친타월로 물기를 닦는다'),
-       (@r_tofu_braise, 2, '팬에 두부를 올려 앞뒤로 노릇하게 굽는다'),
-       (@r_tofu_braise, 3, '간장과 마늘, 양파를 넣고 약불로 졸이기 시작한다'),
-       (@r_tofu_braise, 4, '양념이 스며들면 고추장 소량으로 칼칼함을 더한다'),
-       (@r_tofu_braise, 5, '대파를 올리고 1분 더 졸여 마무리한다'),
-
-       (@r_pork_scallion, 1, '대파와 양파를 먹기 좋게 썬다'),
-       (@r_pork_scallion, 2, '팬에 돼지고기를 넣고 중불에서 볶아 기름을 낸다'),
-       (@r_pork_scallion, 3, '마늘을 넣고 30초 정도 볶아 향을 올린다'),
-       (@r_pork_scallion, 4, '대파와 양파를 넣고 숨이 죽을 때까지 볶는다'),
-       (@r_pork_scallion, 5, '간장으로 간을 맞추고 고추장 소량으로 풍미를 정리한다'),
-
-       (@r_kimchi_stir, 1, '김치는 물기를 살짝 짜고 먹기 좋은 크기로 썬다'),
-       (@r_kimchi_stir, 2, '팬에 김치와 양파를 넣고 중불에서 볶기 시작한다'),
-       (@r_kimchi_stir, 3, '마늘을 넣고 향이 올라오면 간장으로 간을 잡는다'),
-       (@r_kimchi_stir, 4, '마지막에 대파를 넣고 1분 더 볶아 마무리한다'),
-
-       (@r_doenjang_soup, 1, '냄비에 물을 올리고 된장을 풀어 끓인다'),
-       (@r_doenjang_soup, 2, '양파와 마늘을 넣고 5분 정도 끓인다'),
-       (@r_doenjang_soup, 3, '두부를 넣고 5분 더 끓인다'),
-       (@r_doenjang_soup, 4, '대파를 넣고 한소끔 끓인 뒤 불을 끈다'),
-
-       (@r_garlic_pasta, 1, '스파게티면을 소금물에 알맞게 삶는다'),
-       (@r_garlic_pasta, 2, '팬에 마늘을 볶아 향을 올리고 양파를 넣어 투명해질 때까지 볶는다'),
-       (@r_garlic_pasta, 3, '삶은 면을 넣고 간장을 둘러 빠르게 섞는다'),
-       (@r_garlic_pasta, 4, '대파를 넣고 30초 정도 더 볶아 향을 정리한다'),
-
-       (@r_scallion_pasta, 1, '스파게티면을 소금물에 삶아 물기를 뺀다'),
-       (@r_scallion_pasta, 2, '팬에 마늘을 먼저 볶고 대파를 넣어 향을 충분히 낸다'),
-       (@r_scallion_pasta, 3, '돼지고기를 넣고 익을 때까지 볶는다'),
-       (@r_scallion_pasta, 4, '양파를 넣고 숨이 죽으면 면을 넣는다'),
-       (@r_scallion_pasta, 5, '간장을 둘러 간을 맞추고 빠르게 섞어 마무리한다');
-
-
--- 레시피 태그
-INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)
-VALUES (@r_kimchi_stew, @tag_home),
-       (@r_kimchi_stew, @tag_stew),
-       (@r_kimchi_stew, @tag_kimchiTag),
-       (@r_kimchi_stew, @tag_meat),
-       (@r_kimchi_stew, @tag_kal),
-
-       (@r_doenjang_stew, @tag_home),
-       (@r_doenjang_stew, @tag_stew),
-       (@r_doenjang_stew, @tag_doenBase),
-       (@r_doenjang_stew, @tag_tofu),
-       (@r_doenjang_stew, @tag_beginner),
-
-       (@r_bulgogi, @tag_home),
-       (@r_bulgogi, @tag_meat),
-       (@r_bulgogi, @tag_soyBase),
-       (@r_bulgogi, @tag_weekend),
-
-       (@r_jeyuk, @tag_spicy),
-       (@r_jeyuk, @tag_meat),
-       (@r_jeyuk, @tag_stirfry),
-       (@r_jeyuk, @tag_latenight),
-
-       (@r_tofu_braise, @tag_side),
-       (@r_tofu_braise, @tag_tofu),
-       (@r_tofu_braise, @tag_soyBase),
-       (@r_tofu_braise, @tag_riceThief),
-       (@r_tofu_braise, @tag_easy),
-
-       (@r_pork_scallion, @tag_stirfry),
-       (@r_pork_scallion, @tag_meat),
-       (@r_pork_scallion, @tag_easy),
-       (@r_pork_scallion, @tag_home),
-
-       (@r_kimchi_stir, @tag_side),
-       (@r_kimchi_stir, @tag_kimchiTag),
-       (@r_kimchi_stir, @tag_stirfry),
-       (@r_kimchi_stir, @tag_easy),
-
-       (@r_doenjang_soup, @tag_home),
-       (@r_doenjang_soup, @tag_doenBase),
-       (@r_doenjang_soup, @tag_beginner),
-
-       (@r_garlic_pasta, @tag_pastaTag),
-       (@r_garlic_pasta, @tag_soyBase),
-       (@r_garlic_pasta, @tag_easy),
-       (@r_garlic_pasta, @tag_solo),
-
-       (@r_scallion_pasta, @tag_pastaTag),
-       (@r_scallion_pasta, @tag_soyBase),
-       (@r_scallion_pasta, @tag_solo),
-       (@r_scallion_pasta, @tag_weekend);
-
-
--- 큐레이션
-INSERT IGNORE INTO curation (title, description, day_types, time_types, cuisine_types, meal_types,
-                      difficulties, keywords, tags, ingredients, is_active, created_at, updated_at)
-VALUES ('자취요리 특선',
-        '혼자서 간단하게 만들 수 있는 자취생 맞춤 요리 모음',
-        'WEEKDAY,WEEKEND',
-        'LUNCH,DINNER,LATE_NIGHT',
-        'KOREAN',
-        'MAIN,SIDE_DISH',
-        'BEGINNER,INTERMEDIATE',
-        '자취,간단',
-        '자취,초간단',
-        '계란,김치,라면,밥,햄,두부,돼지고기,된장,스팸,고추장,간장',
-        true,
-        NOW(6),
-        NOW(6));
-
-
--- 레시피 북
-INSERT IGNORE INTO recipe_book (id, member_id, title, is_default, sort_order, created_at, updated_at)
-VALUES
-(1, (SELECT id FROM member WHERE email = 'test@example.com'), '기본 레시피북', true, 1, NOW(6), NOW(6)),
-(2, (SELECT id FROM member WHERE email = 'test@example.com'), '찜해둔 요리', false, 2, NOW(6), NOW(6)),
-(3, (SELECT id FROM member WHERE email = 'test@example.com'), '다이어트 식단', false, 3, NOW(6), NOW(6));
-
-
-INSERT IGNORE INTO recipe_book_item (book_id, recipe_id, created_at, updated_at)
-VALUES
-(1, 1, NOW(6), NOW(6)),
-(1, 2, NOW(6), NOW(6));
+SET FOREIGN_KEY_CHECKS = 0;TRUNCATE TABLE recipe_book_item;TRUNCATE TABLE recipe_book;TRUNCATE TABLE recipe_tag;TRUNCATE TABLE recipe_step;TRUNCATE TABLE recipe_ingredient;TRUNCATE TABLE recipe;TRUNCATE TABLE curation;TRUNCATE TABLE source_content;TRUNCATE TABLE source_content_creator;TRUNCATE TABLE tag;TRUNCATE TABLE ingredient;TRUNCATE TABLE member;SET FOREIGN_KEY_CHECKS = 1;-- =========================-- 멤버-- =========================INSERT IGNORE INTO member (email, name, oauth_id, oauth_provider, role, created_at, updated_at)VALUES ('test@example.com', '테스트유저', 'test-oauth-id-001', 'GOOGLE', 'USER', NOW(6), NOW(6));SET @test_user := (SELECT id                   FROM member                   WHERE email = 'test@example.com'                   LIMIT 1);-- =========================-- 태그-- =========================INSERT IGNORE INTO tag (name, source_type, created_at, updated_at)VALUES    ('집밥','SYSTEM',NOW(6),NOW(6)),    ('초간단','SYSTEM',NOW(6),NOW(6)),    ('자취','SYSTEM',NOW(6),NOW(6)),    ('밥도둑','SYSTEM',NOW(6),NOW(6)),    ('국물요리','SYSTEM',NOW(6),NOW(6)),    ('찌개','SYSTEM',NOW(6),NOW(6)),    ('볶음','SYSTEM',NOW(6),NOW(6)),    ('반찬','SYSTEM',NOW(6),NOW(6)),    ('한그릇','SYSTEM',NOW(6),NOW(6)),    ('매운맛','SYSTEM',NOW(6),NOW(6)),    ('칼칼','SYSTEM',NOW(6),NOW(6)),    ('담백','SYSTEM',NOW(6),NOW(6)),    ('다이어트','SYSTEM',NOW(6),NOW(6)),    ('단백질','SYSTEM',NOW(6),NOW(6)),    ('면요리','SYSTEM',NOW(6),NOW(6)),    ('파스타','SYSTEM',NOW(6),NOW(6)),    ('오일파스타','SYSTEM',NOW(6),NOW(6)),    ('토마토','SYSTEM',NOW(6),NOW(6)),    ('치즈','SYSTEM',NOW(6),NOW(6)),    ('일식','SYSTEM',NOW(6),NOW(6)),    ('덮밥','SYSTEM',NOW(6),NOW(6)),    ('중식','SYSTEM',NOW(6),NOW(6)),    ('아시안','SYSTEM',NOW(6),NOW(6)),    ('분식','SYSTEM',NOW(6),NOW(6)),    ('간식','SYSTEM',NOW(6),NOW(6)),    ('주말요리','SYSTEM',NOW(6),NOW(6)),    ('손님상','SYSTEM',NOW(6),NOW(6)),    ('도시락','SYSTEM',NOW(6),NOW(6)),    ('해산물','SYSTEM',NOW(6),NOW(6)),    ('샐러드','SYSTEM',NOW(6),NOW(6));-- =========================-- 재료-- =========================INSERT IGNORE INTO ingredient (name, created_at, updated_at)VALUES-- 공통('소금', NOW(6), NOW(6)),('후추', NOW(6), NOW(6)),('설탕', NOW(6), NOW(6)),('식용유', NOW(6), NOW(6)),('참기름', NOW(6), NOW(6)),('깨', NOW(6), NOW(6)),-- 채소/향신('양파', NOW(6), NOW(6)),('대파', NOW(6), NOW(6)),('쪽파', NOW(6), NOW(6)),('마늘', NOW(6), NOW(6)),('생강', NOW(6), NOW(6)),('청양고추', NOW(6), NOW(6)),('홍고추', NOW(6), NOW(6)),('당근', NOW(6), NOW(6)),('감자', NOW(6), NOW(6)),('무', NOW(6), NOW(6)),('애호박', NOW(6), NOW(6)),('버섯', NOW(6), NOW(6)),('표고버섯', NOW(6), NOW(6)),('양배추', NOW(6), NOW(6)),('오이', NOW(6), NOW(6)),('시금치', NOW(6), NOW(6)),('브로콜리', NOW(6), NOW(6)),('토마토', NOW(6), NOW(6)),('아보카도', NOW(6), NOW(6)),('레몬', NOW(6), NOW(6)),('라임', NOW(6), NOW(6)),-- 한식 베이스('김치', NOW(6), NOW(6)),('고추장', NOW(6), NOW(6)),('고춧가루', NOW(6), NOW(6)),('된장', NOW(6), NOW(6)),('간장', NOW(6), NOW(6)),('국간장', NOW(6), NOW(6)),('멸치액젓', NOW(6), NOW(6)),('새우젓', NOW(6), NOW(6)),-- 단백질/해산물('돼지고기 앞다리살', NOW(6), NOW(6)),('돼지고기 삼겹살', NOW(6), NOW(6)),('소고기 국거리', NOW(6), NOW(6)),('소고기 등심', NOW(6), NOW(6)),('닭다리살', NOW(6), NOW(6)),('닭가슴살', NOW(6), NOW(6)),('베이컨', NOW(6), NOW(6)),('햄', NOW(6), NOW(6)),('달걀', NOW(6), NOW(6)),('두부', NOW(6), NOW(6)),('순두부', NOW(6), NOW(6)),('오징어', NOW(6), NOW(6)),('새우', NOW(6), NOW(6)),('바지락', NOW(6), NOW(6)),('연어', NOW(6), NOW(6)),('참치캔', NOW(6), NOW(6)),-- 곡물/면('쌀', NOW(6), NOW(6)),('밥', NOW(6), NOW(6)),('떡볶이떡', NOW(6), NOW(6)),('우동면', NOW(6), NOW(6)),('스파게티면', NOW(6), NOW(6)),('라면사리', NOW(6), NOW(6)),-- 양식/중식/일식/아시안('올리브오일', NOW(6), NOW(6)),('버터', NOW(6), NOW(6)),('파마산치즈', NOW(6), NOW(6)),('모짜렐라치즈', NOW(6), NOW(6)),('생크림', NOW(6), NOW(6)),('우유', NOW(6), NOW(6)),('토마토소스', NOW(6), NOW(6)),('케첩', NOW(6), NOW(6)),('화이트와인', NOW(6), NOW(6)),('페페론치노', NOW(6), NOW(6)),('파슬리', NOW(6), NOW(6)),('간장(일식)', NOW(6), NOW(6)),('미림', NOW(6), NOW(6)),('식초', NOW(6), NOW(6)),('마요네즈', NOW(6), NOW(6)),('고추기름', NOW(6), NOW(6)),('굴소스', NOW(6), NOW(6)),('두반장', NOW(6), NOW(6)),('춘장', NOW(6), NOW(6)),('카레가루', NOW(6), NOW(6)),('코코넛밀크', NOW(6), NOW(6)),('피시소스', NOW(6), NOW(6)),('라임즙', NOW(6), NOW(6)),-- 디저트/간식('밀가루', NOW(6), NOW(6)),('베이킹파우더', NOW(6), NOW(6)),('꿀', NOW(6), NOW(6)),('바나나', NOW(6), NOW(6)),('딸기', NOW(6), NOW(6)),('요거트', NOW(6), NOW(6)),('초콜릿', NOW(6), NOW(6));-- =========================-- 크리에이터-- =========================INSERT IGNORE INTO source_content_creator (external_key, platform, display_name, profile_img_url, created_at, updated_at)VALUES    ('creator_a', 'YOUTUBE', 'Shortkki Creator A', 'https://img.example.com/creator_a.jpg', NOW(6), NOW(6)),    ('creator_b', 'YOUTUBE', 'Shortkki Creator B', 'https://img.example.com/creator_b.jpg', NOW(6), NOW(6)),    ('creator_c', 'YOUTUBE', 'Shortkki Creator C', 'https://img.example.com/creator_c.jpg', NOW(6), NOW(6));SELECT id INTO @creator_a_id FROM source_content_creator WHERE platform='YOUTUBE' AND external_key='creator_a' LIMIT 1;SELECT id INTO @creator_b_id FROM source_content_creator WHERE platform='YOUTUBE' AND external_key='creator_b' LIMIT 1;SELECT id INTO @creator_c_id FROM source_content_creator WHERE platform='YOUTUBE' AND external_key='creator_c' LIMIT 1;-- =========================-- 원본 컨텐츠-- =========================INSERT IGNORE INTO source_content(source_author_id, external_key, platform, title, canonical_url, thumbnail_url, content_type, is_active, created_at, updated_at)VALUES    (@creator_a_id,'yt_sc_0001','YOUTUBE','두부 된장찌개','https://youtube.example.com/watch?v=yt_sc_0001','https://img.example.com/thumbs/yt_sc_0001.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0002','YOUTUBE','간장 불고기','https://youtube.example.com/watch?v=yt_sc_0002','https://img.example.com/thumbs/yt_sc_0002.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0003','YOUTUBE','매콤 제육볶음','https://youtube.example.com/watch?v=yt_sc_0003','https://img.example.com/thumbs/yt_sc_0003.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0004','YOUTUBE','두부조림','https://youtube.example.com/watch?v=yt_sc_0004','https://img.example.com/thumbs/yt_sc_0004.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0005','YOUTUBE','대파 돼지고기 볶음','https://youtube.example.com/watch?v=yt_sc_0005','https://img.example.com/thumbs/yt_sc_0005.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0006','YOUTUBE','된장국','https://youtube.example.com/watch?v=yt_sc_0006','https://img.example.com/thumbs/yt_sc_0006.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0007','YOUTUBE','순두부찌개','https://youtube.example.com/watch?v=yt_sc_0007','https://img.example.com/thumbs/yt_sc_0007.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0008','YOUTUBE','오징어볶음','https://youtube.example.com/watch?v=yt_sc_0008','https://img.example.com/thumbs/yt_sc_0008.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0009','YOUTUBE','소고기무국','https://youtube.example.com/watch?v=yt_sc_0009','https://img.example.com/thumbs/yt_sc_0009.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0010','YOUTUBE','감자볶음','https://youtube.example.com/watch?v=yt_sc_0010','https://img.example.com/thumbs/yt_sc_0010.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0011','YOUTUBE','알리오 올리오','https://youtube.example.com/watch?v=yt_sc_0011','https://img.example.com/thumbs/yt_sc_0011.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0012','YOUTUBE','미트 토마토 파스타','https://youtube.example.com/watch?v=yt_sc_0012','https://img.example.com/thumbs/yt_sc_0012.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0013','YOUTUBE','까르보나라','https://youtube.example.com/watch?v=yt_sc_0013','https://img.example.com/thumbs/yt_sc_0013.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0014','YOUTUBE','봉골레 파스타','https://youtube.example.com/watch?v=yt_sc_0014','https://img.example.com/thumbs/yt_sc_0014.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0015','YOUTUBE','연어 아보카도 샐러드','https://youtube.example.com/watch?v=yt_sc_0015','https://img.example.com/thumbs/yt_sc_0015.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0016','YOUTUBE','치킨 샐러드','https://youtube.example.com/watch?v=yt_sc_0016','https://img.example.com/thumbs/yt_sc_0016.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0017','YOUTUBE','가츠동','https://youtube.example.com/watch?v=yt_sc_0017','https://img.example.com/thumbs/yt_sc_0017.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0018','YOUTUBE','규동','https://youtube.example.com/watch?v=yt_sc_0018','https://img.example.com/thumbs/yt_sc_0018.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0019','YOUTUBE','우동','https://youtube.example.com/watch?v=yt_sc_0019','https://img.example.com/thumbs/yt_sc_0019.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0020','YOUTUBE','마파두부','https://youtube.example.com/watch?v=yt_sc_0020','https://img.example.com/thumbs/yt_sc_0020.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0021','YOUTUBE','짜장면','https://youtube.example.com/watch?v=yt_sc_0021','https://img.example.com/thumbs/yt_sc_0021.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0022','YOUTUBE','새우 볶음밥','https://youtube.example.com/watch?v=yt_sc_0022','https://img.example.com/thumbs/yt_sc_0022.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_a_id,'yt_sc_0023','YOUTUBE','치킨 카레','https://youtube.example.com/watch?v=yt_sc_0023','https://img.example.com/thumbs/yt_sc_0023.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_b_id,'yt_sc_0024','YOUTUBE','팟타이','https://youtube.example.com/watch?v=yt_sc_0024','https://img.example.com/thumbs/yt_sc_0024.jpg','VIDEO',1,NOW(6),NOW(6)),    (@creator_c_id,'yt_sc_0025','YOUTUBE','나시고렝','https://youtube.example.com/watch?v=yt_sc_0025','https://img.example.com/thumbs/yt_sc_0025.jpg','VIDEO',1,NOW(6),NOW(6));SELECT id INTO @sc_0001 FROM source_content WHERE external_key='yt_sc_0001' LIMIT 1;SELECT id INTO @sc_0002 FROM source_content WHERE external_key='yt_sc_0002' LIMIT 1;SELECT id INTO @sc_0003 FROM source_content WHERE external_key='yt_sc_0003' LIMIT 1;SELECT id INTO @sc_0004 FROM source_content WHERE external_key='yt_sc_0004' LIMIT 1;SELECT id INTO @sc_0005 FROM source_content WHERE external_key='yt_sc_0005' LIMIT 1;SELECT id INTO @sc_0006 FROM source_content WHERE external_key='yt_sc_0006' LIMIT 1;SELECT id INTO @sc_0007 FROM source_content WHERE external_key='yt_sc_0007' LIMIT 1;SELECT id INTO @sc_0008 FROM source_content WHERE external_key='yt_sc_0008' LIMIT 1;SELECT id INTO @sc_0009 FROM source_content WHERE external_key='yt_sc_0009' LIMIT 1;SELECT id INTO @sc_0010 FROM source_content WHERE external_key='yt_sc_0010' LIMIT 1;SELECT id INTO @sc_0011 FROM source_content WHERE external_key='yt_sc_0011' LIMIT 1;SELECT id INTO @sc_0012 FROM source_content WHERE external_key='yt_sc_0012' LIMIT 1;SELECT id INTO @sc_0013 FROM source_content WHERE external_key='yt_sc_0013' LIMIT 1;SELECT id INTO @sc_0014 FROM source_content WHERE external_key='yt_sc_0014' LIMIT 1;SELECT id INTO @sc_0015 FROM source_content WHERE external_key='yt_sc_0015' LIMIT 1;SELECT id INTO @sc_0016 FROM source_content WHERE external_key='yt_sc_0016' LIMIT 1;SELECT id INTO @sc_0017 FROM source_content WHERE external_key='yt_sc_0017' LIMIT 1;SELECT id INTO @sc_0018 FROM source_content WHERE external_key='yt_sc_0018' LIMIT 1;SELECT id INTO @sc_0019 FROM source_content WHERE external_key='yt_sc_0019' LIMIT 1;SELECT id INTO @sc_0020 FROM source_content WHERE external_key='yt_sc_0020' LIMIT 1;SELECT id INTO @sc_0021 FROM source_content WHERE external_key='yt_sc_0021' LIMIT 1;SELECT id INTO @sc_0022 FROM source_content WHERE external_key='yt_sc_0022' LIMIT 1;SELECT id INTO @sc_0023 FROM source_content WHERE external_key='yt_sc_0023' LIMIT 1;SELECT id INTO @sc_0024 FROM source_content WHERE external_key='yt_sc_0024' LIMIT 1;SELECT id INTO @sc_0025 FROM source_content WHERE external_key='yt_sc_0025' LIMIT 1;-- =========================-- 레시피-- =========================INSERT INTO recipe(member_id, title, description, cooking_time, serving_size, difficulty, cuisine_type, meal_type, source_type, source_content_id, bookmark_count, created_at, updated_at)VALUES-- USER(@test_user,'돼지고기 김치찌개','돼지고기와 김치로 진하게 끓인 김치찌개',35,2,'INTERMEDIATE','KOREAN','MAIN','USER',NULL,1820,NOW(6),NOW(6)),(@test_user,'계란말이','부드럽게 말아낸 기본 계란말이',12,2,'BEGINNER','KOREAN','SIDE_DISH','USER',NULL,520,NOW(6),NOW(6)),(@test_user,'감자조림','간장 양념으로 졸인 감자조림',25,3,'BEGINNER','KOREAN','SIDE_DISH','USER',NULL,410,NOW(6),NOW(6)),(@test_user,'오이무침','아삭한 오이를 새콤하게 무친 반찬',10,2,'BEGINNER','KOREAN','SIDE_DISH','USER',NULL,260,NOW(6),NOW(6)),(@test_user,'떡볶이','고추장 양념의 대표 분식 떡볶이',25,2,'INTERMEDIATE','KOREAN','SNACK','USER',NULL,980,NOW(6),NOW(6)),-- IMPORT(@test_user,'두부 된장찌개','된장 베이스의 구수한 두부찌개',25,2,'BEGINNER','KOREAN','MAIN','IMPORT',@sc_0001,940,NOW(6),NOW(6)),(@test_user,'간장 불고기','간장 양념에 재운 달콤짭짤 불고기',30,3,'INTERMEDIATE','KOREAN','MAIN','IMPORT',@sc_0002,1310,NOW(6),NOW(6)),(@test_user,'매콤 제육볶음','고추장 양념으로 볶아낸 제육',25,3,'INTERMEDIATE','KOREAN','MAIN','IMPORT',@sc_0003,1650,NOW(6),NOW(6)),(@test_user,'두부조림','간장 양념으로 졸인 두부조림',20,2,'BEGINNER','KOREAN','SIDE_DISH','IMPORT',@sc_0004,420,NOW(6),NOW(6)),(@test_user,'대파 돼지고기 볶음','대파 향을 살린 담백한 볶음',20,2,'BEGINNER','KOREAN','MAIN','IMPORT',@sc_0005,760,NOW(6),NOW(6)),(@test_user,'된장국','기본 된장국',15,2,'BEGINNER','KOREAN','MAIN','IMPORT',@sc_0006,380,NOW(6),NOW(6)),(@test_user,'순두부찌개','부드러운 순두부와 칼칼한 국물',20,2,'INTERMEDIATE','KOREAN','MAIN','IMPORT',@sc_0007,820,NOW(6),NOW(6)),(@test_user,'오징어볶음','매콤달콤 오징어볶음',25,2,'INTERMEDIATE','KOREAN','MAIN','IMPORT',@sc_0008,910,NOW(6),NOW(6)),(@test_user,'소고기무국','담백한 소고기무국',35,3,'BEGINNER','KOREAN','MAIN','IMPORT',@sc_0009,670,NOW(6),NOW(6)),(@test_user,'감자볶음','간단한 감자볶음',15,2,'BEGINNER','KOREAN','SIDE_DISH','IMPORT',@sc_0010,540,NOW(6),NOW(6)),(@test_user,'알리오 올리오','마늘과 올리브오일의 기본 파스타',20,1,'BEGINNER','WESTERN','MAIN','IMPORT',@sc_0011,920,NOW(6),NOW(6)),(@test_user,'미트 토마토 파스타','토마토소스와 고기로 만든 파스타',30,2,'INTERMEDIATE','WESTERN','MAIN','IMPORT',@sc_0012,860,NOW(6),NOW(6)),(@test_user,'까르보나라','베이컨과 계란으로 만드는 파스타',25,1,'ADVANCED','WESTERN','MAIN','IMPORT',@sc_0013,980,NOW(6),NOW(6)),(@test_user,'봉골레 파스타','바지락 오일 파스타',25,1,'INTERMEDIATE','WESTERN','MAIN','IMPORT',@sc_0014,740,NOW(6),NOW(6)),(@test_user,'연어 아보카도 샐러드','연어와 아보카도로 만든 샐러드',10,1,'BEGINNER','WESTERN','MAIN','IMPORT',@sc_0015,630,NOW(6),NOW(6)),(@test_user,'치킨 샐러드','닭가슴살과 채소의 샐러드',12,1,'BEGINNER','WESTERN','MAIN','IMPORT',@sc_0016,620,NOW(6),NOW(6)),(@test_user,'가츠동','돈가스와 달걀로 만든 덮밥',25,1,'INTERMEDIATE','JAPANESE','MAIN','IMPORT',@sc_0017,880,NOW(6),NOW(6)),(@test_user,'규동','소고기 양파 덮밥',20,1,'BEGINNER','JAPANESE','MAIN','IMPORT',@sc_0018,790,NOW(6),NOW(6)),(@test_user,'우동','따뜻한 국물 우동',25,1,'INTERMEDIATE','JAPANESE','MAIN','IMPORT',@sc_0019,610,NOW(6),NOW(6)),(@test_user,'마파두부','두반장으로 만든 매콤한 마파두부',25,2,'INTERMEDIATE','CHINESE','MAIN','IMPORT',@sc_0020,950,NOW(6),NOW(6)),(@test_user,'짜장면','춘장으로 만든 짜장면',30,2,'ADVANCED','CHINESE','MAIN','IMPORT',@sc_0021,840,NOW(6),NOW(6)),(@test_user,'새우 볶음밥','새우와 채소로 볶아낸 볶음밥',20,2,'BEGINNER','CHINESE','MAIN','IMPORT',@sc_0022,720,NOW(6),NOW(6)),(@test_user,'치킨 카레','치킨과 카레로 만든 한 그릇',35,3,'INTERMEDIATE','ASIAN','MAIN','IMPORT',@sc_0023,690,NOW(6),NOW(6)),(@test_user,'팟타이','피시소스로 감칠맛을 낸 태국 볶음면',30,2,'ADVANCED','ASIAN','MAIN','IMPORT',@sc_0024,770,NOW(6),NOW(6)),(@test_user,'나시고렝','인도네시아식 볶음밥',25,2,'INTERMEDIATE','ASIAN','MAIN','IMPORT',@sc_0025,710,NOW(6),NOW(6));-- =========================-- 레시피 재료-- =========================INSERT IGNORE INTO recipe_ingredient (recipe_id, ingredient_id, amount, created_at, updated_at)VALUES-- USER-- 1) 돼지고기 김치찌개((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='김치' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 앞다리살' LIMIT 1),180,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='두부' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),80,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='국간장' LIMIT 1),10,NOW(6),NOW(6)),-- 2) 계란말이((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),220,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),(SELECT id FROM ingredient WHERE name='쪽파' LIMIT 1),20,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),(SELECT id FROM ingredient WHERE name='당근' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),(SELECT id FROM ingredient WHERE name='소금' LIMIT 1),2,NOW(6),NOW(6)),-- 3) 감자조림((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='감자' LIMIT 1),350,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장' LIMIT 1),25,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='설탕' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),6,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),20,NOW(6),NOW(6)),-- 4) 오이무침((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='오이' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),8,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='식초' LIMIT 1),12,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),4,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='설탕' LIMIT 1),4,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='참기름' LIMIT 1),5,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),(SELECT id FROM ingredient WHERE name='깨' LIMIT 1),2,NOW(6),NOW(6)),-- 5) 떡볶이((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),(SELECT id FROM ingredient WHERE name='떡볶이떡' LIMIT 1),400,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),(SELECT id FROM ingredient WHERE name='고추장' LIMIT 1),35,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),(SELECT id FROM ingredient WHERE name='설탕' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),(SELECT id FROM ingredient WHERE name='양배추' LIMIT 1),80,NOW(6),NOW(6)),-- IMPORT-- 6) 두부 된장찌개((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='된장' LIMIT 1),35,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='두부' LIMIT 1),180,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='애호박' LIMIT 1),80,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),-- 7) 간장 불고기((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 앞다리살' LIMIT 1),320,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장' LIMIT 1),35,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),90,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),(SELECT id FROM ingredient WHERE name='설탕' LIMIT 1),8,NOW(6),NOW(6)),-- 8) 매콤 제육볶음((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 앞다리살' LIMIT 1),330,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='고추장' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),90,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),12,NOW(6),NOW(6)),-- 9) 두부조림((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='두부' LIMIT 1),280,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장' LIMIT 1),25,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),70,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),6,NOW(6),NOW(6)),-- 10) 대파 돼지고기 볶음((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 앞다리살' LIMIT 1),260,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장' LIMIT 1),18,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),-- 11) 된장국((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),(SELECT id FROM ingredient WHERE name='된장' LIMIT 1),25,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),(SELECT id FROM ingredient WHERE name='무' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),-- 12) 순두부찌개((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='순두부' LIMIT 1),300,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),8,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),60,NOW(6),NOW(6)),-- 13) 오징어볶음((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='오징어' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='고추장' LIMIT 1),25,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='고춧가루' LIMIT 1),8,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),80,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),10,NOW(6),NOW(6)),-- 14) 소고기무국((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),(SELECT id FROM ingredient WHERE name='소고기 국거리' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),(SELECT id FROM ingredient WHERE name='무' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),(SELECT id FROM ingredient WHERE name='국간장' LIMIT 1),15,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),-- 15) 감자볶음((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='감자' LIMIT 1),300,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='식용유' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),(SELECT id FROM ingredient WHERE name='소금' LIMIT 1),2,NOW(6),NOW(6)),-- 16) 알리오 올리오((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),(SELECT id FROM ingredient WHERE name='스파게티면' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),(SELECT id FROM ingredient WHERE name='올리브오일' LIMIT 1),25,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),12,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),(SELECT id FROM ingredient WHERE name='페페론치노' LIMIT 1),2,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),(SELECT id FROM ingredient WHERE name='파슬리' LIMIT 1),2,NOW(6),NOW(6)),-- 17) 미트 토마토 파스타((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='스파게티면' LIMIT 1),140,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='토마토소스' LIMIT 1),200,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='다진 소고기' LIMIT 1),180,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),70,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),10,NOW(6),NOW(6)),-- 18) 까르보나라((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),(SELECT id FROM ingredient WHERE name='스파게티면' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),(SELECT id FROM ingredient WHERE name='베이컨' LIMIT 1),100,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),(SELECT id FROM ingredient WHERE name='파마산치즈' LIMIT 1),50,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),(SELECT id FROM ingredient WHERE name='후추' LIMIT 1),1,NOW(6),NOW(6)),-- 19) 봉골레 파스타((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='스파게티면' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='바지락' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='올리브오일' LIMIT 1),20,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),(SELECT id FROM ingredient WHERE name='화이트와인' LIMIT 1),30,NOW(6),NOW(6)),-- 20) 연어 아보카도 샐러드((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='연어' LIMIT 1),180,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='아보카도' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='레몬' LIMIT 1),20,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='올리브오일' LIMIT 1),10,NOW(6),NOW(6)),-- 21) 치킨 샐러드((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='닭가슴살' LIMIT 1),200,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='양배추' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='토마토' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),(SELECT id FROM ingredient WHERE name='올리브오일' LIMIT 1),10,NOW(6),NOW(6)),-- 22) 가츠동((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 등심' LIMIT 1),220,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),70,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),(SELECT id FROM ingredient WHERE name='밥' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장(일식)' LIMIT 1),20,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),(SELECT id FROM ingredient WHERE name='미림' LIMIT 1),15,NOW(6),NOW(6)),-- 23) 규동((SELECT id FROM recipe WHERE title='규동' LIMIT 1),(SELECT id FROM ingredient WHERE name='소고기 등심' LIMIT 1),200,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='규동' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='규동' LIMIT 1),(SELECT id FROM ingredient WHERE name='밥' LIMIT 1),250,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='규동' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장(일식)' LIMIT 1),20,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='규동' LIMIT 1),(SELECT id FROM ingredient WHERE name='미림' LIMIT 1),15,NOW(6),NOW(6)),-- 24) 우동((SELECT id FROM recipe WHERE title='우동' LIMIT 1),(SELECT id FROM ingredient WHERE name='우동면' LIMIT 1),220,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='우동' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='우동' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장(일식)' LIMIT 1),18,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='우동' LIMIT 1),(SELECT id FROM ingredient WHERE name='미림' LIMIT 1),12,NOW(6),NOW(6)),-- 25) 마파두부((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),(SELECT id FROM ingredient WHERE name='두부' LIMIT 1),300,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 앞다리살' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),(SELECT id FROM ingredient WHERE name='두반장' LIMIT 1),15,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),(SELECT id FROM ingredient WHERE name='고추기름' LIMIT 1),10,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),-- 26) 짜장면((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),(SELECT id FROM ingredient WHERE name='춘장' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),(SELECT id FROM ingredient WHERE name='돼지고기 앞다리살' LIMIT 1),120,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),(SELECT id FROM ingredient WHERE name='당근' LIMIT 1),40,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),(SELECT id FROM ingredient WHERE name='식용유' LIMIT 1),15,NOW(6),NOW(6)),-- 27) 새우 볶음밥((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),(SELECT id FROM ingredient WHERE name='밥' LIMIT 1),350,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),(SELECT id FROM ingredient WHERE name='새우' LIMIT 1),160,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),(SELECT id FROM ingredient WHERE name='대파' LIMIT 1),30,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장' LIMIT 1),10,NOW(6),NOW(6)),-- 28) 치킨 카레((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),(SELECT id FROM ingredient WHERE name='닭다리살' LIMIT 1),260,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),(SELECT id FROM ingredient WHERE name='카레가루' LIMIT 1),35,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),(SELECT id FROM ingredient WHERE name='감자' LIMIT 1),150,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),(SELECT id FROM ingredient WHERE name='당근' LIMIT 1),80,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),120,NOW(6),NOW(6)),-- 29) 팟타이((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),(SELECT id FROM ingredient WHERE name='우동면' LIMIT 1),220,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),(SELECT id FROM ingredient WHERE name='새우' LIMIT 1),140,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),(SELECT id FROM ingredient WHERE name='피시소스' LIMIT 1),12,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),(SELECT id FROM ingredient WHERE name='라임즙' LIMIT 1),10,NOW(6),NOW(6)),-- 30) 나시고렝((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),(SELECT id FROM ingredient WHERE name='밥' LIMIT 1),350,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),(SELECT id FROM ingredient WHERE name='달걀' LIMIT 1),60,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),(SELECT id FROM ingredient WHERE name='양파' LIMIT 1),70,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),(SELECT id FROM ingredient WHERE name='마늘' LIMIT 1),8,NOW(6),NOW(6)),((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),(SELECT id FROM ingredient WHERE name='간장' LIMIT 1),12,NOW(6),NOW(6));-- =========================-- 조리 순서-- =========================-- 1) 돼지고기 김치찌개INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),1,'냄비에 돼지고기를 넣고 중불로 볶아 기름을 살립니다.'),    ((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),2,'김치를 넣고 3~4분 더 볶아 신맛을 날립니다.'),    ((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),3,'물(또는 육수)을 붓고 끓으면 거품을 걷습니다.'),    ((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),4,'고춧가루/국간장으로 간을 맞추고 10~15분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),5,'양파를 넣고 5분 더 끓입니다.'),    ((SELECT id FROM recipe WHERE title='돼지고기 김치찌개' LIMIT 1),6,'두부와 대파를 넣고 2~3분 후 불을 끕니다.');-- 2) 계란말이INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),1,'달걀을 풀고 소금으로 간한 뒤 잘게 썬 쪽파/당근을 섞습니다.'),    ((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),2,'약불로 팬을 달군 뒤 기름을 얇게 두릅니다.'),    ((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),3,'계란물을 1/3 붓고 반쯤 익으면 말아 올립니다.'),    ((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),4,'빈 공간에 계란물을 다시 붓고 같은 방식으로 반복합니다.'),    ((SELECT id FROM recipe WHERE title='계란말이' LIMIT 1),5,'겉면을 살짝 더 익힌 뒤 먹기 좋게 썹니다.');-- 3) 감자조림INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),1,'감자를 한입 크기로 썰어 물에 5분 담가 전분을 빼줍니다.'),    ((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),2,'팬에 감자/물/간장/설탕을 넣고 중불로 끓입니다.'),    ((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),3,'끓기 시작하면 마늘을 넣고 뚜껑 덮어 10분 졸입니다.'),    ((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),4,'뚜껑을 열고 국물을 줄이면서 윤기 나게 졸입니다.'),    ((SELECT id FROM recipe WHERE title='감자조림' LIMIT 1),5,'대파를 넣고 1분 더 졸여 마무리합니다.');-- 4) 오이무침INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),1,'오이를 썰어 소금에 5분 절인 뒤 물기를 짭니다.'),    ((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),2,'볼에 고춧가루/식초/설탕/마늘을 넣고 양념을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),3,'오이를 넣고 가볍게 무쳐줍니다.'),    ((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),4,'참기름과 깨를 넣어 한 번 더 섞습니다.'),    ((SELECT id FROM recipe WHERE title='오이무침' LIMIT 1),5,'간을 보고 부족하면 소금으로 마무리합니다.');-- 5) 떡볶이INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),1,'떡을 미지근한 물에 5분 불립니다.'),    ((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),2,'냄비에 물을 붓고 고추장/고춧가루/설탕을 풀어 끓입니다.'),    ((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),3,'끓으면 떡과 양배추를 넣고 중불로 10분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),4,'소스가 걸쭉해지면 대파를 넣고 2분 더 끓입니다.'),    ((SELECT id FROM recipe WHERE title='떡볶이' LIMIT 1),5,'매운맛은 고춧가루로, 단맛은 설탕으로 조절합니다.');-- 6) 두부 된장찌개INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),1,'냄비에 물을 끓이고 된장을 체에 풀어줍니다.'),    ((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),2,'양파/애호박을 넣고 7~8분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),3,'마늘을 넣고 2분 더 끓입니다.'),    ((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),4,'두부를 넣고 3~4분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='두부 된장찌개' LIMIT 1),5,'대파를 넣고 한소끔 후 불을 끕니다.');-- 7) 간장 불고기INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),1,'간장/설탕/마늘을 섞어 양념을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),2,'고기와 양파를 양념에 10분 재웁니다.'),    ((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),3,'중불로 달군 팬에 고기를 펼쳐 넣습니다.'),    ((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),4,'수분이 생기면 센불로 올려 볶아 윤기 나게 합니다.'),    ((SELECT id FROM recipe WHERE title='간장 불고기' LIMIT 1),5,'대파를 넣고 1분 더 볶아 마무리합니다.');-- 8) 매콤 제육볶음INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),1,'고추장/고춧가루/마늘을 섞어 양념을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),2,'고기를 양념에 10분 재웁니다.'),    ((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),3,'팬에 양파를 먼저 볶아 단맛을 올립니다.'),    ((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),4,'고기를 넣고 센불로 빠르게 볶습니다.'),    ((SELECT id FROM recipe WHERE title='매콤 제육볶음' LIMIT 1),5,'대파 넣고 1~2분 더 볶아 마무리합니다.');-- 9) 두부조림INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),1,'두부를 두껍게 썰어 물기를 닦습니다.'),    ((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),2,'팬에 두부를 노릇하게 굽습니다.'),    ((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),3,'간장/고춧가루/마늘/양파로 양념을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),4,'양념과 물 약간을 넣고 중불로 7~8분 졸입니다.'),    ((SELECT id FROM recipe WHERE title='두부조림' LIMIT 1),5,'대파 넣고 1분 더 졸여 마무리합니다.');-- 10) 대파 돼지고기 볶음INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),1,'대파를 길게 썰어 팬에 기름과 함께 볶아 향을 냅니다.'),    ((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),2,'돼지고기를 넣고 색이 변할 때까지 볶습니다.'),    ((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),3,'양파를 넣고 2~3분 볶습니다.'),    ((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),4,'간장/마늘로 간을 맞추고 센불로 수분을 날립니다.'),    ((SELECT id FROM recipe WHERE title='대파 돼지고기 볶음' LIMIT 1),5,'불 끄고 후추로 마무리합니다.');-- 11) 된장국INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),1,'물에 된장을 풀어 끓입니다.'),    ((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),2,'무를 넣고 8~10분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),3,'양파를 넣고 3~4분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='된장국' LIMIT 1),4,'대파를 넣고 한소끔 후 불을 끕니다.');-- 12) 순두부찌개INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),1,'냄비에 기름을 두르고 고춧가루를 살짝 볶아 고추기름을 냅니다.'),    ((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),2,'물(또는 육수)을 붓고 끓입니다.'),    ((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),3,'순두부를 숟가락으로 크게 떠 넣습니다.'),    ((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),4,'마늘/대파를 넣고 4~5분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='순두부찌개' LIMIT 1),5,'마지막에 달걀을 깨 넣고 1~2분 후 불을 끕니다.');-- 13) 오징어볶음INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),1,'오징어를 손질해 한입 크기로 썹니다.'),    ((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),2,'고추장/고춧가루/마늘로 양념을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),3,'팬에 양파를 먼저 볶습니다.'),    ((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),4,'오징어를 넣고 센불로 빠르게 볶습니다.'),    ((SELECT id FROM recipe WHERE title='오징어볶음' LIMIT 1),5,'대파 넣고 1분 더 볶아 마무리합니다.');-- 14) 소고기무국INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),1,'냄비에 소고기를 볶아 겉면을 익힙니다.'),    ((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),2,'무를 넣고 2~3분 더 볶습니다.'),    ((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),3,'물을 붓고 끓으면 거품을 걷습니다.'),    ((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),4,'국간장으로 간을 맞추고 15분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='소고기무국' LIMIT 1),5,'마늘/대파 넣고 2분 더 끓여 마무리합니다.');-- 15) 감자볶음INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),1,'감자를 채 썰어 물에 잠깐 헹궈 전분을 제거합니다.'),    ((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),2,'팬에 기름을 두르고 감자를 볶습니다.'),    ((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),3,'양파를 넣고 함께 볶습니다.'),    ((SELECT id FROM recipe WHERE title='감자볶음' LIMIT 1),4,'소금으로 간하고 불을 끕니다.');-- 16) 알리오 올리오INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),1,'면을 소금물에 삶습니다(면수는 조금 남깁니다).'),    ((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),2,'팬에 올리브오일과 마늘을 약불로 볶아 향을 냅니다.'),    ((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),3,'페페론치노를 넣고 10초만 더 볶습니다.'),    ((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),4,'면과 면수를 조금 넣고 센불로 유화시킵니다.'),    ((SELECT id FROM recipe WHERE title='알리오 올리오' LIMIT 1),5,'파슬리 뿌려 마무리합니다.');-- 17) 미트 토마토 파스타INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),1,'면을 삶습니다.'),    ((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),2,'팬에 양파/마늘을 볶아 향을 냅니다.'),    ((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),3,'고기를 넣고 색이 변할 때까지 볶습니다.'),    ((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),4,'토마토소스를 넣고 5~7분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='미트 토마토 파스타' LIMIT 1),5,'면을 넣고 1~2분 섞어 마무리합니다.');-- 18) 까르보나라INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),1,'달걀과 치즈를 섞어 소스를 준비합니다.'),    ((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),2,'베이컨을 노릇하게 볶습니다.'),    ((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),3,'면을 삶고 팬에 넣어 베이컨과 섞습니다.'),    ((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),4,'불을 끄고 달걀치즈 소스를 넣어 빠르게 섞습니다(스크램블 방지).'),    ((SELECT id FROM recipe WHERE title='까르보나라' LIMIT 1),5,'후추 듬뿍 뿌려 마무리합니다.');-- 19) 봉골레 파스타INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),1,'바지락을 해감해 준비합니다.'),    ((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),2,'팬에 오일과 마늘을 볶아 향을 냅니다.'),    ((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),3,'바지락과 화이트와인을 넣고 뚜껑 덮어 입을 엽니다.'),    ((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),4,'삶은 면과 면수를 넣고 섞어 소스를 만듭니다.'),    ((SELECT id FROM recipe WHERE title='봉골레 파스타' LIMIT 1),5,'간을 보고 불을 끄고 마무리합니다.');-- 20) 연어 아보카도 샐러드INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),1,'아보카도를 한입 크기로 썹니다.'),    ((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),2,'연어를 먹기 좋은 크기로 썹니다.'),    ((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),3,'레몬즙/올리브오일로 드레싱을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='연어 아보카도 샐러드' LIMIT 1),4,'재료를 섞고 드레싱 뿌려 마무리합니다.');-- 21) 치킨 샐러드INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),1,'닭가슴살을 익혀 한입 크기로 찢습니다.'),    ((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),2,'양배추/토마토를 손질해 준비합니다.'),    ((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),3,'올리브오일(또는 요거트) 기반 드레싱을 만듭니다.'),    ((SELECT id FROM recipe WHERE title='치킨 샐러드' LIMIT 1),4,'모든 재료를 섞어 마무리합니다.');-- 22) 가츠동INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),1,'돈가스를 준비해 바삭하게 익힙니다.'),    ((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),2,'팬에 양파를 볶다가 간장/미림/물로 소스를 만듭니다.'),    ((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),3,'돈가스를 올리고 풀어둔 달걀을 둘러 반숙으로 익힙니다.'),    ((SELECT id FROM recipe WHERE title='가츠동' LIMIT 1),4,'밥 위에 올려 덮밥으로 마무리합니다.');-- 23) 규동INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='규동' LIMIT 1),1,'팬에 양파를 볶다가 간장/미림/물로 끓입니다.'),    ((SELECT id FROM recipe WHERE title='규동' LIMIT 1),2,'소고기를 넣고 핏기가 사라질 때까지 끓입니다.'),    ((SELECT id FROM recipe WHERE title='규동' LIMIT 1),3,'국물 농도를 보고 간을 조절합니다.'),    ((SELECT id FROM recipe WHERE title='규동' LIMIT 1),4,'밥 위에 올려 마무리합니다.');-- 24) 우동INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='우동' LIMIT 1),1,'물에 간장/미림으로 기본 국물을 끓입니다.'),    ((SELECT id FROM recipe WHERE title='우동' LIMIT 1),2,'우동면을 데쳐 넣습니다.'),    ((SELECT id FROM recipe WHERE title='우동' LIMIT 1),3,'대파를 올리고 한소끔 끓입니다.'),    ((SELECT id FROM recipe WHERE title='우동' LIMIT 1),4,'간을 보고 마무리합니다.');-- 25) 마파두부INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),1,'팬에 고추기름을 두르고 다진 고기를 볶습니다.'),    ((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),2,'두반장과 마늘을 넣고 볶아 향을 냅니다.'),    ((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),3,'물(또는 육수)을 넣고 끓입니다.'),    ((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),4,'두부를 넣고 5분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='마파두부' LIMIT 1),5,'대파 넣고 1분 더 끓여 마무리합니다.');-- 26) 짜장면INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),1,'팬에 기름을 두르고 양파/당근/고기를 볶습니다.'),    ((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),2,'춘장을 넣고 약불로 1분 볶아 잡내를 줄입니다.'),    ((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),3,'물(또는 육수)을 넣어 끓여 소스를 만듭니다.'),    ((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),4,'면을 삶아 그릇에 담습니다.'),    ((SELECT id FROM recipe WHERE title='짜장면' LIMIT 1),5,'짜장 소스를 부어 마무리합니다.');-- 27) 새우 볶음밥INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),1,'팬에 기름을 두르고 대파를 볶아 향을 냅니다.'),    ((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),2,'새우를 넣고 익힙니다.'),    ((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),3,'밥을 넣고 고슬고슬하게 볶습니다.'),    ((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),4,'달걀을 넣어 섞고 간장으로 간을 맞춥니다.'),    ((SELECT id FROM recipe WHERE title='새우 볶음밥' LIMIT 1),5,'불을 끄고 마무리합니다.');-- 28) 치킨 카레INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),1,'닭을 한입 크기로 썰어 볶아 겉면을 익힙니다.'),    ((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),2,'양파/감자/당근을 넣고 3~4분 볶습니다.'),    ((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),3,'물을 붓고 재료가 익을 때까지 15분 끓입니다.'),    ((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),4,'카레가루를 풀어 5분 더 끓입니다.'),    ((SELECT id FROM recipe WHERE title='치킨 카레' LIMIT 1),5,'농도를 맞춰 마무리합니다.');-- 29) 팟타이INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),1,'면을 불리거나 살짝 데쳐 준비합니다.'),    ((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),2,'팬에 새우를 볶아 익힙니다.'),    ((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),3,'달걀을 넣어 스크램블 후 면을 넣습니다.'),    ((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),4,'피시소스/라임즙으로 간을 맞추며 볶습니다.'),    ((SELECT id FROM recipe WHERE title='팟타이' LIMIT 1),5,'불 끄고 한 번 더 섞어 마무리합니다.');-- 30) 나시고렝INSERT INTO recipe_step (recipe_id, step_order, description)VALUES    ((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),1,'팬에 기름을 두르고 마늘/양파를 볶습니다.'),    ((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),2,'밥을 넣고 고슬고슬하게 볶습니다.'),    ((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),3,'간장으로 간을 맞추며 볶습니다.'),    ((SELECT id FROM recipe WHERE title='나시고렝' LIMIT 1),4,'달걀을 추가해 섞고 마무리합니다.');-- =========================-- 레시피 태그-- =========================INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r         JOIN tag tWHERE r.title='돼지고기 김치찌개' AND t.name IN ('집밥','찌개','국물요리','칼칼','밥도둑');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='계란말이' AND t.name IN ('집밥','반찬','초간단','도시락');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='감자조림' AND t.name IN ('집밥','반찬','밥도둑','도시락');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='오이무침' AND t.name IN ('집밥','반찬','초간단','담백');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='떡볶이' AND t.name IN ('분식','간식','매운맛','주말요리','자취');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='두부 된장찌개' AND t.name IN ('집밥','찌개','국물요리','담백','자취');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='간장 불고기' AND t.name IN ('집밥','주말요리','손님상','한그릇','밥도둑');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='매콤 제육볶음' AND t.name IN ('집밥','볶음','매운맛','밥도둑','주말요리');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='두부조림' AND t.name IN ('집밥','반찬','초간단','밥도둑');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='대파 돼지고기 볶음' AND t.name IN ('집밥','볶음','초간단','자취');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='된장국' AND t.name IN ('집밥','국물요리','초간단','자취');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='순두부찌개' AND t.name IN ('집밥','찌개','국물요리','칼칼','자취');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='오징어볶음' AND t.name IN ('집밥','볶음','매운맛','해산물');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='소고기무국' AND t.name IN ('집밥','국물요리','담백','주말요리');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='감자볶음' AND t.name IN ('집밥','반찬','초간단','자취','도시락');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='알리오 올리오' AND t.name IN ('파스타','오일파스타','초간단','한그릇');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='미트 토마토 파스타' AND t.name IN ('파스타','토마토','주말요리','한그릇');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='까르보나라' AND t.name IN ('파스타','치즈','주말요리','손님상');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='봉골레 파스타' AND t.name IN ('파스타','오일파스타','해산물','주말요리');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='연어 아보카도 샐러드' AND t.name IN ('샐러드','다이어트','담백','주말요리');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='치킨 샐러드' AND t.name IN ('샐러드','다이어트','단백질','초간단');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='가츠동' AND t.name IN ('일식','덮밥','한그릇','주말요리');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='규동' AND t.name IN ('일식','덮밥','초간단','한그릇');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='우동' AND t.name IN ('일식','면요리','국물요리','주말요리');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='마파두부' AND t.name IN ('중식','매운맛','한그릇','밥도둑');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='짜장면' AND t.name IN ('중식','면요리','주말요리','한그릇');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='새우 볶음밥' AND t.name IN ('중식','한그릇','초간단','해산물');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='치킨 카레' AND t.name IN ('아시안','한그릇','주말요리','자취');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='팟타이' AND t.name IN ('아시안','면요리','주말요리','해산물');INSERT IGNORE INTO recipe_tag (recipe_id, tag_id)SELECT r.id, t.idFROM recipe r JOIN tag tWHERE r.title='나시고렝' AND t.name IN ('아시안','한그릇','초간단','자취');-- =========================-- 큐레이션-- =========================INSERT IGNORE INTO curation(title, description, day_types, time_types, cuisine_types, meal_types, difficulties, keywords, tags, ingredients, is_active, created_at, updated_at)VALUES    ('자취요리 특선','혼자서 간단하게 만들 수 있는 자취생 맞춤 요리 모음',     'WEEKDAY,WEEKEND','LUNCH,DINNER,LATE_NIGHT','KOREAN','MAIN,SIDE_DISH','BEGINNER,INTERMEDIATE',     NULL,'자취,초간단','계란,김치,라면,밥,햄,두부,돼지고기,된장,스팸,고추장,간장',true,NOW(6),NOW(6)),    ('초보 국물요리','실패 확률 낮은 국/찌개 위주',     'WEEKDAY,WEEKEND','DINNER,LATE_NIGHT','KOREAN','MAIN','BEGINNER,INTERMEDIATE',     NULL,'국물요리,기본','된장,김치,무,대파,마늘,두부,국간장',true,NOW(6),NOW(6)),    ('밥도둑 반찬','밥 한 그릇 순삭 반찬 모음',     'WEEKDAY,WEEKEND','LUNCH,DINNER','KOREAN','SIDE_DISH','BEGINNER,INTERMEDIATE',     NULL,'밥도둑,반찬','감자,두부,간장,고춧가루,대파,마늘,오이',true,NOW(6),NOW(6)),    ('매운맛 스트레스 해소','칼칼하고 매운 메뉴로 기분전환',     'WEEKDAY,WEEKEND','DINNER,LATE_NIGHT','KOREAN,CHINESE','MAIN','INTERMEDIATE,ADVANCED',     NULL,'매운맛,칼칼','고추장,고춧가루,돼지고기,오징어,두반장,고추기름,대파',true,NOW(6),NOW(6)),    ('다이어트 가벼운 한끼','샐러드/단백질 위주의 가벼운 식사',     'WEEKDAY,WEEKEND','LUNCH,DINNER','WESTERN','MAIN','BEGINNER,INTERMEDIATE',     NULL,'다이어트,담백','닭가슴살,연어,아보카도,양배추,토마토,레몬,올리브오일',true,NOW(6),NOW(6)),    ('파스타 데이','집에서 만드는 파스타 컬렉션',     'WEEKDAY,WEEKEND','DINNER','WESTERN','MAIN','BEGINNER,INTERMEDIATE,ADVANCED',     NULL,'파스타,면요리','스파게티면,올리브오일,마늘,토마토소스,베이컨,치즈,바지락',true,NOW(6),NOW(6)),    ('한그릇 해결','설거지 줄이는 한그릇 메뉴',     'WEEKDAY,WEEKEND','LUNCH,DINNER','KOREAN,JAPANESE,CHINESE,ASIAN','MAIN','BEGINNER,INTERMEDIATE',     NULL,'한그릇,간단','밥,양파,달걀,간장,미림,새우,카레가루',true,NOW(6),NOW(6)),    ('일식 덮밥/면','집에서 만드는 일식 덮밥과 면요리',     'WEEKDAY,WEEKEND','LUNCH,DINNER','JAPANESE','MAIN','BEGINNER,INTERMEDIATE',     NULL,'일식,덮밥','밥,양파,달걀,간장,미림,우동면,대파',true,NOW(6),NOW(6)),    ('주말 손님상','손님 와도 체면 서는 메뉴',     'WEEKEND','DINNER','KOREAN,WESTERN','MAIN','INTERMEDIATE,ADVANCED',     NULL,'손님상,주말요리','소고기,돼지고기,토마토소스,치즈,양파,마늘',true,NOW(6),NOW(6)),    ('야식 특집','늦은 밤 당기는 메뉴',     'WEEKDAY,WEEKEND','LATE_NIGHT','KOREAN,ASIAN','SNACK,MAIN','BEGINNER,INTERMEDIATE',     NULL,'야식,간식','떡볶이떡,고추장,라면사리,대파,양배추,밥,달걀',true,NOW(6),NOW(6));-- =========================-- 레시피 북-- =========================INSERT IGNORE INTO recipe_book (id, member_id, title, is_default, sort_order, created_at,                                updated_at)VALUES (1, (SELECT id FROM member WHERE email = 'test@example.com'), '기본 레시피북', true, 1, NOW(6),        NOW(6)),       (2, (SELECT id FROM member WHERE email = 'test@example.com'), '찜해둔 요리', false, 2, NOW(6),        NOW(6)),       (3, (SELECT id FROM member WHERE email = 'test@example.com'), '다이어트 식단', false, 3, NOW(6),        NOW(6));INSERT IGNORE INTO recipe_book_item (book_id, recipe_id, created_at, updated_at)VALUES (1, 1, NOW(6), NOW(6)),       (1, 2, NOW(6), NOW(6));

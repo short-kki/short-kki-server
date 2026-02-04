@@ -10,11 +10,12 @@ public record RecipeImportStatusResponse(
         Long recipeId,
         String sourceUrl,
         SourcePlatform platform,
-        RecipeImportPreview preview
+        RecipeImportPreviewResponse preview
 ) {
 
-    public static RecipeImportStatusResponse from(SourceImportHistory history,
-            RecipeImportPreview preview) {
+    public static RecipeImportStatusResponse from(
+            SourceImportHistory history, RecipeImportPreviewResponse preview
+    ) {
         return new RecipeImportStatusResponse(
                 history.getId(),
                 history.getStatus(),

@@ -32,7 +32,7 @@ public class RecipeIngredient extends BaseEntity {
     private Ingredient ingredient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id")
+    @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
 
     @Column(nullable = false, length = 50)

@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<BaseResponse<Void>> handleBusinessException(BusinessException e) {
-        log.error("BusinessException: {}", e.getMessage());
+        log.error("BusinessException: code={}, message={}", e.getErrorCode(), e.getMessage(), e);
         ErrorCode errorCode = e.getErrorCode();
         String message = errorCode.getMessage() + " " + e.getMessage();
         return ResponseEntity

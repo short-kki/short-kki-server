@@ -15,8 +15,10 @@ import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.group.entity.Group;
+import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,6 +38,8 @@ public class RecipeBookService {
     private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
     private final RecipeRepository recipeRepository;
+
+    private final DomainEventPublisher domainEventPublisher;
 
     @Transactional
     public RecipeBookResponse create(Long memberId, RecipeBookCreateRequest request) {
@@ -118,6 +122,7 @@ public class RecipeBookService {
         recipeBookItemRepository.save(item);
 
         recipeRepository.incrementBookmarkCount(recipeId);
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
     }
 
     @Transactional
@@ -134,6 +139,7 @@ public class RecipeBookService {
         recipeBookItemRepository.save(item);
 
         recipeRepository.incrementBookmarkCount(recipeId);
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
     }
 
     @Transactional
@@ -147,6 +153,7 @@ public class RecipeBookService {
         if (deleted > 0) {
             recipeRepository.decrementBookmarkCount(recipeId);
         }
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
     }
 
     @Transactional

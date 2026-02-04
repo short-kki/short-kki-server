@@ -11,9 +11,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,8 +27,14 @@ import lombok.NoArgsConstructor;
                 name = "UK_SOURCE_CONTENT_PLATFORM_KEY",
                 columnNames = {"platform", "external_key"}
         ))
-@Getter
+@NamedEntityGraph(
+        name = "SourceContent.withCreator",
+        attributeNodes = @NamedAttributeNode("sourceCreator")
+)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class SourceContent extends BaseEntity {
 
     @Id
@@ -36,7 +45,7 @@ public class SourceContent extends BaseEntity {
     @JoinColumn(name = "source_author_id", nullable = false)
     private SourceContentCreator sourceCreator;
 
-    @Column(name = "external_key", nullable = false, length = 100)
+    @Column(name = "external_key", nullable = false, length = 100, unique = true)
     private String externalKey;
 
     @Enumerated(EnumType.STRING)
@@ -46,10 +55,10 @@ public class SourceContent extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 500, unique = true)
     private String canonicalUrl;
 
-    @Column(length = 500)
+    @Column(length = 500, unique = true)
     private String thumbnailUrl;
 
     @Enumerated(EnumType.STRING)
@@ -58,20 +67,6 @@ public class SourceContent extends BaseEntity {
 
     @Column(nullable = false)
     private boolean isActive = true;
-
-    @Builder
-    private SourceContent(SourceContentCreator sourceCreator, String externalKey,
-            SourcePlatform platform, String title, String canonicalUrl,
-            String thumbnailUrl, SourceContentType contentType) {
-        this.sourceCreator = sourceCreator;
-        this.externalKey = externalKey;
-        this.platform = platform;
-        this.title = title;
-        this.canonicalUrl = canonicalUrl;
-        this.thumbnailUrl = thumbnailUrl;
-        this.contentType = contentType;
-        this.isActive = true;
-    }
 
     public static SourceContent create(
             String title, String canonicalUrl, String externalKey, SourcePlatform platform,

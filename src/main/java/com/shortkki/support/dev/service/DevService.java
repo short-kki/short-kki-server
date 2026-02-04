@@ -5,7 +5,7 @@ import com.shortkki.api.file.controller.dto.FileUploadRequest;
 import com.shortkki.api.file.controller.dto.FileUploadResponse;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.UploaderType;
-import com.shortkki.api.file.service.FileMetadataService;
+import com.shortkki.api.file.application.service.FileMetadataService;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.service.MemberQueryService;
 import com.shortkki.global.auth.jwt.JwtTokenProvider;

@@ -27,7 +27,7 @@ public class DevController {
 
     @PostMapping("/tokens")
     public ResponseEntity<BaseResponse<LoginResponse>> login(
-            @RequestParam Long memberId
+            @RequestParam(defaultValue = "1") Long memberId
     ) {
         LoginResponse response = devService.getLoginResponse(memberId);
         return ResponseEntity.ok(BaseResponse.success(response));
