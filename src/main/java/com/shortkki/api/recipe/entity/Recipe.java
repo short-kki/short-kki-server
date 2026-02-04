@@ -138,7 +138,7 @@ public class Recipe extends BaseEntity {
     }
 
     public String getAuthorName() {
-        return isImported() ? this.getMember().getName() : null;
+        return this.getMember().getName();
     }
 
     public String getAuthorProfileImgUrl() {
