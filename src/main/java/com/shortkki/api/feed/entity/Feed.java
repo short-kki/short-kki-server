@@ -39,21 +39,26 @@ public class Feed extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Column(name = "image_file_id")
+    private Long imageFileId;
+
     @Builder
-    private Feed(Group group, Member member, String content, FeedType feedType) {
+    private Feed(Group group, Member member, String content, FeedType feedType, Long imageFileId) {
         this.group = group;
         this.member = member;
         this.content = content;
         this.feedType = feedType;
+        this.imageFileId = imageFileId;
         this.likes = 0L;
     }
 
-    public static Feed create(Group group, Member member, String content, FeedType feedType) {
+    public static Feed create(Group group, Member member, String content, FeedType feedType, Long imageFileId) {
         return Feed.builder()
                 .group(group)
                 .member(member)
                 .content(content)
                 .feedType(feedType)
+                .imageFileId(imageFileId)
                 .build();
     }
 

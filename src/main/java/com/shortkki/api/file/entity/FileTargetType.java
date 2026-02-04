@@ -16,7 +16,11 @@ public enum FileTargetType {
     RECIPE_IMG(
             Set.of("image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"),
             "recipe"
-    );
+    ),
+    FEED_IMG(  Set.of("image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"),
+            "feed"
+    ),
+    ;
 
     private final Set<String> allowedContentTypes;
     private final String prefix;

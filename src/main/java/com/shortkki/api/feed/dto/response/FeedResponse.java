@@ -13,10 +13,11 @@ public record FeedResponse(
         String authorName,
         Long likes,
         boolean likedByMe,
+        String imageUrl,
         LocalDateTime createdAt
 ) {
 
-    public static FeedResponse from(Feed feed, boolean likedByMe) {
+    public static FeedResponse from(Feed feed, boolean likedByMe, String imageUrl) {
         return new FeedResponse(
                 feed.getId(),
                 feed.getContent(),
@@ -25,6 +26,7 @@ public record FeedResponse(
                 feed.getMember().getName(),
                 feed.getLikes(),
                 likedByMe,
+                imageUrl,
                 feed.getCreatedAt()
         );
     }

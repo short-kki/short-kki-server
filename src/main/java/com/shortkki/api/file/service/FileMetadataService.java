@@ -9,6 +9,7 @@ import com.shortkki.api.file.repository.FileMetadataRepository;
 import com.shortkki.api.file.util.FileKeyUtil;
 import com.shortkki.global.error.exception.NotFoundException;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,10 @@ public class FileMetadataService {
     public FileMetadata getById(long fileId) {
         return fileMetadataRepository.findById(fileId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 파일 입니다."));
+    }
+
+    public List<FileMetadata> findAllByIds(List<Long> fileIds) {
+        return fileMetadataRepository.findAllById(fileIds);
     }
 
     public FileMetadata createFileMetadata(

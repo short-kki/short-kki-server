@@ -1,11 +1,15 @@
 package com.shortkki.api.feed.service;
 
 import com.shortkki.api.feed.dto.request.CreateFeedRequest;
+import com.shortkki.api.feed.dto.request.UpdateFeedRequest;
 import com.shortkki.api.feed.dto.response.FeedResponse;
 import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
 import com.shortkki.api.feed.repository.FeedLikeRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
+import com.shortkki.api.file.entity.FileMetadata;
+import com.shortkki.api.file.entity.FileTargetType;
+import com.shortkki.api.file.service.FileMetadataService;
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.repository.GroupMemberRepository;
@@ -21,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,15 +41,33 @@ public class FeedService {
     private final FeedLikeRepository feedLikeRepository;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
+    private final FileMetadataService fileMetadataService;
 
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
         List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
         Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feeds);
+        Map<Long, String> imageUrlMap = getImageUrlMap(feeds);
         return feeds.stream()
-                .map(feed -> FeedResponse.from(feed, likedFeedIds.contains(feed.getId())))
+                .map(feed -> FeedResponse.from(
+                        feed,
+                        likedFeedIds.contains(feed.getId()),
+                        imageUrlMap.get(feed.getImageFileId())
+                ))
                 .toList();
+    }
+
+    private Map<Long, String> getImageUrlMap(List<Feed> feeds) {
+        List<Long> imageFileIds = feeds.stream()
+                .map(Feed::getImageFileId)
+                .filter(Objects::nonNull)
+                .toList();
+        if (imageFileIds.isEmpty()) {
+            return Map.of();
+        }
+        return fileMetadataService.findAllByIds(imageFileIds).stream()
+                .collect(Collectors.toMap(FileMetadata::getId, FileMetadata::getObjectKey));
     }
 
     @Transactional
@@ -50,8 +75,26 @@ public class FeedService {
         Member member = findMemberById(memberId);
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
-        Feed feed = Feed.create(group, member, request.content(), request.feedType());
-        feedRepository.save(feed);
+        if (request.imageFileId() != null) {
+            FileMetadata file = fileMetadataService.getById(request.imageFileId());
+            validateFileOwnership(file, member);
+        }
+        Feed feed = Feed.create(group, member, request.content(), request.feedType(), request.imageFileId());
+        Feed saved = feedRepository.save(feed);
+        if (request.imageFileId() != null) {
+            FileMetadata file = fileMetadataService.getById(request.imageFileId());
+            file.bindTarget(FileTargetType.FEED_IMG, saved.getId());
+        }
+    }
+
+    @Transactional
+    public void updateFeed(Long memberId, Long groupId, Long feedId, UpdateFeedRequest request) {
+        Group group = findGroupById(groupId);
+        validateGroupMember(memberId, groupId);
+        Feed feed = findFeedById(feedId);
+        validateFeedOwner(memberId, feed);
+        validateFeedBelongsToGroup(feed, group);
+        feed.updateContent(request.content());
     }
 
     @Transactional
@@ -131,6 +174,12 @@ public class FeedService {
     private void existsByFeedAndMember(Feed feed, Member member) {
         if (feedLikeRepository.existsByFeedAndMember(feed, member)) {
             throw new ConflictException(ErrorCode.FEED_ALREADY_LIKED);
+        }
+    }
+
+    private void validateFileOwnership(FileMetadata file, Member member) {
+        if (!file.getUploaderId().equals(member.getId())) {
+            throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
         }
     }
 }

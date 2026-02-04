@@ -1,6 +1,7 @@
 package com.shortkki.api.feed.controller;
 
 import com.shortkki.api.feed.dto.request.CreateFeedRequest;
+import com.shortkki.api.feed.dto.request.UpdateFeedRequest;
 import com.shortkki.api.feed.dto.response.FeedResponse;
 import com.shortkki.api.feed.service.FeedService;
 import com.shortkki.global.auth.dto.LoginMember;
@@ -38,6 +39,17 @@ public class FeedController {
     ) {
         feedService.createFeed(loginMember.getId(), groupId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+    }
+
+    @PutMapping("/{feedId}")
+    public ResponseEntity<BaseResponse<Void>> updateFeed(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long feedId,
+            @Valid @RequestBody UpdateFeedRequest request
+    ) {
+        feedService.updateFeed(loginMember.getId(), groupId, feedId, request);
+        return ResponseEntity.ok(BaseResponse.success());
     }
 
     @DeleteMapping("/{feedId}")
