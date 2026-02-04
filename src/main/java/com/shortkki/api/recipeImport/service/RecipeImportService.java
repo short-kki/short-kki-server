@@ -7,8 +7,9 @@ import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.Difficulty;
 import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipeImport.dto.RecipeEditRequest;
-import com.shortkki.api.recipeImport.dto.RecipeImportPreview;
+import com.shortkki.api.recipeImport.dto.RecipeImportPreviewResponse;
 import com.shortkki.api.recipeImport.dto.RecipeImportRequest;
 import com.shortkki.api.recipeImport.dto.RecipeImportResponse;
 import com.shortkki.api.recipeImport.dto.RecipeImportStatusResponse;
@@ -41,15 +42,18 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @RequiredArgsConstructor
 public class RecipeImportService {
 
+    private final RecipeRepository recipeRepository;
     private final SourceContentService sourceContentService;
     private final SourceContentRepository sourceContentRepository;
     private final ExternalKeyExtractorRegistry extractorRegistry;
     private final MemberRepository memberRepository;
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
+
     private final RecipeImportAsyncService recipeImportAsyncService;
     private final RecipeImportTransactionalService transactionalService;
     private final RecipeBookService recipeBookService;
     private final RecipeBookQueryService recipeBookQueryService;
+
     private final ObjectMapper objectMapper;
 
     @Transactional
@@ -60,9 +64,8 @@ public class RecipeImportService {
         validateNotDuplicateSource(sourceUrl);
 
         SourceContent sourceContent = sourceContentService.resolveSourceContent(sourceUrl);
-
         SourceImportHistory history = createHistory(member, sourceContent, sourceUrl);
-        RecipeImportPreview preview = loadPreview(sourceContent.getId());
+        RecipeImportPreviewResponse preview = loadPreview(sourceContent.getId());
 
         Long resolvedMemberId = member.getId();
         Long resolvedSourceContentId = sourceContent.getId();
@@ -84,7 +87,7 @@ public class RecipeImportService {
         SourceImportHistory history = findHistory(historyId);
         validateHistoryOwnership(history, memberId);
 
-        RecipeImportPreview preview = loadPreview(history.getSourceContentId());
+        RecipeImportPreviewResponse preview = loadPreview(history.getSourceContentId());
         return RecipeImportStatusResponse.from(history, preview);
     }
 
@@ -136,10 +139,10 @@ public class RecipeImportService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
     }
 
-    private RecipeImportPreview loadPreview(Long sourceContentId) {
+    private RecipeImportPreviewResponse loadPreview(Long sourceContentId) {
         SourceContent previewContent = sourceContentRepository.findByIdWithCreator(sourceContentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
-        return RecipeImportPreview.from(previewContent);
+        return RecipeImportPreviewResponse.from(previewContent);
     }
 
     // -------------------------
@@ -151,8 +154,11 @@ public class RecipeImportService {
                 .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
         String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
 
-        if (sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
-                .isPresent()) {
+        boolean isDuplicate = sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
+                .map(sc -> recipeRepository.existsBySourceContentId(sc.getId()))
+                .orElse(false);
+
+        if (isDuplicate) {
             throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
         }
     }

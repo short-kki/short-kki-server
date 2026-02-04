@@ -14,10 +14,10 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
     defer-datasource-initialization: true
 
   elasticsearch:
@@ -66,7 +66,7 @@ aws:
 
 google:
   credential:
-    api-key: google-api-test-key
+    api-key: ${GOOGLE_GENAI_API_KEY:google-api-test-key}
   services:
     gemini:
       model-name: gemini-3-flash-preview

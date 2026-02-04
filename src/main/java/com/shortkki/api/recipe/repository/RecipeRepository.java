@@ -20,4 +20,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Modifying
     @Query("UPDATE Recipe r SET r.bookmarkCount = r.bookmarkCount - 1 WHERE r.id IN :recipeIds AND r.bookmarkCount > 0")
     void decrementBookmarkCountBulk(@Param("recipeIds") List<Long> recipeIds);
+
+    boolean existsBySourceContentId(Long sourceContentId);
 }
