@@ -117,6 +117,12 @@ public class SourceImportHistory extends BaseEntity {
      * 저장 확정(최종 완료) - recipeId 기록 - status = COMPLETED - parsedContent 정리(요구사항) - errorMessage 정리
      */
     public void complete(Long recipeId) {
+        if (recipeId == null) {
+            throw new IllegalStateException("완료 상태에는 recipeId가 필수입니다.");
+        }
+        if (this.status != ImportStatus.PARSED) {
+            throw new IllegalStateException("PARSED 상태에서만 완료 처리할 수 있습니다. current=" + this.status);
+        }
         this.recipeId = recipeId;
         this.status = ImportStatus.COMPLETED;
         this.errorMessage = null;

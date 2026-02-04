@@ -2,6 +2,7 @@ package com.shortkki.api.recipeBook.service;
 
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
@@ -34,6 +35,7 @@ public class RecipeBookService {
 
     private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
+    private final RecipeRepository recipeRepository;
 
     @Transactional
     public RecipeBookResponse create(Long memberId, RecipeBookCreateRequest request) {
@@ -95,9 +97,9 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeBookOwnership(recipeBook, memberId);
         recipeBookValidationService.validateNotDefaultRecipeBook(recipeBook);
 
-        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookIdWithRecipe(id);
-        for (RecipeBookItem item : items) {
-            item.getRecipe().decrementBookmarkCount();
+        List<Long> recipeIds = recipeBookItemRepository.findRecipeIdsByRecipeBookId(id);
+        if (!recipeIds.isEmpty()) {
+            recipeRepository.decrementBookmarkCountBulk(recipeIds);
         }
 
         recipeBookItemRepository.deleteAllByRecipeBookId(id);
@@ -115,7 +117,7 @@ public class RecipeBookService {
         RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
         recipeBookItemRepository.save(item);
 
-        recipe.incrementBookmarkCount();
+        recipeRepository.incrementBookmarkCount(recipeId);
     }
 
     @Transactional
@@ -131,7 +133,7 @@ public class RecipeBookService {
         RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
         recipeBookItemRepository.save(item);
 
-        recipe.incrementBookmarkCount();
+        recipeRepository.incrementBookmarkCount(recipeId);
     }
 
     @Transactional
@@ -140,13 +142,10 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
         recipeBookValidationService.validateRecipeInBook(recipeBookId, recipeId);
 
-        recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
-
         long deleted = recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId,
                 recipeId);
         if (deleted > 0) {
-            Recipe recipe = recipeBookValidationService.findRecipeById(recipeId);
-            recipe.decrementBookmarkCount();
+            recipeRepository.decrementBookmarkCount(recipeId);
         }
     }
 
@@ -204,7 +203,7 @@ public class RecipeBookService {
         if (fromBookId.equals(toBookId)) {
             return;
         }
-        
+
         RecipeBook fromBook = recipeBookValidationService.findRecipeBookById(fromBookId);
         RecipeBook toBook = recipeBookValidationService.findRecipeBookById(toBookId);
 
@@ -215,7 +214,7 @@ public class RecipeBookService {
 
         recipeBookValidationService.validateRecipeInBook(fromBookId, recipeId);
 
-        long updated = recipeBookItemRepository.moveRecipe(fromBookId, toBookId, recipeId);
+        long updated = recipeBookItemRepository.moveRecipe(fromBook, toBook, recipeId);
 
         if (updated == 0) {
             throw new NotFoundException(ErrorCode.RECIPE_NOT_IN_BOOK);

@@ -1,5 +1,6 @@
 package com.shortkki.api.recipeBook.repository;
 
+import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,11 +28,14 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
                 update RecipeBookItem rbi
-                   set rbi.recipeBook.id = :toBookId
-                 where rbi.recipeBook.id = :fromBookId
+                   set rbi.recipeBook = :toBook
+                 where rbi.recipeBook = :fromBook
                    and rbi.recipe.id = :recipeId
             """)
-    long moveRecipe(@Param("fromBookId") Long fromBookId,
-            @Param("toBookId") Long toBookId,
+    long moveRecipe(@Param("fromBook") RecipeBook fromBook,
+            @Param("toBook") RecipeBook toBook,
             @Param("recipeId") Long recipeId);
+
+    @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
+    List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
 }
