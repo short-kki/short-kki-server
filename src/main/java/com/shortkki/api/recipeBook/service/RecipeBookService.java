@@ -140,8 +140,6 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
         recipeBookValidationService.validateRecipeInBook(recipeBookId, recipeId);
 
-        recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId, recipeId);
-
         long deleted = recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId,
                 recipeId);
         if (deleted > 0) {
@@ -204,7 +202,7 @@ public class RecipeBookService {
         if (fromBookId.equals(toBookId)) {
             return;
         }
-        
+
         RecipeBook fromBook = recipeBookValidationService.findRecipeBookById(fromBookId);
         RecipeBook toBook = recipeBookValidationService.findRecipeBookById(toBookId);
 

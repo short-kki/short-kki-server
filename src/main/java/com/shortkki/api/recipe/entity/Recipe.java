@@ -32,7 +32,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Table(name = "recipe")
 @Getter
 @Builder
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recipe extends BaseEntity {
 

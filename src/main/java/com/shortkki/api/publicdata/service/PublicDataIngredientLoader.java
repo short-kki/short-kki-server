@@ -29,7 +29,6 @@ public class PublicDataIngredientLoader implements ApplicationRunner {
     private final IngredientRepository ingredientRepository;
 
     @Override
-    @Transactional
     public void run(ApplicationArguments args) throws Exception {
         if (!props.enabled()) {
             log.info("[IngredientLoader] disabled");
@@ -81,8 +80,13 @@ public class PublicDataIngredientLoader implements ApplicationRunner {
             return;
         }
 
-        ingredientRepository.saveAll(toSave);
+        saveIngredients(toSave);
         log.info("[IngredientLoader] {}개 재료 저장 완료 (총 {}개 중)", toSave.size(), names.size());
+    }
+
+    @Transactional
+    void saveIngredients(List<Ingredient> ingredients) {
+        ingredientRepository.saveAll(ingredients);
     }
 
     private Set<String> extractIngredientNames(String xml) throws Exception {
