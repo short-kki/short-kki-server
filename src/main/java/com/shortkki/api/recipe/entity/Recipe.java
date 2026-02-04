@@ -115,16 +115,6 @@ public class Recipe extends BaseEntity {
         this.mainImgFile = mainImgFile;
     }
 
-    public void incrementBookmarkCount() {
-        this.bookmarkCount++;
-    }
-
-    public void decrementBookmarkCount() {
-        if (this.bookmarkCount > 0) {
-            this.bookmarkCount--;
-        }
-    }
-
     public String getSourceUrl() {
         return isImported() ? sourceContent.getCanonicalUrl() : null;
     }
