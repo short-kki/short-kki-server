@@ -53,7 +53,7 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
                 .withQuery(buildQuery(searchWord, tags, ingredients, recipeSource, cuisineTypes, mealTypes, difficulties))
                 .withSort(s -> s.score(sc -> sc.order(SortOrder.Desc)))
                 .withMaxResults(pageSize + 1)
-                .withPageable(Pageable.ofSize(pageSize + 1).withPage(pageable.getPageNumber()));
+                .withPageable(pageable);
 
         if (!hasSearchWord) {
             queryBuilder
