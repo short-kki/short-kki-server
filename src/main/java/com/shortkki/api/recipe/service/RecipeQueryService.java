@@ -30,8 +30,7 @@ public class RecipeQueryService {
     }
 
     public RecipeResponse getDetail(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
+        Recipe recipe = findById(id);
 
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(

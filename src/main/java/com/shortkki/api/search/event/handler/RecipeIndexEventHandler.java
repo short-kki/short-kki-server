@@ -19,6 +19,7 @@ public class RecipeIndexEventHandler {
     public void handle(RecipeIndexUpsertEvent event) {
         try {
             indexer.upsert(event.recipeId());
+            log.info("ES indexing success. recipeId={}", event.recipeId());
         } catch (Exception e) {
             log.error("ES indexing failed. recipeId={}", event.recipeId(), e);
         }
