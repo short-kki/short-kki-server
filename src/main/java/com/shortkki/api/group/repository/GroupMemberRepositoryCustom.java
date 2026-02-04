@@ -10,7 +10,7 @@ public interface GroupMemberRepositoryCustom {
 
     Optional<GroupMember> findByMemberIdAndGroup(Long memberId, Group group);
 
-    boolean existsByMemberIdAndGroup(Long memberId, Group group);
+    boolean existsByMemberIdAndGroup(Long memberId, Long groupId);
 
     List<GroupMember> findAllByMemberIdWithGroup(Long memberId);
 

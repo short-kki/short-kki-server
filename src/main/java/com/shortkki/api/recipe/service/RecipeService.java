@@ -4,12 +4,16 @@ import com.shortkki.api.file.application.service.FileMetadataQueryService;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
 import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.recipe.entity.TagSource;
 import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
 import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
 import com.shortkki.api.recipe.dto.request.RecipeCreateRequest;
 import com.shortkki.api.recipe.dto.request.RecipeUpdateRequest;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
+import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.recipe.repository.RecipeRepository;
+import com.shortkki.api.recipe.repository.RecipeTagRepository;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
@@ -31,110 +35,115 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RecipeService {
 
-    private final RecipeBookService recipeBookService;
-    private final RecipeBookQueryService recipeBookQueryService;
     private final RecipeStepService recipeStepService;
     private final RecipeIngredientService recipeIngredientService;
+    private final RecipeBookService recipeBookService;
+    private final RecipeBookQueryService recipeBookQueryService;
+    private final RecipeQueryService recipeQueryService;
     private final FileMetadataQueryService fileMetadataQueryService;
-
-    private final DomainEventPublisher domainEventPublisher;
+    private final TagService tagService;
 
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
+    private final RecipeTagRepository recipeTagRepository;
+
+    private final DomainEventPublisher domainEventPublisher;
 
     public void create(Long memberId, RecipeCreateRequest request) {
         validateRecipeRequest(request);
 
         Member member = findMemberById(memberId);
 
-        BasicInfoRequest basicInfo = request.basicInfo();
-        CategoryInfoRequest categoryInfo = request.categoryInfo();
+        BasicInfoRequest basicInfoRequest = request.basicInfo();
+        CategoryInfoRequest categoryInfoRequest = request.categoryInfo();
 
-        Recipe saved = createRecipe(member, basicInfo, categoryInfo);
+        RecipeBasicInfo basicInfo = new RecipeBasicInfo(
+                basicInfoRequest.title(),
+                basicInfoRequest.description(),
+                basicInfoRequest.servingSize(),
+                basicInfoRequest.cookingTime());
+
+        RecipeCategoryInfo categoryInfo = new RecipeCategoryInfo(
+                categoryInfoRequest.cuisineType(),
+                categoryInfoRequest.mealType(),
+                categoryInfoRequest.difficulty());
+
+        Recipe saved = createRecipe(member, basicInfo, categoryInfo, basicInfoRequest.mainImgFileId());
 
         recipeStepService.createSteps(saved, request.steps());
         recipeIngredientService.createIngredients(saved, request.ingredients());
+        tagService.saveRecipeTags(saved.getId(), request.tags(), TagSource.USER);
 
         addToDefaultRecipeBook(memberId, saved.getId());
-        
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(saved.getId()));
     }
 
     public void update(Long memberId, Long id, RecipeUpdateRequest request) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
+        Recipe recipe = recipeQueryService.findById(id);
+        Member member = findMemberById(memberId);
 
         validateRecipeOwnership(recipe, memberId);
         validateUserCreated(recipe);
 
-        Member member = findMemberById(memberId);
+        updateRecipeImage(recipe, member, request.basicInfo().mainImgFileId());
 
-        updateRecipeImage(recipe, member, request.basicInfo().imageFileId());
-        recipe.update(request.basicInfo(), request.categoryInfo());
+        BasicInfoRequest basicInfoRequest = request.basicInfo();
+        CategoryInfoRequest categoryInfoRequest = request.categoryInfo();
+
+        RecipeBasicInfo basicInfo = new RecipeBasicInfo(
+                basicInfoRequest.title(),
+                basicInfoRequest.description(),
+                basicInfoRequest.servingSize(),
+                basicInfoRequest.cookingTime());
+        recipe.updateBasicInfo(basicInfo);
+
+        RecipeCategoryInfo categoryInfo = new RecipeCategoryInfo(
+                categoryInfoRequest.cuisineType(),
+                categoryInfoRequest.mealType(),
+                categoryInfoRequest.difficulty());
+        recipe.updateCategoryInfo(categoryInfo);
 
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);
+        recipeTagRepository.deleteByTagId(id);
 
         recipeStepService.createSteps(recipe, request.steps());
         recipeIngredientService.createIngredients(recipe, request.ingredients());
-        
+
+        tagService.saveRecipeTags(recipe.getId(), request.tags(), TagSource.USER);
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
     }
 
     public void delete(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
-
-        validateUserCreated(recipe);
-
-        recipeStepService.deleteByRecipeId(id);
-        recipeIngredientService.deleteByRecipeId(id);
-        recipeRepository.delete(recipe);
-        
-        // TODO: 레시피 서치 인덱스 삭제
+        recipeRepository.findById(id).ifPresent(recipe -> {
+            recipeStepService.deleteByRecipeId(id);
+            recipeIngredientService.deleteByRecipeId(id);
+            recipeTagRepository.deleteByRecipeId(id);
+            recipeRepository.delete(recipe);
+        });
     }
 
     private Recipe createRecipe(
-            Member member, BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo) {
-        Recipe created = Recipe.createManual(
-                member,
-                basicInfo.title(),
-                basicInfo.description(),
-                basicInfo.servingSize(),
-                basicInfo.cookingTime(),
-                categoryInfo.cuisineType(),
-                categoryInfo.mealType(),
-                categoryInfo.difficulty());
-
+            Member member, RecipeBasicInfo basicInfo, RecipeCategoryInfo categoryInfo, Long imageFileId
+    ) {
+        Recipe created = Recipe.createManual(member, basicInfo, categoryInfo);
         Recipe saved = recipeRepository.save(created);
-
-        if (basicInfo.imageFileId() != null) {
-            FileMetadata file = fileMetadataQueryService.findById(basicInfo.imageFileId());
-            validateFileOwnership(file, member);
-            file.bindTarget(FileTargetType.RECIPE_IMG, saved.getId());
-            saved.setMainImgFile(file);
-        }
-
-        // TODO: 태그 저장 로직 추가
+        updateRecipeImage(saved, member, imageFileId);
 
         return saved;
     }
 
     private void addToDefaultRecipeBook(Long memberId, Long recipeId) {
-        RecipeBook defaultBook = recipeBookQueryService.findAllByMemberId(memberId).stream()
-                .filter(RecipeBook::getIsDefault)
-                .findFirst()
+        RecipeBook defaultBook = recipeBookQueryService.findDefaultByMemberId(memberId)
                 .orElse(null);
 
         if (defaultBook == null) {
             recipeBookService.createDefaultForMember(memberId);
-            defaultBook = recipeBookQueryService.findAllByMemberId(memberId).stream()
-                    .filter(RecipeBook::getIsDefault)
-                    .findFirst()
+            defaultBook = recipeBookQueryService.findDefaultByMemberId(memberId)
                     .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
         }
 
-        recipeBookService.addRecipeInternal(memberId, defaultBook.getId(), recipeId);
+        recipeBookService.addRecipeIfNotExists(memberId, defaultBook.getId(), recipeId);
     }
 
     private Member findMemberById(Long memberId) {
@@ -171,7 +180,7 @@ public class RecipeService {
 
     private void updateRecipeImage(Recipe recipe, Member member, Long newImageFileId) {
         if (newImageFileId == null) {
-            recipe.setMainImgFile(null);
+            recipe.updateMainImgFile(null);
             return;
         }
 
@@ -179,11 +188,10 @@ public class RecipeService {
         if (exist != null && exist.getId().equals(newImageFileId)) {
             return;
         }
-        
+
         FileMetadata file = fileMetadataQueryService.findById(newImageFileId);
         validateFileOwnership(file, member);
         file.bindTarget(FileTargetType.RECIPE_IMG, recipe.getId());
-        
-        recipe.setMainImgFile(file);
+        recipe.updateMainImgFile(file);
     }
 }

@@ -14,6 +14,7 @@ public record BasicInfoRequest(
 
         @NotNull(message = "조리 시간은 필수입니다") @Positive(message = "조리 시간은 양수여야 합니다") Integer cookingTime,
 
-        Long imageFileId) {
+        Long mainImgFileId
+) {
 
 }

@@ -1,15 +1,16 @@
 package com.shortkki.api.recipe.entity;
 
 import com.shortkki.api.file.entity.FileMetadata;
+import com.shortkki.api.member.entity.Member;
+import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
+import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
-import com.shortkki.api.recipe.dto.request.BasicInfoRequest;
-import com.shortkki.api.recipe.dto.request.CategoryInfoRequest;
-import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.entity.BaseEntity;
 import com.shortkki.global.error.exception.InvalidStateException;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -48,35 +49,18 @@ public class Recipe extends BaseEntity {
     @JoinColumn(name = "source_content_id", unique = true)
     private SourceContent sourceContent;
 
-    @Column(nullable = false, length = 100)
-    private String title;
+    @Embedded
+    private RecipeBasicInfo basicInfo;
 
-    @Column(length = 500)
-    private String description;
-
-    @Column(nullable = false)
-    private Integer servingSize;
-
-    @Column(nullable = false)
-    private Integer cookingTime;
+    @Embedded
+    private RecipeCategoryInfo categoryInfo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private CuisineType cuisineType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private MealType mealType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private Difficulty difficulty;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "source_type", length = 50, nullable = false)
+    @Column(length = 50)
     private RecipeSource sourceType;
 
     @Builder.Default
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer bookmarkCount = 0;
 
@@ -90,62 +74,55 @@ public class Recipe extends BaseEntity {
     private Boolean isActive = true;
 
     public static Recipe createManual(
-            Member member, String title, String description, Integer servingSize, Integer cookingTime,
-            CuisineType cuisineType, MealType mealType, Difficulty difficulty
-    ) {
+            Member member,
+            RecipeBasicInfo basicInfo,
+            RecipeCategoryInfo categoryInfo) {
         return Recipe.builder()
                 .member(member)
-                .title(title)
-                .description(description)
-                .servingSize(servingSize)
-                .cookingTime(cookingTime)
-                .cuisineType(cuisineType)
-                .mealType(mealType)
-                .difficulty(difficulty)
+                .basicInfo(basicInfo)
+                .categoryInfo(categoryInfo)
                 .sourceType(RecipeSource.USER)
-                .bookmarkCount(0)
-                .isActive(true)
                 .build();
     }
 
     public static Recipe createImported(
-            Member member, String title, String description, Integer servingSize, Integer cookingTime,
-            CuisineType cuisineType, MealType mealType, Difficulty difficulty, SourceContent sourceContent
-    ) {
+            Member member,
+            RecipeBasicInfo basicInfo,
+            RecipeCategoryInfo categoryInfo,
+            SourceContent sourceContent) {
         if (sourceContent == null) {
             throw new InvalidStateException("원본 컨텐츠 정보 없이 외부 레시피를 생성할 수 없습니다.");
         }
 
         return Recipe.builder()
                 .member(member)
-                .title(title)
-                .description(description)
-                .servingSize(servingSize)
-                .cookingTime(cookingTime)
-                .cuisineType(cuisineType)
-                .mealType(mealType)
-                .difficulty(difficulty)
+                .basicInfo(basicInfo)
+                .categoryInfo(categoryInfo)
                 .sourceType(RecipeSource.IMPORT)
                 .sourceContent(sourceContent)
-                .bookmarkCount(0)
-                .isActive(true)
                 .build();
     }
 
-    public void update(
-            BasicInfoRequest basicInfo, CategoryInfoRequest categoryInfo
-    ) {
-        this.title = basicInfo.title();
-        this.description = basicInfo.description();
-        this.servingSize = basicInfo.servingSize();
-        this.cookingTime = basicInfo.cookingTime();
-        this.cuisineType = categoryInfo.cuisineType();
-        this.mealType = categoryInfo.mealType();
-        this.difficulty = categoryInfo.difficulty();
+    public void updateBasicInfo(RecipeBasicInfo basicInfo) {
+        this.basicInfo = basicInfo;
     }
 
-    public void setMainImgFile(FileMetadata mainImgFile) {
+    public void updateCategoryInfo(RecipeCategoryInfo categoryInfo) {
+        this.categoryInfo = categoryInfo;
+    }
+
+    public void updateMainImgFile(FileMetadata mainImgFile) {
         this.mainImgFile = mainImgFile;
+    }
+
+    public void incrementBookmarkCount() {
+        this.bookmarkCount++;
+    }
+
+    public void decrementBookmarkCount() {
+        if (this.bookmarkCount > 0) {
+            this.bookmarkCount--;
+        }
     }
 
     public String getSourceUrl() {
@@ -181,11 +158,9 @@ public class Recipe extends BaseEntity {
         if (isImported()) {
             return sourceContent.getThumbnailUrl();
         }
-
         if (mainImgFile != null) {
             return mainImgFile.getUrl();
         }
-
         return null;
     }
 

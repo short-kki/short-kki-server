@@ -9,9 +9,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-  #    url: jdbc:h2:mem:short_kki;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
-  #    driver-class-name: org.h2.Driver
-  #    username: sa
 
   jpa:
     hibernate:
@@ -69,7 +66,7 @@ aws:
 
 google:
   credential:
-    api-key: ${GOOGLE_GENAI_API_KEY}
+    api-key: google-api-test-key
   services:
     gemini:
       model-name: gemini-3-flash-preview
@@ -83,10 +80,16 @@ springdoc:
 
 logging:
   level:
-#    org.hibernate.SQL: debug
-    org.springframework.data.elasticsearch.client.WIRE: TRACE
-    co.elastic.clients: TRACE
-    org.elasticsearch.client.RestClient: TRACE
-    org.elasticsearch.client.tracer: TRACE
+    org.hibernate.SQL: debug
 #    org.hibernate.orm.jdbc.bind: trace
-#    org.elasticsearch.client: TRACE
+    org.elasticsearch.client.RestClient: DEBUG
+
+public-data:
+  ingredient:
+    enabled: true
+    type: xml
+    api-url: Grid_20150827000000000227_1
+    url-template: "http://211.237.50.150:7080/openapi/%s/%s/%s/%d/%d"
+    start-index: 1
+    end-index: 1000
+    api-key: ${INGREDIENT_API_KEY}

@@ -1,5 +1,6 @@
 package com.shortkki.api.recipeBook.repository;
 
+import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,28 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
 
     boolean existsByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
-    void deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
+    long deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
-    void deleteAllByRecipeBookId(Long recipeBookId);
+    long deleteAllByRecipeBookId(Long recipeBookId);
+
+    @Query("""
+            select i from RecipeBookItem i
+            join fetch i.recipe 
+            where i.recipeBook.id = :recipeBookId
+            """)
+    List<RecipeBookItem> findAllByRecipeBookIdWithRecipe(@Param("recipeBookId") Long recipeBookId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+                update RecipeBookItem rbi
+                   set rbi.recipeBook = :toBook
+                 where rbi.recipeBook = :fromBook
+                   and rbi.recipe.id = :recipeId
+            """)
+    long moveRecipe(@Param("fromBook") RecipeBook fromBook,
+            @Param("toBook") RecipeBook toBook,
+            @Param("recipeId") Long recipeId);
+
+    @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
+    List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
 }

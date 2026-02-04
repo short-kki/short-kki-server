@@ -55,7 +55,7 @@ public class FileUploadService {
 
     public void markUploaded(long fileId, long memberId) {
         FileMetadata file = fileMetadataQueryService.findById(fileId);
-        Member member = memberQueryService.getById(memberId);
+        Member member = memberQueryService.findMember(memberId);
 
         if (!Objects.equals(file.getUploaderId(), member.getId())) {
             throw new AccessDeniedException("파일 업로더 id와 요청자 id가 다릅니다.");

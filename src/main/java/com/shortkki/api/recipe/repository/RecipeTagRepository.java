@@ -9,6 +9,25 @@ import org.springframework.data.repository.query.Param;
 
 public interface RecipeTagRepository extends JpaRepository<RecipeTag, Long> {
 
-    @Query("SELECT t FROM Tag t JOIN RecipeTag rt ON rt.tagId = t.id WHERE rt.recipeId = :recipeId")
+    @Query("""
+                select t
+                from Tag t
+                join RecipeTag rt
+                    on rt.tagId = t.id
+                where rt.recipeId = :recipeId
+            """)
     List<Tag> findTagsByRecipeId(@Param("recipeId") Long recipeId);
+
+    @Query("""
+                select t.name
+                from RecipeTag rt
+                join Tag t
+                    on t.id = rt.tagId
+                where rt.recipeId = :recipeId
+            """)
+    List<String> findTagNamesByRecipeId(@Param("recipeId") Long recipeId);
+
+    void deleteByTagId(Long tagId);
+
+    void deleteByRecipeId(Long recipeId);
 }

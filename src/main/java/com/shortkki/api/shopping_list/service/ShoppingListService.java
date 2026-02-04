@@ -1,5 +1,6 @@
 package com.shortkki.api.shopping_list.service;
 
+import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
@@ -26,14 +27,15 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class ShoppingListService {
 
+    private final GroupMemberValidationService groupMemberValidationService;
+
     private final ShoppingListRepository shoppingListRepository;
     private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
     public List<ShoppingListResponse> getShoppingList(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         return shoppingListRepository.findByGroupId(groupId).stream()
                 .map(ShoppingListResponse::from)
                 .toList();
@@ -43,7 +45,7 @@ public class ShoppingListService {
     public void createShoppingListBulk(Long memberId, Long groupId,
             List<ShoppingListItemRequest> items) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         List<Long> recipeIngredientIds = items.stream()
                 .map(ShoppingListItemRequest::recipeIngredientId)
                 .toList();
@@ -62,7 +64,7 @@ public class ShoppingListService {
     @Transactional
     public void deleteShoppingList(Long memberId, Long groupId, Long shoppingListId) {
         Group group = findGroupById(groupId);
-        validateGroupMember(memberId, group);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
         ShoppingList shoppingList = findShoppingListById(shoppingListId);
         validateShoppingListInGroup(shoppingList, groupId);
         shoppingListRepository.delete(shoppingList);
@@ -80,12 +82,6 @@ public class ShoppingListService {
     private ShoppingList findShoppingListById(Long shoppingListId) {
         return shoppingListRepository.findById(shoppingListId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.SHOPPING_LIST_NOT_FOUND));
-    }
-
-    private void validateGroupMember(Long memberId, Group group) {
-        if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, group)) {
-            throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);
-        }
     }
 
     private void validateShoppingListInGroup(ShoppingList shoppingList, Long groupId) {

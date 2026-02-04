@@ -86,13 +86,13 @@ public class JpaRecipeSearchAdapter implements RecipeSearchPort {
 
         // 카테고리 필터
         if (!isEmpty(cuisineTypes)) {
-            where.and(recipe.cuisineType.in(cuisineTypes));
+            where.and(recipe.categoryInfo.cuisineType.in(cuisineTypes));
         }
         if (!isEmpty(mealTypes)) {
-            where.and(recipe.mealType.in(mealTypes));
+            where.and(recipe.categoryInfo.mealType.in(mealTypes));
         }
         if (!isEmpty(difficulties)) {
-            where.and(recipe.difficulty.in(difficulties));
+            where.and(recipe.categoryInfo.difficulty.in(difficulties));
         }
         if (recipeSource != null) {
             where.and(recipe.sourceType.eq(recipeSource));
@@ -123,15 +123,15 @@ public class JpaRecipeSearchAdapter implements RecipeSearchPort {
                 continue;
             }
 
-            builder.or(matchAnyField(trimmed)); // 기존과 동일: 키워드들은 OR
+            builder.or(matchAnyField(trimmed));
         }
 
         return builder.hasValue() ? builder : null;
     }
 
     private BooleanExpression matchAnyField(String keyword) {
-        return recipe.title.containsIgnoreCase(keyword)
-                .or(recipe.description.containsIgnoreCase(keyword))
+        return recipe.basicInfo.title.containsIgnoreCase(keyword)
+                .or(recipe.basicInfo.description.containsIgnoreCase(keyword))
                 .or(ingredient.name.containsIgnoreCase(keyword))
                 .or(tag.name.containsIgnoreCase(keyword));
     }
@@ -139,7 +139,7 @@ public class JpaRecipeSearchAdapter implements RecipeSearchPort {
     private RecipeSearchItem toSearchItem(Recipe recipe) {
         return new RecipeSearchItem(
                 recipe.getId(),
-                recipe.getTitle(),
+                recipe.getBasicInfo().getTitle(),
                 recipe.getBookmarkCount(),
                 recipe.getMainImgUrl(),
                 recipe.getSourceType(),

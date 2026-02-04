@@ -29,11 +29,14 @@ public record RecipeResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<StepResponse> steps,
-        List<IngredientResponse> ingredients
+        List<IngredientResponse> ingredients,
+        List<String> tags
 ) {
 
     public static RecipeResponse toDto(Recipe recipe, List<RecipeStep> steps,
-            List<RecipeIngredient> ingredients) {
+            List<RecipeIngredient> ingredients,
+            List<String> tags
+    ) {
 
         List<StepResponse> stepResponses = steps.stream()
                 .map(s -> new StepResponse(s.getStepOrder(), s.getDescription()))
@@ -42,19 +45,20 @@ public record RecipeResponse(
         List<IngredientResponse> ingredientResponses = ingredients.stream()
                 .map(i -> new IngredientResponse(
                         i.getIngredient().getName(),
+                        i.getUnit(),
                         i.getAmount()))
                 .toList();
 
         return new RecipeResponse(
                 recipe.getId(),
-                recipe.getTitle(),
-                recipe.getDescription(),
-                recipe.getServingSize(),
-                recipe.getCookingTime(),
+                recipe.getBasicInfo().getTitle(),
+                recipe.getBasicInfo().getDescription(),
+                recipe.getBasicInfo().getServingSize(),
+                recipe.getBasicInfo().getCookingTime(),
                 recipe.getBookmarkCount(),
-                recipe.getCuisineType(),
-                recipe.getMealType(),
-                recipe.getDifficulty(),
+                recipe.getCategoryInfo().getCuisineType(),
+                recipe.getCategoryInfo().getMealType(),
+                recipe.getCategoryInfo().getDifficulty(),
                 recipe.getSourceType(),
                 recipe.getSourceUrl(),
                 recipe.getSourcePlatform(),
@@ -62,6 +66,8 @@ public record RecipeResponse(
                 recipe.getCreatedAt(),
                 recipe.getUpdatedAt(),
                 stepResponses,
-                ingredientResponses);
+                ingredientResponses,
+                tags != null ? tags : List.of()
+        );
     }
 }

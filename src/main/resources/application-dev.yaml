@@ -31,5 +31,6 @@ oauth2:
 google:
   credential:
     api-key: ${GOOGLE_GENAI_API_KEY}
-  gemini:
-    model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
+  services:
+    gemini:
+      model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}

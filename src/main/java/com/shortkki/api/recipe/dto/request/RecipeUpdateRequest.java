@@ -19,7 +19,9 @@ public record RecipeUpdateRequest(
 
         @Valid @NotNull(message = "조리 순서는 필수입니다.")
         @Size(min = 1, message = "조리 순서는 최소 1개 이상이어야 합니다.")
-        List<StepRequest> steps
+        List<StepRequest> steps,
+
+        List<String> tags
 ) {
 
 }

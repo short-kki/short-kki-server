@@ -3,6 +3,8 @@ package com.shortkki.api.search.infra.elasticsearch.adapter;
 import com.shortkki.api.ingredient.entity.Ingredient;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.entity.Tag;
+import com.shortkki.api.recipe.entity.vo.RecipeBasicInfo;
+import com.shortkki.api.recipe.entity.vo.RecipeCategoryInfo;
 import com.shortkki.api.recipe.service.RecipeIngredientQueryService;
 import com.shortkki.api.recipe.service.RecipeQueryService;
 import com.shortkki.api.recipe.service.RecipeTagQueryService;
@@ -44,16 +46,19 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
                 .map(Tag::getName)
                 .collect(Collectors.toSet());
 
+        RecipeBasicInfo basicInfo = recipe.getBasicInfo();
+        RecipeCategoryInfo categoryInfo = recipe.getCategoryInfo();
+
         return new RecipeDocument(
                 recipe.getId(),
-                recipe.getTitle(),
-                recipe.getDescription(),
+                basicInfo.getTitle(),
+                basicInfo.getDescription(),
                 recipe.getSourceType().name(),
                 recipe.getBookmarkCount(),
                 recipe.getMainImgUrl(),
-                recipe.getCuisineType().name(),
-                recipe.getMealType().name(),
-                recipe.getDifficulty().name(),
+                categoryInfo.getCuisineType().name(),
+                categoryInfo.getMealType().name(),
+                categoryInfo.getDifficulty().name(),
                 ingredients,
                 tags,
                 recipe.getAuthorName(),
