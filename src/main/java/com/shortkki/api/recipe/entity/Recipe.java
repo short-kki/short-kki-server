@@ -45,7 +45,7 @@ public class Recipe extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_content_id", unique = true)
     private SourceContent sourceContent;
 

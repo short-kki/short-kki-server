@@ -21,7 +21,9 @@ import com.shortkki.api.recipe.service.TagService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
+import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.api.source.domain.SourceContent;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,9 +40,10 @@ public class RecipeImportTransactionalService {
     private final RecipeStepRepository recipeStepRepository;
 
     private final IngredientQueryService ingredientQueryService;
-
     private final TagService tagService;
     private final RecipeTagRepository recipeTagRepository;
+
+    private final DomainEventPublisher domainEventPublisher;
 
     @Transactional
     public Recipe saveRecipeWithRelations(
@@ -55,6 +58,7 @@ public class RecipeImportTransactionalService {
         saveSteps(recipe, safeList(parseResult.steps()));
         saveTags(recipe, safeList(parseResult.tags()), originalParsedTags);
 
+        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
         return recipe;
     }
 
