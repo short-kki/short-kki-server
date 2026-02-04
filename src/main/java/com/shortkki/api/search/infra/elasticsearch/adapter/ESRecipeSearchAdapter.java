@@ -82,14 +82,17 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
         // 검색어
         boolean hasSearchWord = searchWord != null && !searchWord.isBlank();
         if (hasSearchWord) {
-            bool.must(m -> m.bool(b -> b
-                    .should(s -> s.multiMatch(mm -> mm
-                            .query(searchWord)
-                            .type(TextQueryType.CrossFields)
-                            .operator(Operator.Or)
-                            .minimumShouldMatch("1")
-                            .fields("title^3", "description", "ingredients^2", "tags^2")
-                    ))
+            bool.must(m -> m.multiMatch(mm -> mm
+                    .query(searchWord)
+                    .type(TextQueryType.BestFields)
+                    .operator(Operator.Or)
+                    .minimumShouldMatch("1")
+                    .fields("title^3", "description", "ingredients^2", "tags^2")
+            ));
+            bool.should(s -> s.matchPhrase(mp -> mp
+                    .field("title")
+                    .query(searchWord)
+                    .boost(10.0f)
             ));
         }
 
@@ -138,7 +141,7 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
         return Query.of(q -> q.functionScore(fs -> fs
                 .query(baseQuery)
                 .scoreMode(FunctionScoreMode.Sum)
-                .boostMode(FunctionBoostMode.Multiply)
+                .boostMode(FunctionBoostMode.Sum)
                 .functions(fn -> fn
                         .weight(2.0)
                         .fieldValueFactor(fvf -> fvf

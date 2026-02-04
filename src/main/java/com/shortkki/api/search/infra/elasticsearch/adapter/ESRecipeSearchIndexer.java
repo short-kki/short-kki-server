@@ -60,7 +60,7 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
                 recipe.getAuthorProfileImgUrl(),
                 recipe.getCreatorName(),
                 recipe.getCreatorProfileImgUrl(),
-                recipe.getSourcePlatform().name(),
+                recipe.isImported() ? recipe.getSourcePlatform().name() : null,
                 recipe.getSourceUrl(),
                 recipe.getIsActive(),
                 recipe.getCreatedAt().toLocalDate()
