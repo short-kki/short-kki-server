@@ -105,7 +105,7 @@ public class RecipeService {
 
         recipeStepService.deleteByRecipeId(id);
         recipeIngredientService.deleteByRecipeId(id);
-        recipeTagRepository.deleteByTagId(id);
+        recipeTagRepository.deleteByRecipeId(id);
 
         recipeStepService.createSteps(recipe, request.steps());
         recipeIngredientService.createIngredients(recipe, request.ingredients());
