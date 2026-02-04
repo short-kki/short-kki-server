@@ -170,11 +170,13 @@ public class RecipeService {
     }
 
     private void updateRecipeImage(Recipe recipe, Member member, Long newImageFileId) {
-        if (Objects.equals(recipe.getMainImgFile().getId(), newImageFileId)) {
+        if (newImageFileId == null) {
+            recipe.setMainImgFile(null);
             return;
         }
 
-        if (newImageFileId == null) {
+        FileMetadata exist = recipe.getMainImgFile();
+        if (exist != null && exist.getId().equals(newImageFileId)) {
             return;
         }
         

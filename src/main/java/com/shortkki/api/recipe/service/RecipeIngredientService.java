@@ -25,8 +25,9 @@ public class RecipeIngredientService {
         List<RecipeIngredient> recipeIngredients = ingredientRequests.stream()
                 .map(info -> {
                     Ingredient ingredient = ingredientRepository.findByName(info.name())
-                            .orElseGet(() -> ingredientRepository.save(
-                                    Ingredient.create(info.name())));
+                            .orElseGet(() ->
+                                    ingredientRepository.save(Ingredient.create(info.name()))
+                            );
                     return RecipeIngredient.create(ingredient, recipe, info.amount());
                 })
                 .toList();
