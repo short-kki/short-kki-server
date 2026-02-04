@@ -27,3 +27,9 @@ oauth2:
       client-id: ${NAVER_CLIENT_ID}
       client-secret: ${NAVER_CLIENT_SECRET}
       redirect-uri: ${NAVER_REDIRECT_URI}
+
+google:
+  credential:
+    api-key: ${GOOGLE_GENAI_API_KEY}
+  gemini:
+    model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}

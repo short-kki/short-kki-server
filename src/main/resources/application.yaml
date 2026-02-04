@@ -47,11 +47,7 @@ file:
     max-bytes: ${FILE_UPLOAD_MAX_BYTES:10485760} # 10MB
 
 google:
-  credential:
-    api-key: ${GOOGLE_GENAI_API_KEY:google-api-test-key}
   services:
     youtube:
       api:
         base-url: https://www.googleapis.com/youtube/v3
-    gemini:
-      model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}

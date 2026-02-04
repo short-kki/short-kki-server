@@ -17,10 +17,10 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
     defer-datasource-initialization: true
 
   elasticsearch:
@@ -32,7 +32,8 @@ spring:
 
   sql:
     init:
-      mode: never
+      mode: always
+#      mode: never
 
   flyway:
     enabled: false
@@ -66,6 +67,13 @@ aws:
         access-key: ${AWS_ACCESS_KEY_ID}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
 
+google:
+  credential:
+    api-key: ${GOOGLE_GENAI_API_KEY}
+  services:
+    gemini:
+      model-name: gemini-3-flash-preview
+
 springdoc:
   swagger-ui:
     tags-sorter: alpha
@@ -75,7 +83,7 @@ springdoc:
 
 logging:
   level:
-    org.hibernate.SQL: debug
+#    org.hibernate.SQL: debug
     org.springframework.data.elasticsearch.client.WIRE: TRACE
     co.elastic.clients: TRACE
     org.elasticsearch.client.RestClient: TRACE
