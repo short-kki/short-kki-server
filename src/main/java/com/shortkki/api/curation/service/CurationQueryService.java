@@ -1,6 +1,8 @@
 package com.shortkki.api.curation.service;
 
-import com.shortkki.api.curation.dto.response.CurationRecommendResponse;
+import com.shortkki.api.curation.controller.dto.response.CurationRecommendResponse;
+import com.shortkki.api.curation.controller.dto.response.CurationRecommendsResponse;
+import com.shortkki.api.curation.controller.dto.response.RecipeCurationSearchResponse;
 import com.shortkki.api.curation.entity.Curation;
 import com.shortkki.api.curation.entity.DayType;
 import com.shortkki.api.curation.entity.TimeType;
@@ -9,11 +11,15 @@ import com.shortkki.api.recipe.dto.response.RecipeSummaryResponse;
 import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.search.application.port.RecipeSearchPort;
 import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
+import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.NotFoundException;
+import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CurationQueryService {
 
-    private static final int CURATION_COUNT = 5;
+    private static final int DEFAULT_CURATION_COUNT = 5;
     private static final int RECIPES_PER_CURATION = 10;
 
     private final CurationRepository curationRepository;
@@ -38,50 +44,82 @@ public class CurationQueryService {
         this.esSearchPort = esSearchPort;
     }
 
-    public List<CurationRecommendResponse> getRecommendedCurations(LocalDateTime now) {
-        return getRecommendedCurations(now, jpaSearchPort);
-    }
+    public CurationRecommendsResponse getRecommendedCurations(LocalDateTime now, Pageable pageable) {
+        Pageable limited = limitPageSize(pageable);
+        Slice<Curation> curations = getCurrentCurations(now, limited);
+        Pageable recipePageable = PageRequest.of(0, RECIPES_PER_CURATION);
 
-    public List<CurationRecommendResponse> getRecommendedCurationsV2(LocalDateTime now) {
-        return getRecommendedCurations(now, esSearchPort);
-    }
-
-    private List<CurationRecommendResponse> getRecommendedCurations(
-            LocalDateTime now, RecipeSearchPort searchPort
-    ) {
-        List<Curation> curations = getCurrentCurations(now, CURATION_COUNT);
-
-        return curations.stream()
-                .map(curation -> toCurationRecommendResponse(curation, searchPort))
+        List<CurationRecommendResponse> items = curations.getContent().stream()
+                .map(c -> toCurationRecommendResponse(c, search(c, recipePageable)))
                 .toList();
+
+        return new CurationRecommendsResponse(items, SlicePageInfoResponse.from(curations));
     }
 
-    private List<Curation> getCurrentCurations(LocalDateTime now, int size) {
+    public CurationRecommendsResponse getRecommendedCurationsV2(LocalDateTime now, Pageable pageable) {
+        Pageable limited = limitPageSize(pageable);
+        Slice<Curation> curations = getCurrentCurations(now, limited);
+        Pageable recipePageable = PageRequest.of(0, RECIPES_PER_CURATION);
+
+        List<CurationRecommendResponse> items = curations.getContent().stream()
+                .map(c -> toCurationRecommendResponse(c, searchV2(c, recipePageable)))
+                .toList();
+
+        return new CurationRecommendsResponse(items, SlicePageInfoResponse.from(curations));
+    }
+
+    public RecipeCurationSearchResponse searchRecipesByCuration(long id, Pageable pageable) {
+        Curation curation = findById(id);
+        Slice<RecipeSearchItem> result = search(curation, pageable);
+        return toRecipeCurationSearchResponse(curation, result);
+    }
+
+    public RecipeCurationSearchResponse searchRecipesByCurationV2(long id, Pageable pageable) {
+        Curation curation = findById(id);
+        Slice<RecipeSearchItem> result = searchV2(curation, pageable);
+        return toRecipeCurationSearchResponse(curation, result);
+    }
+
+    public Curation findById(long id) {
+        return curationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CURATION_NOT_FOUND));
+    }
+
+    private Slice<RecipeSearchItem> search(Curation curation, Pageable pageable) {
+        return jpaSearchPort.search(
+                pageable, curation.getSearchWord(), curation.getTags(), curation.getIngredients(),
+                RecipeSource.IMPORT, curation.getCuisineTypes(), curation.getMealTypes(), curation.getDifficulties()
+        );
+    }
+
+    private Slice<RecipeSearchItem> searchV2(Curation curation, Pageable pageable) {
+        return esSearchPort.search(
+                pageable, curation.getSearchWord(), curation.getTags(), curation.getIngredients(),
+                RecipeSource.IMPORT, curation.getCuisineTypes(), curation.getMealTypes(), curation.getDifficulties()
+        );
+    }
+
+    /**
+     * 응답 변환 헬퍼
+     */
+    private Pageable limitPageSize(Pageable pageable) {
+        if (pageable.getPageSize() > DEFAULT_CURATION_COUNT) {
+            return PageRequest.of(pageable.getPageNumber(), DEFAULT_CURATION_COUNT);
+        }
+        return pageable;
+    }
+
+    private Slice<Curation> getCurrentCurations(LocalDateTime now, Pageable pageable) {
         DayType dayType = DayType.from(now.getDayOfWeek());
         TimeType timeType = TimeType.from(now.toLocalTime());
-
-        List<Curation> candidates = curationRepository.findMatchingCurations(
-                dayType.name(), timeType.name(), size
-        );
-
-        Collections.shuffle(candidates);
-        return candidates.size() <= size ? candidates : candidates.subList(0, size);
+        return curationRepository.findMatchingCurations(dayType.name(), timeType.name(), pageable);
     }
 
     private CurationRecommendResponse toCurationRecommendResponse(
-            Curation curation, RecipeSearchPort searchPort
+            Curation curation, Slice<RecipeSearchItem> searchResult
     ) {
-        List<RecipeSummaryResponse> recipes = searchPort.search(
-                        PageRequest.of(0, RECIPES_PER_CURATION),
-                        curation.getSearchWord(),
-                        curation.getTags(),
-                        curation.getIngredients(),
-                        RecipeSource.IMPORT,
-                        curation.getCuisineTypes(),
-                        curation.getMealTypes(),
-                        curation.getDifficulties()
-                ).stream()
-                .map(this::toRecipeSummaryResponse)
+        List<RecipeSummaryResponse> recipes = searchResult.stream()
+                .map(RecipeSummaryResponse::from)
                 .toList();
 
         return CurationRecommendResponse.builder()
@@ -89,22 +127,17 @@ public class CurationQueryService {
                 .title(curation.getTitle())
                 .description(curation.getDescription())
                 .recipes(recipes)
+                .pageInfo(SlicePageInfoResponse.from(searchResult))
                 .build();
     }
 
-    private RecipeSummaryResponse toRecipeSummaryResponse(RecipeSearchItem item) {
-        return new RecipeSummaryResponse(
-                item.id(),
-                item.title(),
-                item.bookmarkCount(),
-                item.sourceUrl(),
-                item.mainImgUrl(),
-                item.recipeSource(),
-                item.authorName(),
-                item.authorProfileImgUrl(),
-                item.platform(),
-                item.creatorName(),
-                item.creatorProfileImgUrl()
-        );
+    private RecipeCurationSearchResponse toRecipeCurationSearchResponse(
+            Curation curation, Slice<RecipeSearchItem> searchResult
+    ) {
+        List<RecipeSummaryResponse> recipes = searchResult.stream()
+                .map(RecipeSummaryResponse::from)
+                .toList();
+
+        return new RecipeCurationSearchResponse(curation.getId(), recipes, SlicePageInfoResponse.from(searchResult));
     }
 }

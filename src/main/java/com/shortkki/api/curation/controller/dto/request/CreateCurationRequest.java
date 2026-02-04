@@ -1,4 +1,4 @@
-package com.shortkki.api.curation.dto.request;
+package com.shortkki.api.curation.controller.dto.request;
 
 import com.shortkki.api.curation.entity.DayType;
 import com.shortkki.api.curation.entity.TimeType;

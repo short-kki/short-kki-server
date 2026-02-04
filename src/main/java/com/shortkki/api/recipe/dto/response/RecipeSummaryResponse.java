@@ -1,6 +1,7 @@
 package com.shortkki.api.recipe.dto.response;
 
 import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import com.shortkki.api.source.domain.SourcePlatform;
 
 public record RecipeSummaryResponse(
@@ -17,4 +18,19 @@ public record RecipeSummaryResponse(
         String creatorProfileImgUrl
 ) {
 
+    public static RecipeSummaryResponse from(RecipeSearchItem item) {
+        return new RecipeSummaryResponse(
+                item.id(),
+                item.title(),
+                item.bookmarkCount(),
+                item.sourceUrl(),
+                item.mainImgUrl(),
+                item.recipeSource(),
+                item.authorName(),
+                item.authorProfileImgUrl(),
+                item.platform(),
+                item.creatorName(),
+                item.creatorProfileImgUrl()
+        );
+    }
 }

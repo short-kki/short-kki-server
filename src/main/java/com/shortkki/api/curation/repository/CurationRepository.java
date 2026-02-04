@@ -1,7 +1,8 @@
 package com.shortkki.api.curation.repository;
 
 import com.shortkki.api.curation.entity.Curation;
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,11 +26,10 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
                 OR c.time_types LIKE CONCAT('%', :timeType, '%')
               )
         ORDER BY c.created_at DESC
-        LIMIT :limit
         """, nativeQuery = true)
-    List<Curation> findMatchingCurations(
+    Slice<Curation> findMatchingCurations(
             @Param("dayType") String dayType,
             @Param("timeType") String timeType,
-            @Param("limit") int limit
+            Pageable pageable
     );
 }
