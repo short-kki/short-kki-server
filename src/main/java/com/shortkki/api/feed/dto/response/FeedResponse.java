@@ -2,7 +2,6 @@ package com.shortkki.api.feed.dto.response;
 
 import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedType;
-
 import java.time.LocalDateTime;
 
 public record FeedResponse(
@@ -13,6 +12,7 @@ public record FeedResponse(
         String authorName,
         Long likes,
         boolean likedByMe,
+        String imageUrl,
         LocalDateTime createdAt
 ) {
 
@@ -25,6 +25,7 @@ public record FeedResponse(
                 feed.getMember().getName(),
                 feed.getLikes(),
                 likedByMe,
+                feed.getImageUrl(),
                 feed.getCreatedAt()
         );
     }

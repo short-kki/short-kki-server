@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 로컬 개발 환경
+
+```bash
+# 로컬 인프라 실행 (MySQL:3307, Elasticsearch:9200, Kibana:5601)
+docker-compose up -d
+
+# 애플리케이션 실행 (기본적으로 local 프로필 사용)
+./gradlew bootRun
+```
+
+API 문서: http://localhost:8080/swagger-ui/index.html
+
 ## 빌드 & 테스트 명령어
 
 ```bash
@@ -20,9 +32,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # 단일 테스트 메서드 실행
 ./gradlew test --tests "com.shortkki.test.smoke.DBConnectionTest.testMethod"
 
-# 애플리케이션 실행 (기본적으로 local 프로필 사용)
-./gradlew bootRun
-
 # JaCoCo 커버리지 리포트 생성
 ./gradlew jacocoTestReport
 ```
@@ -30,16 +39,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 아키텍처
 
 ### 패키지 구조
-- `com.shortkki.api.*` - 도메인 모듈 (auth, feed, file, group, ingredient, member, recipe, recipeBook, shopping_list, source)
-- `com.shortkki.global.*` - 공통 관심사 (auth, config, entity, error, response)
+- `com.shortkki.api.*` - 도메인 모듈 (auth, calendar, curation, feed, file, group, ingredient, member, publicdata, recipe, recipeBook, recipeImport, search, shopping_list, source)
+- `com.shortkki.global.*` - 공통 관심사 (auth, config, entity, error, event, response, utils)
 
 ### 도메인 모듈 패턴
 각 도메인 모듈은 다음 구조를 따름:
 - `controller/` - REST 엔드포인트
-- `service/` - 비즈니스 로직
+- `service/` - 비즈니스 로직 (`*QueryService`는 조회, `*Service`는 명령)
 - `repository/` - 데이터 접근 (JPA + QueryDSL 커스텀 구현체)
-- `entity/` - JPA 엔티티
+- `entity/` 또는 `domain/` - JPA 엔티티
 - `dto/request/`, `dto/response/` - 요청/응답 DTO
+
+일부 모듈은 헥사고날 아키텍처 적용:
+- `application/port/` - 추상화 인터페이스
+- `application/service/` - 유스케이스 구현
+- `infra/` - 어댑터 구현체 (예: `ESRecipeSearchAdapter`, `S3FileUploadAdapter`)
 
 ### Repository 패턴
 Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
@@ -56,6 +70,8 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - `ShoppingList` - 장볼거리, Group과 Ingredient에 속함
 - `SourceContent` - 외부 레시피 원본 정보 (YouTube 등), `SourceContentCreator`로 크리에이터 관리
 - `Feed` - 피드, Recipe를 참조
+- `RecipeCalendar`, `RecipeQueue` - 식단 캘린더 및 대기열 관리
+- `Curation` - 레시피 큐레이션 (TimeType, DayType 등 조건 기반)
 
 ### 기반 클래스
 - `BaseEntity` - 모든 엔티티에 `createdAt`, `updatedAt` 감사 필드 제공
@@ -69,7 +85,7 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 ### 인증
 - `JwtAuthenticationFilter`를 통한 JWT 기반 무상태 인증
 - Google (iOS/Android), Kakao, Naver OAuth2 로그인 지원
-- `LoginMember` - 인증된 사용자를 위한 시큐리티 컨텍스트 홀더
+- `LoginMember` - `UserDetails` 구현체, 인증된 사용자 정보를 담는 DTO
 - `@WithMockMember` - 테스트에서 인증된 사용자를 모킹하는 어노테이션
 
 ### 파일 업로드
@@ -77,10 +93,20 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - `FileUploadPort` 인터페이스와 `S3FileUploadAdapter` 구현체
 - `FileMetadata`가 업로드 상태와 공개 여부 추적
 
-### 레시피 파싱
-- Google Gemini AI를 사용한 외부 레시피 파싱
+### 레시피 가져오기 (recipeImport)
+- Google Gemini AI를 사용한 외부 레시피 파싱 (`GeminiRecipeParserAdapter`)
+- `RecipeParserPort` 인터페이스로 파서 추상화
+- 비동기 처리: `RecipeImportAsyncService`로 긴 작업 백그라운드 실행
+
+### 외부 콘텐츠 (source)
 - `SourceDataProvider` 인터페이스와 플랫폼별 구현체 (예: `YoutubeSourceDataProvider`)
-- `ExternalKeyExtractor` 레지스트리로 URL에서 외부 키 추출
+- `ExternalKeyExtractorRegistry`로 URL에서 플랫폼 감지 및 외부 키 추출
+- `SourceImportHistory`로 가져오기 이력 추적
+
+### 검색 (search)
+- Elasticsearch 기반 레시피 검색 (`RecipeSearchPort` → `ESRecipeSearchAdapter`)
+- JPA 폴백 구현체 (`JpaRecipeSearchAdapter`)
+- Spring Event로 인덱스 동기화 (`RecipeIndexUpsertEvent` → `RecipeIndexEventHandler`)
 
 ## 테스트
 
@@ -91,10 +117,14 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 ### 테스트 프로필
 테스트는 `@ActiveProfiles("test")`로 H2 또는 Testcontainers MySQL 사용.
 
+### 이벤트 시스템
+- `DomainEventPublisher` 인터페이스와 `InProcessEventPublisher` 구현
+- Spring `ApplicationEventPublisher`를 래핑하여 도메인 이벤트 발행
+
 ## 주요 컨벤션
 
 - Java 21, Spring Boot 3.5.9
 - 엔티티는 protected 기본 생성자와 `@Builder`, 정적 팩토리 메서드 (`create()`) 사용
 - QueryDSL 생성 소스는 `src/main/generated/`에 위치
-- 초기 데이터는 `src/main/resources/data.sql`에 위치
 - 설정 속성은 `@ConfigurationProperties`로 바인딩 (예: `FileUploadProperties`, `OAuth2Properties`)
+- 예외는 `ErrorCode` enum에 정의 후 적절한 예외 클래스 사용 (`NotFoundException`, `BadRequestException`, `ConflictException` 등)

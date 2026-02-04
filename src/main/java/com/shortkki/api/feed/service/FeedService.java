@@ -6,6 +6,10 @@ import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
 import com.shortkki.api.feed.repository.FeedLikeRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
+import com.shortkki.api.file.application.service.FileMetadataQueryService;
+import com.shortkki.api.file.entity.FileMetadata;
+import com.shortkki.api.file.entity.FileTargetType;
+import com.shortkki.api.file.repository.FileMetadataRepository;
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.repository.GroupMemberRepository;
@@ -16,13 +20,14 @@ import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.ConflictException;
 import com.shortkki.global.error.exception.NotFoundException;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,6 +37,8 @@ public class FeedService {
     private final GroupMemberRepository groupMemberRepository;
     private final FeedRepository feedRepository;
     private final FeedLikeRepository feedLikeRepository;
+    private final FileMetadataRepository fileMetadataRepository;
+    private final FileMetadataQueryService fileMetadataQueryService;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
 
@@ -41,7 +48,10 @@ public class FeedService {
         List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
         Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feeds);
         return feeds.stream()
-                .map(feed -> FeedResponse.from(feed, likedFeedIds.contains(feed.getId())))
+                .map(feed -> {
+                    log.info(feed.getImageUrl());
+                    return FeedResponse.from(feed, likedFeedIds.contains(feed.getId()));
+                })
                 .toList();
     }
 
@@ -50,10 +60,18 @@ public class FeedService {
         Member member = findMemberById(memberId);
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
-        Feed feed = Feed.create(group, member, request.content(), request.feedType());
+        FileMetadata image = null;
+        if (request.imageFileId() != null) {
+            image = fileMetadataQueryService.findByIdWithOwnerValidation(request.imageFileId(), memberId);
+        }
+        Feed feed = Feed.create(group, member, request.content(), request.feedType(), image);
         feedRepository.save(feed);
+        if (image != null) {
+            image.bindTarget(FileTargetType.FEED_IMG, feed.getId());
+        }
     }
 
+    // TODO : FileUploadPort에 deleteFile(String objectKey) 메서드 추가
     @Transactional
     public void deleteFeed(Long memberId, Long groupId, Long feedId) {
         Group group = findGroupById(groupId);
@@ -62,6 +80,9 @@ public class FeedService {
         validateFeedOwner(memberId, feed);
         validateFeedBelongsToGroup(feed, group);
         feedLikeRepository.deleteByFeed(feed);
+        if (feed.getImage() != null) {
+            fileMetadataRepository.delete(feed.getImage());
+        }
         feedRepository.delete(feed);
     }
 
@@ -109,7 +130,7 @@ public class FeedService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
-  
+
     private void validateGroupMember(Long memberId, Long groupId) {
         if (!groupMemberRepository.existsByMemberIdAndGroup(memberId, groupId)) {
             throw new AccessDeniedException(ErrorCode.GROUP_NOT_MEMBER);

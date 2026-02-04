@@ -11,6 +11,8 @@ public record CreateFeedRequest(
         String content,
 
         @NotNull(message = "피드 타입은 필수입니다.")
-        FeedType feedType
+        FeedType feedType,
+
+        Long imageFileId
 ) {
 }
