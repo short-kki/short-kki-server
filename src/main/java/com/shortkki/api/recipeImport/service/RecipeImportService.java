@@ -72,7 +72,8 @@ public class RecipeImportService {
                     @Override
                     public void afterCommit() {
                         recipeImportAsyncService.processImport(
-                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId, sourceUrl);
+                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId, sourceUrl
+                        );
                     }
                 });
 
