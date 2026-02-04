@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
@@ -20,16 +20,17 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
     private static final Pattern VIDEO_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{11}$");
     private final String apiKey;
     private final String apiBaseUrl;
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
     private final ObjectMapper objectMapper;
 
     public YoutubeSourceDataProvider(
             @Value("${GOOGLE_GENAI_API_KEY}") String apiKey,
             @Value("${youtube.api.base-url}") String apiBaseUrl,
+            RestClient restClient,
             ObjectMapper objectMapper) {
         this.apiKey = apiKey;
         this.apiBaseUrl = apiBaseUrl;
-        this.restTemplate = new RestTemplate();
+        this.restClient = restClient;
         this.objectMapper = objectMapper;
     }
 
@@ -40,13 +41,13 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
             throw new BadRequestException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
-        String url = String.format(
-                "%s/videos?part=snippet&id=%s&key=%s",
-                apiBaseUrl, videoId, apiKey);
-
         try {
-            String response = restTemplate.getForObject(url, String.class);
-            if (response == null) {
+            String response = restClient.get()
+                    .uri(apiBaseUrl + "/videos?part=snippet&id={id}&key={key}", videoId, apiKey)
+                    .retrieve()
+                    .body(String.class);
+
+            if (response == null || response.isBlank()) {
                 log.warn("YouTube API 응답이 null입니다: {}", videoId);
                 return createDefaultContentInfo(videoId);
             }
@@ -82,13 +83,14 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
             return new SourceCreatorInfo("unknown", "Unknown Creator", null);
         }
 
-        String url = String.format(
-                "%s/channels?part=snippet&id=%s&key=%s",
-                apiBaseUrl, channelId, apiKey);
-
         try {
-            String response = restTemplate.getForObject(url, String.class);
-            if (response == null) {
+            String response = restClient.get()
+                    .uri(apiBaseUrl + "/channels?part=snippet&id={id}&key={key}", channelId,
+                            apiKey)
+                    .retrieve()
+                    .body(String.class);
+
+            if (response == null || response.isBlank()) {
                 log.warn("YouTube API 응답이 null입니다: {}", channelId);
                 return new SourceCreatorInfo(channelId, "Unknown Creator", null);
             }

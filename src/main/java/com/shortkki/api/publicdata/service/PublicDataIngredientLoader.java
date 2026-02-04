@@ -16,7 +16,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -26,7 +26,8 @@ import org.w3c.dom.NodeList;
 public class PublicDataIngredientLoader implements ApplicationRunner {
 
     private final PublicDataApiProperties props;
-    private final IngredientRepository ingredientRepository;
+    private final PublicDataIngredientPersistService persistService;
+    private final RestClient restClient;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -46,8 +47,10 @@ public class PublicDataIngredientLoader implements ApplicationRunner {
 
         log.info("[IngredientLoader] API 호출 시작: {}", url.replaceAll(props.apiKey(), "***"));
 
-        RestTemplate rt = new RestTemplate();
-        String xml = rt.getForObject(url, String.class);
+        String xml = restClient.get()
+                .uri(url)
+                .retrieve()
+                .body(String.class);
 
         if (xml == null || xml.isBlank()) {
             log.warn("[IngredientLoader] API 응답이 비어있음");
@@ -60,38 +63,24 @@ public class PublicDataIngredientLoader implements ApplicationRunner {
             log.warn("[IngredientLoader] IRDNT_NM을 찾을 수 없음");
             return;
         }
+        int inserted = persistService.saveNewIngredients(names);
+        log.info("[IngredientLoader] {}개 재료 저장 완료 (총 {}개 중)", inserted, names.size());
 
-        log.info("[IngredientLoader] 추출된 재료명: {}개", names.size());
-
-        // 기존 재료 조회
-        List<Ingredient> existing = ingredientRepository.findAllByNameIn(names);
-        Set<String> existingNames = existing.stream()
-                .map(Ingredient::getName)
-                .collect(Collectors.toSet());
-
-        // 차집합: 새로 추가할 재료만
-        List<Ingredient> toSave = names.stream()
-                .filter(n -> !existingNames.contains(n))
-                .map(Ingredient::create)
-                .toList();
-
-        if (toSave.isEmpty()) {
-            log.info("[IngredientLoader] 새로 추가할 재료 없음 (기존 {}개 존재)", existingNames.size());
-            return;
-        }
-
-        saveIngredients(toSave);
-        log.info("[IngredientLoader] {}개 재료 저장 완료 (총 {}개 중)", toSave.size(), names.size());
-    }
-
-    @Transactional
-    void saveIngredients(List<Ingredient> ingredients) {
-        ingredientRepository.saveAll(ingredients);
     }
 
     private Set<String> extractIngredientNames(String xml) throws Exception {
-        Document doc = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder()
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        // XXE 방어 설정
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+
+        Document doc = factory.newDocumentBuilder()
                 .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
 
         NodeList nodes = doc.getElementsByTagName("IRDNT_NM");
