@@ -141,6 +141,7 @@ public class Recipe extends BaseEntity {
         this.imageFileId = imageFileId;
     }
 
+    // TODO : 동시성 이슈 해결
     public void incrementBookmarkCount() {
         this.bookmarkCount++;
     }
