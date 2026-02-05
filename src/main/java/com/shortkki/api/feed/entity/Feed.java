@@ -1,5 +1,6 @@
 package com.shortkki.api.feed.entity;
 
+import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.entity.BaseEntity;
@@ -40,22 +41,32 @@ public class Feed extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private FileMetadata image;
+
     @Builder
-    private Feed(Group group, Member member, String content, FeedType feedType) {
+    private Feed(Group group, Member member, String content, FeedType feedType, FileMetadata image) {
         this.group = group;
         this.member = member;
         this.content = content;
         this.feedType = feedType;
         this.likes = 0L;
+        this.image = image;
     }
 
-    public static Feed create(Group group, Member member, String content, FeedType feedType) {
+    public static Feed create(Group group, Member member, String content, FeedType feedType, FileMetadata image) {
         return Feed.builder()
                 .group(group)
                 .member(member)
                 .content(content)
                 .feedType(feedType)
+                .image(image)
                 .build();
+    }
+
+    public String getImageUrl() {
+        return image != null ? image.getUrl() : null;
     }
 
     public void updateContent(String content) {
