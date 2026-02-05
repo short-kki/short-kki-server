@@ -20,13 +20,15 @@ public class RecipeCalendarRepositoryImpl implements RecipeCalendarRepositoryCus
     private final QRecipeCalendar recipeCalendar = QRecipeCalendar.recipeCalendar;
 
     @Override
-    public List<RecipeCalendar> findAllByMemberAndDateRange(Long memberId, Long groupId, LocalDate startDate, LocalDate endDate) {
+    public List<RecipeCalendar> findAllByMemberAndDateRange(Long memberId, LocalDate startDate, LocalDate endDate) {
         return queryFactory
                 .selectFrom(recipeCalendar)
                 .join(recipeCalendar.recipe).fetchJoin()
+                .leftJoin(recipeCalendar.recipe.sourceContent).fetchJoin()
+                .leftJoin(recipeCalendar.recipe.mainImgFile).fetchJoin()
                 .leftJoin(recipeCalendar.group).fetchJoin()
                 .where(
-                        ownerCondition(memberId, groupId),
+                        memberOrGroupCondition(memberId),
                         recipeCalendar.scheduledDate.between(startDate, endDate)
                 )
                 .orderBy(recipeCalendar.scheduledDate.asc(), recipeCalendar.sortOrder.asc())
@@ -53,11 +55,7 @@ public class RecipeCalendarRepositoryImpl implements RecipeCalendarRepositoryCus
                 .and(recipeCalendar.group.isNull());
     }
 
-    private BooleanExpression ownerCondition(Long memberId, Long groupId) {
-        if (groupId != null) {
-            return recipeCalendar.group.id.eq(groupId);
-        }
-
+    private BooleanExpression memberOrGroupCondition(Long memberId) {
         QGroupMember groupMember = QGroupMember.groupMember;
 
         BooleanExpression personalCondition = recipeCalendar.member.id.eq(memberId);

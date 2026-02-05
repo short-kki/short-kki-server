@@ -8,18 +8,22 @@ public record RecipeCalendarDetailResponse(
         Long id,
         Long recipeId,
         String recipeTitle,
+        String mainImgUrl,
         LocalDate scheduledDate,
         Integer sortOrder,
-        Long groupId
+        Long groupId,
+        String groupName
 ) {
     public static RecipeCalendarDetailResponse from(RecipeCalendar calendar) {
         return new RecipeCalendarDetailResponse(
                 calendar.getId(),
                 calendar.getRecipe().getId(),
                 calendar.getRecipe().getBasicInfo().getTitle(),
+                calendar.getRecipe().getMainImgUrl(),
                 calendar.getScheduledDate(),
                 calendar.getSortOrder(),
-                calendar.getGroup() != null ? calendar.getGroup().getId() : null
+                calendar.getGroup() != null ? calendar.getGroup().getId() : null,
+                calendar.getGroup() != null ? calendar.getGroup().getName() : null
         );
     }
 }
