@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MealType {
 
-    MAIN("밥"),
-    SIDE_DISH("반찬"),
+    MAIN("주메뉴"),
+    SIDE_DISH("사이드"),
     SNACK("간식"),
     DESSERT("디저트"),
     SIDE_FOR_DRINK("안주"),

@@ -39,11 +39,10 @@ public class RecipeCalendarController {
     public ResponseEntity<BaseResponse<RecipeCalendarsResponse>> getList(
             @AuthenticationPrincipal LoginMember loginMember,
             @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
-            @RequestParam(required = false) Long groupId
+            @RequestParam LocalDate endDate
     ) {
         RecipeCalendarsResponse response = recipeCalendarQueryService
-                .getRecipeCalendars(loginMember.getId(), groupId, startDate, endDate);
+                .getRecipeCalendars(loginMember.getId(), startDate, endDate);
         return ResponseEntity.ok(BaseResponse.success("레시피 캘린더 목록을 조회했습니다.", response));
     }
 

@@ -8,14 +8,15 @@ public record RecipeQueueDetailResponse(
         Long id,
         Long recipeId,
         String recipeTitle,
+        String mainImgUrl,
         LocalDateTime createdAt
-        // TODO: 썸네일 URL 추가
 ) {
     public static RecipeQueueDetailResponse from(RecipeQueue queue) {
         return new RecipeQueueDetailResponse(
                 queue.getId(),
                 queue.getRecipe().getId(),
                 queue.getRecipe().getBasicInfo().getTitle(),
+                queue.getRecipe().getMainImgUrl(),
                 queue.getCreatedAt()
         );
     }

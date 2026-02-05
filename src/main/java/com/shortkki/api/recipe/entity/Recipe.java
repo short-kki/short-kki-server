@@ -76,7 +76,8 @@ public class Recipe extends BaseEntity {
     public static Recipe createManual(
             Member member,
             RecipeBasicInfo basicInfo,
-            RecipeCategoryInfo categoryInfo) {
+            RecipeCategoryInfo categoryInfo
+    ) {
         return Recipe.builder()
                 .member(member)
                 .basicInfo(basicInfo)
@@ -89,7 +90,8 @@ public class Recipe extends BaseEntity {
             Member member,
             RecipeBasicInfo basicInfo,
             RecipeCategoryInfo categoryInfo,
-            SourceContent sourceContent) {
+            SourceContent sourceContent
+    ) {
         if (sourceContent == null) {
             throw new InvalidStateException("원본 컨텐츠 정보 없이 외부 레시피를 생성할 수 없습니다.");
         }

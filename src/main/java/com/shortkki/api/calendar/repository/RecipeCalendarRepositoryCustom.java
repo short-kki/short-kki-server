@@ -8,7 +8,7 @@ import java.util.List;
 public interface RecipeCalendarRepositoryCustom {
 
     List<RecipeCalendar> findAllByMemberAndDateRange(
-            Long memberId, Long groupId, LocalDate startDate, LocalDate endDate
+            Long memberId, LocalDate startDate, LocalDate endDate
     );
 
     List<RecipeCalendar> findAllByOwnerAndDate(Long memberId, Long groupId, LocalDate scheduledDate);

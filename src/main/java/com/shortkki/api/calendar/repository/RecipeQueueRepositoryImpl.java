@@ -20,6 +20,8 @@ public class RecipeQueueRepositoryImpl implements RecipeQueueRepositoryCustom {
         return queryFactory
                 .selectFrom(recipeQueue)
                 .join(recipeQueue.recipe).fetchJoin()
+                .leftJoin(recipeQueue.recipe.sourceContent).fetchJoin()
+                .leftJoin(recipeQueue.recipe.mainImgFile).fetchJoin()
                 .where(recipeQueue.member.id.eq(memberId))
                 .orderBy(recipeQueue.createdAt.desc())
                 .fetch();

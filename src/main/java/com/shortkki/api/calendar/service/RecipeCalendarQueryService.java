@@ -32,14 +32,10 @@ public class RecipeCalendarQueryService {
 
     // TODO: 페이지네이션
     public RecipeCalendarsResponse getRecipeCalendars(
-            Long memberId, Long groupId, LocalDate startDate, LocalDate endDate
+            Long memberId, LocalDate startDate, LocalDate endDate
     ) {
-        if (groupId != null) {
-            groupMemberValidationService.validateGroupMember(memberId, groupId);
-        }
-
         List<RecipeCalendarDetailResponse> calendarDetails = recipeCalendarRepository
-                .findAllByMemberAndDateRange(memberId, groupId, startDate, endDate)
+                .findAllByMemberAndDateRange(memberId, startDate, endDate)
                 .stream()
                 .map(RecipeCalendarDetailResponse::from)
                 .toList();
