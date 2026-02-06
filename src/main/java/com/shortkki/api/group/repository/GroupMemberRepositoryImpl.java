@@ -48,6 +48,7 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
                 .selectFrom(groupMember)
                 .join(groupMember.group).fetchJoin()
                 .where(groupMember.member.id.eq(memberId))
+                .orderBy(groupMember.group.createdAt.desc())
                 .fetch();
     }
 

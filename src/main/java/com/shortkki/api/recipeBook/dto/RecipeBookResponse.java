@@ -10,7 +10,8 @@ public record RecipeBookResponse(
         Boolean isDefault,
         Integer sortOrder,
         LocalDateTime createdAt,
-        List<RecipeSummaryResponse> recipes) {
+        List<RecipeSummaryResponse> recipes
+) {
 
     public static RecipeBookResponse from(RecipeBook recipeBook) {
         return new RecipeBookResponse(

@@ -126,6 +126,8 @@ public class CurationQueryService {
                 .curationId(curation.getId())
                 .title(curation.getTitle())
                 .description(curation.getDescription())
+                .mealTypes(curation.getMealTypes())
+                .cuisineTypes(curation.getCuisineTypes())
                 .recipes(recipes)
                 .pageInfo(SlicePageInfoResponse.from(searchResult))
                 .build();
