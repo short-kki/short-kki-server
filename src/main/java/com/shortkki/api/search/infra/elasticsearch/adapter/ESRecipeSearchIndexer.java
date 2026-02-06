@@ -11,6 +11,7 @@ import com.shortkki.api.recipe.service.RecipeTagQueryService;
 import com.shortkki.api.search.application.port.RecipeSearchIndexer;
 import com.shortkki.api.search.infra.elasticsearch.document.RecipeDocument;
 import com.shortkki.api.search.infra.elasticsearch.repository.RecipeDocumentRepository;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,14 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
         RecipeDocument doc = toDocument(recipe);
 
         recipeDocumentRepository.save(doc);
+    }
+
+    @Transactional(readOnly = true)
+    public void upsertAll(List<Recipe> recipes) {
+        List<RecipeDocument> docs = recipes.stream()
+                .map(this::toDocument)
+                .toList();
+        recipeDocumentRepository.saveAll(docs);
     }
 
     private RecipeDocument toDocument(Recipe recipe) {
