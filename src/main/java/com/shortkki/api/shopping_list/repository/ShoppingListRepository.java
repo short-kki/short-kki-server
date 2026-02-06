@@ -17,6 +17,9 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     @Query("SELECT sl.ingredient.id FROM ShoppingList sl WHERE sl.group.id = :groupId")
     Set<Long> findIngredientIdsByGroupId(@Param("groupId") Long groupId);
 
+    @Query("SELECT sl.name FROM ShoppingList sl WHERE sl.group.id = :groupId")
+    Set<String> findNamesByGroupId(@Param("groupId") Long groupId);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM ShoppingList sl WHERE sl.group = :group")
     void deleteAllByGroup(@Param("group") Group group);
