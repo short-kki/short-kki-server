@@ -22,6 +22,7 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
             select i from RecipeBookItem i
             join fetch i.recipe 
             where i.recipeBook.id = :recipeBookId
+            order by i.createdAt desc
             """)
     List<RecipeBookItem> findAllByRecipeBookIdWithRecipe(@Param("recipeBookId") Long recipeBookId);
 
