@@ -59,17 +59,41 @@ public class RecipeBookService {
 
     public List<RecipeBookResponse> findAllByMember(Long memberId) {
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
-        return recipeBooks.stream()
-                .map(RecipeBookResponse::from)
-                .toList();
+        return toRecipeBookResponses(recipeBooks);
     }
 
     public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId) {
         Group group = recipeBookValidationService.findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, groupId);
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
+        return toRecipeBookResponses(recipeBooks);
+    }
+
+    private List<RecipeBookResponse> toRecipeBookResponses(List<RecipeBook> recipeBooks) {
+        if (recipeBooks.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> recipeBookIds = recipeBooks.stream()
+                .map(RecipeBook::getId)
+                .toList();
+
+        Map<Long, List<RecipeSummaryResponse>> recipesByBookId = recipeBookItemRepository
+                .findAllByRecipeBookIdsWithRecipe(recipeBookIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        item -> item.getRecipeBook().getId(),
+                        Collectors.mapping(
+                                item -> RecipeSummaryResponse.from(item.getRecipe()),
+                                Collectors.toList()
+                        )
+                ));
+
         return recipeBooks.stream()
-                .map(RecipeBookResponse::from)
+                .map(book -> RecipeBookResponse.from(
+                        book,
+                        recipesByBookId.getOrDefault(book.getId(), List.of())
+                ))
                 .toList();
     }
 
