@@ -2,6 +2,7 @@ package com.shortkki.api.feed.dto.response;
 
 import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedType;
+import com.shortkki.api.recipeBook.dto.RecipeSummaryResponse;
 import java.time.LocalDateTime;
 
 public record FeedResponse(
@@ -13,6 +14,7 @@ public record FeedResponse(
         Long likes,
         boolean likedByMe,
         String imageUrl,
+        RecipeSummaryResponse recipe,
         LocalDateTime createdAt
 ) {
 
@@ -26,6 +28,9 @@ public record FeedResponse(
                 feed.getLikes(),
                 likedByMe,
                 feed.getImageUrl(),
+                feed.getRecipe() != null
+                        ? RecipeSummaryResponse.from(feed.getRecipe())
+                        : null,
                 feed.getCreatedAt()
         );
     }
