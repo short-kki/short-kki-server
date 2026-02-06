@@ -21,6 +21,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
         return queryFactory
                 .selectFrom(feed)
                 .join(feed.member).fetchJoin()
+                .leftJoin(feed.recipe).fetchJoin()
                 .where(feed.group.eq(group))
                 .orderBy(feed.createdAt.desc())
                 .fetch();

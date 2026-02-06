@@ -3,18 +3,22 @@ package com.shortkki.api.feed.entity;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.member.entity.Member;
+import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "feed")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@Getter
 public class Feed extends BaseEntity {
 
     @Id
@@ -30,6 +34,7 @@ public class Feed extends BaseEntity {
     private FeedType feedType;
 
     // TODO : 좋아요 테이블을 만들어야 할까
+    @Builder.Default
     @PositiveOrZero(message = "좋아요는 0 미만의 숫자를 가질 수 없습니다.")
     private Long likes = 0L;
 
@@ -41,19 +46,13 @@ public class Feed extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private FileMetadata image;
-
-    @Builder
-    private Feed(Group group, Member member, String content, FeedType feedType, FileMetadata image) {
-        this.group = group;
-        this.member = member;
-        this.content = content;
-        this.feedType = feedType;
-        this.likes = 0L;
-        this.image = image;
-    }
 
     public static Feed create(Group group, Member member, String content, FeedType feedType, FileMetadata image) {
         return Feed.builder()
@@ -62,6 +61,16 @@ public class Feed extends BaseEntity {
                 .content(content)
                 .feedType(feedType)
                 .image(image)
+                .build();
+    }
+
+    public static Feed create(Group group, Member member, String content, FeedType feedType, Recipe recipe) {
+        return Feed.builder()
+                .group(group)
+                .member(member)
+                .recipe(recipe)
+                .content(content)
+                .feedType(feedType)
                 .build();
     }
 

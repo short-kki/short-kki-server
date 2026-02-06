@@ -13,6 +13,8 @@ public record CreateFeedRequest(
         @NotNull(message = "피드 타입은 필수입니다.")
         FeedType feedType,
 
-        Long imageFileId
+        Long imageFileId,
+
+        Long recipeId
 ) {
 }
