@@ -5,9 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record RecipeCalendarsResponse(
-        List<RecipeCalendarDetailResponse> personals,
-        List<RecipeCalendarDetailResponse> groups
-
+        List<RecipeCalendarDetailResponse> personalCalendars,
+        List<GroupRecipeCalendarResponse> groupCalendars
 ) {
 
 }
