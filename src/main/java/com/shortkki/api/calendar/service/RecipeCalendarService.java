@@ -57,10 +57,15 @@ public class RecipeCalendarService {
         return RecipeCalendarDetailResponse.from(calendar);
     }
 
-    public void delete(Long memberId, Long calendarId) {
+    public void deletePersonalCalendar(Long memberId, Long calendarId) {
         RecipeCalendar calendar = recipeCalendarQueryService.findRecipeCalendar(calendarId);
-        recipeCalendarValidationService.validateRecipeCalendarOwner(calendarId, memberId);
+        recipeCalendarValidationService.validatePersonalCalendarOwner(calendar, memberId);
+        recipeCalendarRepository.delete(calendar);
+    }
 
+    public void deleteGroupCalendar(Long memberId, Long groupId, Long calendarId) {
+        RecipeCalendar calendar = recipeCalendarQueryService.findRecipeCalendar(calendarId);
+        recipeCalendarValidationService.validateGroupCalendarAccess(calendar, memberId, groupId);
         recipeCalendarRepository.delete(calendar);
     }
 

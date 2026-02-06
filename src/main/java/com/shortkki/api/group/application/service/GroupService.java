@@ -1,6 +1,7 @@
 package com.shortkki.api.group.application.service;
 
 
+import com.shortkki.api.calendar.repository.RecipeCalendarRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
@@ -43,6 +44,7 @@ public class GroupService {
     private final InviteLinkRepository inviteLinkRepository;
     private final FeedRepository feedRepository;
     private final ShoppingListRepository shoppingListRepository;
+    private final RecipeCalendarRepository recipeCalendarRepository;
   
     @Transactional
     public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
@@ -78,6 +80,7 @@ public class GroupService {
         validateGroupMemberAdmin(groupMember);
         feedRepository.deleteAllByGroup(group);
         shoppingListRepository.deleteAllByGroup(group);
+        recipeCalendarRepository.deleteAllByGroup(group);
         inviteLinkRepository.deleteAllByGroup(group);
         groupMemberRepository.deleteAllByGroup(group);
         groupRepository.delete(group);

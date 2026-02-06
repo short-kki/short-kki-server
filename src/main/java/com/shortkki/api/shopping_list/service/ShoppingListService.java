@@ -2,17 +2,12 @@ package com.shortkki.api.shopping_list.service;
 
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
-import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
-import com.shortkki.api.ingredient.entity.Ingredient;
-import com.shortkki.api.recipe.entity.RecipeIngredient;
-import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.shopping_list.dto.request.ShoppingListItemRequest;
 import com.shortkki.api.shopping_list.dto.response.ShoppingListResponse;
 import com.shortkki.api.shopping_list.entity.ShoppingList;
 import com.shortkki.api.shopping_list.repository.ShoppingListRepository;
 import com.shortkki.global.error.ErrorCode;
-import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +26,6 @@ public class ShoppingListService {
 
     private final ShoppingListRepository shoppingListRepository;
     private final GroupRepository groupRepository;
-    private final RecipeIngredientRepository recipeIngredientRepository;
 
     public List<ShoppingListResponse> getShoppingList(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
@@ -46,17 +40,11 @@ public class ShoppingListService {
             List<ShoppingListItemRequest> items) {
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
-        List<Long> recipeIngredientIds = items.stream()
-                .map(ShoppingListItemRequest::recipeIngredientId)
-                .toList();
-        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository
-                .findAllByIdsWithIngredient(recipeIngredientIds);
-        Set<Long> existingIngredientIds = shoppingListRepository
-                .findIngredientIdsByGroupId(groupId);
-        List<ShoppingList> shoppingLists = recipeIngredients.stream()
-                .map(RecipeIngredient::getIngredient)
-                .filter(ingredient -> isNewIngredient(existingIngredientIds, ingredient))
-                .map(ingredient -> ShoppingList.create(ingredient.getName(), ingredient, group))
+        Set<String> existingNames = shoppingListRepository.findNamesByGroupId(groupId);
+        List<ShoppingList> shoppingLists = items.stream()
+                .map(ShoppingListItemRequest::name)
+                .filter(name -> !existingNames.contains(name))
+                .map(name -> ShoppingList.create(name, null, group))
                 .toList();
         shoppingListRepository.saveAll(shoppingLists);
     }
@@ -68,10 +56,6 @@ public class ShoppingListService {
         ShoppingList shoppingList = findShoppingListById(shoppingListId);
         validateShoppingListInGroup(shoppingList, groupId);
         shoppingListRepository.delete(shoppingList);
-    }
-
-    private boolean isNewIngredient(Set<Long> existingIds, Ingredient ingredient) {
-        return !existingIds.contains(ingredient.getId());
     }
 
     private Group findGroupById(Long groupId) {

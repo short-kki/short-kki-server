@@ -67,13 +67,13 @@ public class RecipeCalendarController {
         return ResponseEntity.ok(BaseResponse.success("레시피 캘린더 순서가 변경되었습니다."));
     }
 
-    @Operation(summary = "레시피 캘린더 삭제")
+    @Operation(summary = "개인 레시피 캘린더 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> delete(
+    public ResponseEntity<BaseResponse<Void>> deletePersonalCalendar(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id
     ) {
-        recipeCalendarService.delete(loginMember.getId(), id);
+        recipeCalendarService.deletePersonalCalendar(loginMember.getId(), id);
         return ResponseEntity.ok(BaseResponse.success("레시피 캘린더가 삭제되었습니다."));
     }
 }
