@@ -6,7 +6,6 @@ import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
 import com.shortkki.api.feed.repository.FeedLikeRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
-import com.shortkki.api.feed.entity.FeedType;
 import com.shortkki.api.file.application.service.FileMetadataQueryService;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
@@ -17,8 +16,6 @@ import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
-import com.shortkki.api.recipe.entity.Recipe;
-import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.ConflictException;
@@ -44,7 +41,6 @@ public class FeedService {
     private final FileMetadataQueryService fileMetadataQueryService;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
-    private final RecipeRepository recipeRepository;
 
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
@@ -64,25 +60,15 @@ public class FeedService {
         Member member = findMemberById(memberId);
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
-
-        Feed feed;
-        if (request.feedType() == FeedType.NEW_RECIPE_ADDED) {
-            Recipe recipe = recipeRepository.findById(request.recipeId())
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
-            feed = Feed.create(group, member, request.content(), request.feedType(), recipe);
-        } else {
-            FileMetadata image = null;
-            if (request.imageFileId() != null) {
-                image = fileMetadataQueryService.findByIdWithOwnerValidation(request.imageFileId(), memberId);
-            }
-            feed = Feed.create(group, member, request.content(), request.feedType(), image);
-            feedRepository.save(feed);
-            if (image != null) {
-                image.bindTarget(FileTargetType.FEED_IMG, feed.getId());
-            }
-            return;
+        FileMetadata image = null;
+        if (request.imageFileId() != null) {
+            image = fileMetadataQueryService.findByIdWithOwnerValidation(request.imageFileId(), memberId);
         }
+        Feed feed = Feed.create(group, member, request.content(), request.feedType(), image);
         feedRepository.save(feed);
+        if (image != null) {
+            image.bindTarget(FileTargetType.FEED_IMG, feed.getId());
+        }
     }
 
     // TODO : FileUploadPort에 deleteFile(String objectKey) 메서드 추가
