@@ -1,6 +1,16 @@
+-- 파일
+INSERT INTO file_metadata (object_key, original_name, extension, size, target_type, target_id, uploader_type, uploader_id, upload_status, visibility, public_url, created_at, updated_at)
+VALUES ('public/assets/logo.png','profile.png','png',491363,'MEMBER_PROFILE_IMG',NULL,'SYSTEM',NULL,'PENDING','PUBLIC','https://d36jasu56jneaq.cloudfront.net/assets/logo.png',NOW(6),NOW(6));
+
+
 -- 멤버
-INSERT IGNORE INTO `member` (email, name, oauth_id, oauth_provider, role, created_at, updated_at)
-VALUES ('shortkki-dev1@gmail.com', '숏끼', 'test-oauth-id-001', 'GOOGLE', 'USER', NOW(6), NOW(6));
+INSERT IGNORE INTO `member` (email, name, oauth_id, oauth_provider, role, profile_img_file_id, created_at, updated_at)
+VALUES ('shortkki-dev1@gmail.com', '숏끼', 'test-oauth-id-001', 'GOOGLE', 'USER', 1, NOW(6), NOW(6));
+
+
+-- 기본 레시피 북
+INSERT IGNORE INTO recipe_book (id, member_id, title, is_default, sort_order, created_at, updated_at)
+VALUES (1, 1, '내 레시피북', true, 1, NOW(6), NOW(6));
 
 -- 원본 컨텐츠 크리에이터
 INSERT IGNORE INTO `source_content_creator` (`created_at`, `id`, `updated_at`, `display_name`,
@@ -494,424 +504,56 @@ VALUES (1, '2026-02-05 17:29:39.650293', 78, 14, '2026-02-05 17:29:39.650293', '
 
 
 -- 레시피
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 40, 1, 4, '2026-02-05 16:42:30.828213', 31, NULL, 1, 26, '2026-02-05 16:42:30.828213',
-        '고사리나물', '밀가루를 활용해 고사리의 쓴맛을 제거하고 부드러운 식감을 살린 고소한 고사리나물 볶음입니다.', 'KOREAN', 'BEGINNER',
-        'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:43:24.801851', 32, NULL, 1, 27, '2026-02-05 16:43:24.801851',
-        '콩자반', '검은콩을 달콤짭짤하게 졸여 밑반찬으로 오래 두고 먹기 좋은 콩자반입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:43:59.546232', 33, NULL, 1, 28, '2026-02-05 16:43:59.546232',
-        '마늘쫑무침', '아삭한 마늘쫑을 매콤새콤하게 무쳐 밥도둑이 되는 마늘쫑무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 10, 1, 2, '2026-02-05 16:44:25.815198', 34, NULL, 1, 29, '2026-02-05 16:44:25.815198',
-        '시금치나물', '데친 시금치를 고소하게 무쳐 영양 가득한 시금치나물입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 10, 1, 2, '2026-02-05 16:44:55.198176', 35, NULL, 1, 30, '2026-02-05 16:44:55.198176',
-        '멸치볶음', '잔멸치를 바삭하게 볶아 달콤짭짤한 밑반찬 멸치볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:45:23.278405', 36, NULL, 1, 31, '2026-02-05 16:45:23.278405',
-        '감자채볶음', '감자를 채 썰어 아삭하게 볶아낸 담백한 감자채볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:45:56.696650', 37, NULL, 1, 32, '2026-02-05 16:45:56.696650',
-        '오이무침', '오이를 아삭하게 썰어 새콤매콤하게 무친 오이무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 10, 1, 2, '2026-02-05 16:46:31.877815', 38, NULL, 1, 33, '2026-02-05 16:46:31.877815',
-        '무생채', '무를 채 썰어 아삭하게 무친 새콤한 무생채입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:47:02.657022', 39, NULL, 1, 34, '2026-02-05 16:47:02.657022',
-        '계란말이', '계란을 부드럽게 말아내어 누구나 좋아하는 계란말이입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:47:35.415374', 40, NULL, 1, 35, '2026-02-05 16:47:35.415374',
-        '두부조림', '두부를 간장 양념에 졸여 만든 짭짤한 두부조림입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:48:09.682089', 41, NULL, 1, 36, '2026-02-05 16:48:09.682089',
-        '어묵볶음', '어묵을 양념에 볶아 쫄깃하고 달콤짭짤한 어묵볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 16:48:47.865110', 42, NULL, 1, 37, '2026-02-05 16:48:47.865110',
-        '김치볶음', '묵은 김치를 달달하게 볶아 밥이랑 잘 어울리는 김치볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:49:21.896160', 43, NULL, 1, 38, '2026-02-05 16:49:21.896160',
-        '버섯볶음', '각종 버섯을 간단히 볶아 향과 식감이 좋은 버섯볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:49:54.225410', 44, NULL, 1, 39, '2026-02-05 16:49:54.225410',
-        '미역줄기볶음', '미역줄기를 아삭하게 볶아내 짭짤고소한 미역줄기볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:50:25.705537', 45, NULL, 1, 40, '2026-02-05 16:50:25.705537',
-        '진미채볶음', '진미채를 달콤매콤하게 볶아 밥도둑이 되는 진미채볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:50:58.340741', 46, NULL, 1, 41, '2026-02-05 16:50:58.340741',
-        '깻잎무침', '깻잎을 양념에 무쳐 향긋하고 밥에 올려 먹기 좋은 깻잎무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 16:51:30.556340', 47, NULL, 1, 42, '2026-02-05 16:51:30.556340',
-        '장조림', '소고기 또는 돼지고기를 간장 양념에 졸여 만든 짭짤한 장조림입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 10, 1, 2, '2026-02-05 16:52:02.529251', 48, NULL, 1, 43, '2026-02-05 16:52:02.529251',
-        '콩나물무침', '콩나물을 아삭하게 데쳐 양념에 무친 기본 반찬 콩나물무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:52:34.423187', 49, NULL, 1, 44, '2026-02-05 16:52:34.423187',
-        '가지볶음', '가지를 부드럽게 볶아 감칠맛이 좋은 가지볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:53:05.188041', 50, NULL, 1, 45, '2026-02-05 16:53:05.188041',
-        '연근조림', '연근을 간장 양념에 졸여 만든 달콤짭짤한 연근조림입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:53:35.513550', 51, NULL, 1, 46, '2026-02-05 16:53:35.513550',
-        '호박볶음', '애호박을 부드럽게 볶아 만든 담백한 호박볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:54:08.149495', 52, NULL, 1, 47, '2026-02-05 16:54:08.149495',
-        '쥐포볶음', '쥐포를 달콤매콤하게 볶아 간식 겸 반찬으로 좋은 쥐포볶음입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:54:39.188019', 53, NULL, 1, 48, '2026-02-05 16:54:39.188019',
-        '무조림', '무를 간장 양념에 졸여 부드럽고 달큰한 무조림입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:55:10.619810', 54, NULL, 1, 49, '2026-02-05 16:55:10.619810',
-        '파채무침', '파채를 새콤매콤하게 무쳐 고기와 잘 어울리는 파채무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:55:41.239493', 55, NULL, 1, 50, '2026-02-05 16:55:41.239493',
-        '깍두기', '무를 깍둑 썰어 시원하게 발효시킨 깍두기입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:56:13.540582', 56, NULL, 1, 51, '2026-02-05 16:56:13.540582',
-        '파김치', '쪽파를 양념에 버무려 만든 향긋한 파김치입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:56:44.207072', 57, NULL, 1, 52, '2026-02-05 16:56:44.207072',
-        '겉절이', '배추를 바로 무쳐 아삭하고 새콤한 겉절이입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:57:15.606496', 58, NULL, 1, 53, '2026-02-05 16:57:15.606496',
-        '열무김치', '열무를 시원하게 담가 만든 여름철 인기 반찬 열무김치입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:57:48.102508', 59, NULL, 1, 54, '2026-02-05 16:57:48.102508',
-        '배추김치', '배추를 절여 양념에 버무려 숙성시킨 기본 김치 배추김치입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 16:58:19.691419', 60, NULL, 1, 55, '2026-02-05 16:58:19.691419',
-        '총각김치', '알타리무를 이용해 담근 아삭한 총각김치입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 10, 1, 2, '2026-02-05 16:58:52.076853', 61, NULL, 1, 56, '2026-02-05 16:58:52.076853',
-        '파무침', '파를 고춧가루 양념에 무쳐 고기와 함께 먹기 좋은 파무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 10, 1, 2, '2026-02-05 16:59:24.416109', 62, NULL, 1, 57, '2026-02-05 16:59:24.416109',
-        '상추겉절이', '상추를 바로 무쳐 신선하고 아삭한 상추겉절이입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 16:59:56.941519', 63, NULL, 1, 58, '2026-02-05 16:59:56.941519',
-        '부추무침', '부추를 새콤하게 무쳐 고기와 잘 어울리는 부추무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:00:29.032060', 64, NULL, 1, 59, '2026-02-05 17:00:29.032060',
-        '무말랭이무침', '무말랭이를 매콤하게 무쳐 만든 꼬들한 무말랭이무침입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:01:01.975142', 65, NULL, 1, 60, '2026-02-05 17:01:01.975142',
-        '오징어젓갈', '오징어를 젓갈로 담가 짭짤하고 감칠맛 나는 오징어젓갈입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:01:35.311143', 66, NULL, 1, 61, '2026-02-05 17:01:35.311143',
-        '명란젓갈', '명란을 간단히 손질해 짭짤하고 고소한 명란젓갈입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:02:07.886561', 67, NULL, 1, 62, '2026-02-05 17:02:07.886561',
-        '창란젓갈', '창란을 이용해 짭짤하고 쫄깃한 식감이 있는 창란젓갈입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH',
-        'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:02:41.006509', 68, NULL, 1, 63, '2026-02-05 17:02:41.006509',
-        '낙지젓갈', '낙지를 젓갈로 담가 감칠맛이 강한 낙지젓갈입니다.', 'KOREAN', 'INTERMEDIATE', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:03:13.118912', 69, NULL, 1, 64, '2026-02-05 17:03:13.118912',
-        '새우젓', '새우를 소금에 절여 만든 기본 젓갈 새우젓입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 15, 1, 2, '2026-02-05 17:03:45.062402', 70, NULL, 1, 65, '2026-02-05 17:03:45.062402',
-        '멸치젓', '멸치를 소금에 절여 만든 짭짤한 멸치젓입니다.', 'KOREAN', 'BEGINNER', 'SIDE_DISH', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 17:04:17.571921', 71, NULL, 1, 66, '2026-02-05 17:04:17.571921',
-        '갈치조림', '갈치를 무와 함께 매콤하게 조려낸 갈치조림입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 17:04:53.120779', 72, NULL, 1, 67, '2026-02-05 17:04:53.120779',
-        '고등어조림', '고등어를 무와 함께 매콤하게 조려낸 고등어조림입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 30, 1, 2, '2026-02-05 17:05:28.913666', 73, NULL, 1, 68, '2026-02-05 17:05:28.913666',
-        '코다리조림', '코다리를 매콤달콤하게 조려낸 코다리조림입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 17:06:02.293677', 74, NULL, 1, 69, '2026-02-05 17:06:02.293677',
-        '꽁치조림', '꽁치를 무와 함께 칼칼하게 조려낸 꽁치조림입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 17:06:36.989921', 75, NULL, 1, 70, '2026-02-05 17:06:36.989921',
-        '동태찌개', '동태를 넣어 얼큰하게 끓인 시원한 동태찌개입니다.', 'KOREAN', 'BEGINNER', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 17:07:12.763412', 76, NULL, 1, 71, '2026-02-05 17:07:12.763412',
-        '알탕', '명란/알을 넣어 칼칼하게 끓인 알탕입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 17:07:45.641250', 77, NULL, 1, 72, '2026-02-05 17:07:45.641250',
-        '매운탕', '생선과 채소를 넣어 얼큰하게 끓인 매운탕입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 20, 1, 2, '2026-02-05 17:08:19.777906', 78, NULL, 1, 73, '2026-02-05 17:08:19.777906',
-        '오징어볶음', '오징어를 매콤하게 볶아낸 밥도둑 오징어볶음입니다.', 'KOREAN', 'BEGINNER', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 17:08:52.571352', 79, NULL, 1, 74, '2026-02-05 17:08:52.571352',
-        '낙지볶음', '낙지를 매콤하게 볶아낸 쫄깃한 낙지볶음입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 25, 1, 2, '2026-02-05 17:09:28.679451', 80, NULL, 1, 75, '2026-02-05 17:09:28.679451',
-        '쭈꾸미볶음', '쭈꾸미를 매콤하게 볶아낸 쭈꾸미볶음입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
-INSERT IGNORE INTO `recipe` (`bookmark_count`, `cooking_time`, `is_active`, `serving_size`,
-                             `created_at`,
-                             `id`, `main_img_file_id`, `member_id`, `source_content_id`,
-                             `updated_at`,
-                             `title`, `description`, `cuisine_type`, `difficulty`, `meal_type`,
-                             `source_type`)
-VALUES (1, 30, 1, 2, '2026-02-05 17:10:03.596499', 81, NULL, 1, 76, '2026-02-05 17:10:03.596499',
-        '주꾸미삼겹살', '쭈꾸미와 삼겹살을 함께 매콤하게 볶아낸 주꾸미삼겹살입니다.', 'KOREAN', 'INTERMEDIATE', 'MAIN', 'IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,40,1,4,'2026-02-05 16:42:30.828213',31,NULL,1,26,'2026-02-05 16:42:30.828213','고사리나물','밀가루를 활용해 고사리의 쓴맛을 제거하고 부드러운 식감을 살린 고소한 고사리나물 볶음입니다.','KOREAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,10,1,2,'2026-02-05 16:45:46.369007',32,NULL,1,27,'2026-02-05 16:45:46.369007','흑임자 양배추 샐러드','마요네즈 대신 그릭요거트와 흑임자를 사용하여 고소하고 담백한 맛을 낸 건강한 한식 스타일 샐러드입니다.','KOREAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,30,1,2,'2026-02-05 16:46:50.062689',33,NULL,1,28,'2026-02-05 16:46:50.062689','조기구이','에어프라이어를 활용해 비린내를 완벽히 잡고 겉은 바삭, 속은 촉촉하게 굽는 조기구이 레시피입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,30,1,2,'2026-02-05 16:47:03.240151',34,NULL,1,29,'2026-02-05 16:47:03.240151','돼지고기 육전','고소한 돼지고기 육전과 매콤달콤한 파절이를 곁들여 풍미를 더한 요리입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,60,1,10,'2026-02-05 16:47:17.292712',35,NULL,1,30,'2026-02-05 16:47:17.292712','나박김치','명절에 어울리는 시원하고 개운한 맛의 전통 물김치입니다.','KOREAN','INTERMEDIATE','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,45,1,4,'2026-02-05 16:47:20.381515',36,NULL,1,31,'2026-02-05 16:47:20.381515','양배추 나물','담백하고 고소하여 샐러드나 반찬으로 먹기 좋으며 다이어트에도 효과적인 양배추 요리입니다.','KOREAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,50,1,2,'2026-02-05 16:47:43.826069',37,NULL,1,32,'2026-02-05 16:47:43.826069','도라지 오이무침','쓴맛을 뺀 도라지와 아삭한 오이를 새콤달콤한 양념에 무쳐 입맛을 돋우는 반찬입니다.','KOREAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,40,1,4,'2026-02-05 16:47:48.530047',38,NULL,1,34,'2026-02-05 16:47:48.530047','고추간장','청양고추의 알싸한 맛과 다시마 육수의 감칠맛이 어우러진 만능 양념장입니다.','KOREAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,150,1,80,'2026-02-05 16:47:51.607687',39,NULL,1,33,'2026-02-05 16:47:51.607687','버섯잡채','호텔 주방장의 비법을 담아 대용량으로 만들어도 면이 불지 않고 채소의 식감이 살아있는 버섯잡채입니다.','KOREAN','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,40,1,4,'2026-02-05 16:48:21.773751',40,NULL,1,35,'2026-02-05 16:48:21.773751','김치왕만두','밀가루 피 대신 묵은지로 만두소를 감싸 깊은 맛을 내는 이색적인 김치만두 전골 요리입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,10,1,1,'2026-02-05 16:49:34.113532',41,NULL,1,36,'2026-02-05 16:49:34.113532','치즈 닭갈비 볶음밥','매콤한 닭갈비 볶음밥에 고소한 치즈를 듬뿍 얹어 토치로 풍미를 더한 요리입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,2,'2026-02-05 16:49:39.702630',42,NULL,1,37,'2026-02-05 16:49:39.702630','크나페','카다이프 면과 모짜렐라 치즈를 층층이 쌓아 버터에 구운 뒤 달콤한 시럽을 곁들인 아랍식 디저트입니다.','ASIAN','BEGINNER','DESSERT','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,30,1,2,'2026-02-05 16:51:21.758719',43,NULL,1,38,'2026-02-05 16:51:21.758719','안심 스테이크','영국 엘리자베스 2세 여왕이 즐겨 먹던 방식의 스테이크로, 크림 소스와 버섯을 곁들인 요리입니다.','WESTERN','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,40,1,2,'2026-02-05 16:51:28.584032',44,NULL,1,39,'2026-02-05 16:51:28.584032','감자튀김','허브와 함께 삶아낸 감자를 세 번 튀겨내어 겉은 바삭하고 속은 포슬포슬한 식감을 극대화한 요리입니다.','WESTERN','INTERMEDIATE','SNACK','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,60,1,2,'2026-02-05 16:51:50.326392',45,NULL,1,40,'2026-02-05 16:51:50.326392','홍어애 트러플 덮밥','고급 식재료인 홍어애와 트러플을 일본식 조림 기법으로 조리하여 밥 위에 얹어 먹는 독특한 퓨전 요리입니다.','FUSION','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,2,'2026-02-05 16:54:23.282934',46,NULL,1,41,'2026-02-05 16:54:23.282934','두부 계란 볶음','두부와 계란을 활용해 부드럽고 짭조름한 맛을 낸 이연복 셰프의 간단한 볶음 요리입니다.','ASIAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,10,1,2,'2026-02-05 16:54:30.857809',47,NULL,1,42,'2026-02-05 16:54:30.857809','중식 오이무침','불을 사용하지 않고 두드린 오이에 양념을 버무려 만드는 새콤달콤한 중식 스타일 오이 요리입니다.','ASIAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 16:54:51.924432',48,NULL,1,43,'2026-02-05 16:54:51.924432','계란덮밥','이연복 셰프의 비법이 담긴 중식 스타일의 계란덮밥으로, 간단한 재료로 풍성한 맛을 낼 수 있는 한 그릇 요리입니다.','CHINESE','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,70,1,2,'2026-02-05 16:56:03.928635',49,NULL,1,44,'2026-02-05 16:56:03.928635','소고기 토마토 스튜','소고기와 채소를 토마토 홀과 함께 푹 끓여내어 깊은 맛을 내는 프랑스식 건강 스튜입니다.','WESTERN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,40,1,2,'2026-02-05 16:56:22.103037',50,NULL,1,45,'2026-02-05 16:56:22.103037','국물 닭발','쫀득한 무뼈 닭발과 시원한 콩나물 육수가 어우러진 매콤한 국물 요리입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,10,1,2,'2026-02-05 16:56:30.899229',51,NULL,1,46,'2026-02-05 16:56:30.899229','계란찜','전자레인지를 사용하여 5분 만에 완성하는 푸딩처럼 부드러운 식감의 계란찜입니다.','KOREAN','BEGINNER','SIDE_DISH','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,30,1,2,'2026-02-05 16:57:36.068448',52,NULL,1,47,'2026-02-05 16:57:36.068448','쉬림프 카나페','바삭하게 구운 식빵 위에 완숙 계란과 새우를 올려 한 입에 즐기는 서양식 핑거푸드입니다.','WESTERN','BEGINNER','SNACK','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,5,1,1,'2026-02-05 16:58:08.028567',53,NULL,1,48,'2026-02-05 16:58:08.028567','신라면 골드','강황 성분을 함유하여 더욱 깊고 칼칼한 국물 맛을 자랑하는 신라면 골드 조리법입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,30,1,1,'2026-02-05 16:58:38.371164',54,NULL,1,50,'2026-02-05 16:58:38.371164','토마토 파스타','신선한 방울토마토와 토마토 퓨레를 활용해 깊고 진한 풍미를 낸 정통 토마토 파스타입니다.','WESTERN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,100,1,2,'2026-02-05 16:58:57.824077',55,NULL,1,51,'2026-02-05 16:58:57.824077','돼지 곰탕','깊고 맑은 육수와 부드러운 돼지고기가 어우러진 깔끔한 맛의 돼지 곰탕입니다.','KOREAN','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 16:59:04.629656',56,NULL,1,52,'2026-02-05 16:59:04.629656','엔초비 알리오 올리오','엔초비 페이스트로 감칠맛을 더하고 유화 과정을 통해 촉촉함을 살린 알리오 올리오 파스타입니다.','WESTERN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,60,1,4,'2026-02-05 16:59:36.021568',57,NULL,1,53,'2026-02-05 16:59:36.021568','다이어트 두쫀쿠','마시멜로와 버터 없이 만든 건강하고 바삭한 저칼로리 초코 디저트 레시피입니다.','FUSION','INTERMEDIATE','DESSERT','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,1,'2026-02-05 16:59:45.749970',58,NULL,1,54,'2026-02-05 16:59:45.749970','데리야끼 새우 포케','탱글한 새우와 신선한 채소를 곁들인 건강하고 든든한 다이어트용 한 그릇 요리입니다.','ASIAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 16:59:52.396722',59,NULL,1,55,'2026-02-05 16:59:52.396722','야키소바빵','양배추와 우삼겹을 데리야끼 소스에 볶아 빵 위에 얹어 먹는 일본식 샌드위치입니다.','JAPANESE','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,4,'2026-02-05 17:00:02.241608',60,NULL,1,56,'2026-02-05 17:00:02.241608','참치마요 밥버거','전자레인지로 간편하게 만드는 추억의 참치마요 밥버거 밀프레프 레시피입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 17:00:16.592915',61,NULL,1,57,'2026-02-05 17:00:16.592915','게살볶음밥','크래미를 활용하여 집에서도 쉽고 맛있게 만들 수 있는 간단한 볶음밥 레시피입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,30,1,4,'2026-02-05 17:03:56.278689',62,NULL,1,58,'2026-02-05 17:03:56.278689','샐러드 파스타','닭가슴살과 새우, 신선한 채소를 곁들여 건강하고 든든하게 즐기는 다이어트용 밀프렙 요리입니다.','FUSION','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 17:05:50.093294',63,NULL,1,59,'2026-02-05 17:05:50.093294','김치말이국수','시원하고 새콤한 김치 국물에 쌀소면을 말아 먹는 여름철 별미 요리입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,35,1,1,'2026-02-05 17:06:06.557890',64,NULL,1,60,'2026-02-05 17:06:06.557890','닭가슴살 감자 쿠키','감자와 닭가슴살을 잘게 썰어 오븐에 구워낸 겉바속쫀 식감의 고단백 영양 간식입니다.','FUSION','BEGINNER','SNACK','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,1,'2026-02-05 17:06:34.650242',65,NULL,1,61,'2026-02-05 17:06:34.650242','명란 크림 파스타','생크림 없이 우유와 치즈만으로 꾸덕한 소스를 구현한 고소하고 짭조름한 퓨전 파스타입니다.','FUSION','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,1,'2026-02-05 17:07:28.634192',66,NULL,1,63,'2026-02-05 17:07:28.634192','솔 뫼니에르','버터의 풍미와 가자미의 담백함이 조화를 이루는 프랑스식 생선 요리입니다.','WESTERN','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 17:07:28.832216',67,NULL,1,62,'2026-02-05 17:07:28.832216','컵누들 짬뽕','컵누들 짬뽕맛에 신선한 채소와 해산물을 더해 중국집 짬뽕 부럽지 않은 깊은 맛을 내는 든든한 한 끼 레시피입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,2,'2026-02-05 17:07:35.016799',68,NULL,1,64,'2026-02-05 17:07:35.016799','까르보나라','생크림 없이 계란 노른자와 치즈로만 맛을 낸 꾸덕한 정통 이탈리아식 파스타입니다.','WESTERN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,2,'2026-02-05 17:08:01.386261',69,NULL,1,66,'2026-02-05 17:08:01.386261','알배추찜','이연복 셰프의 레시피를 활용한 아삭하고 건강한 배추찜 요리입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,50,1,2,'2026-02-05 17:08:06.729977',70,NULL,1,67,'2026-02-05 17:08:06.729977','무수분 대파수육','물을 한 방울도 넣지 않고 대파와 양파의 채수로만 익혀 육즙과 풍미가 가득한 수육 레시피입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,2,'2026-02-05 17:08:17.616216',71,NULL,1,68,'2026-02-05 17:08:17.616216','카스테라 프렌치 토스트','식빵 대신 카스테라를 활용해 입안에서 녹는 부드러움과 달콤함을 극대화한 프렌치 토스트입니다.','WESTERN','BEGINNER','SNACK','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,2,'2026-02-05 17:08:26.787620',72,NULL,1,69,'2026-02-05 17:08:26.787620','스팸 무스비','깻잎과 오이를 더해 느끼함을 잡고 아삭한 식감을 살린 고소한 스팸 무스비입니다.','KOREAN','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 17:08:44.169372',73,NULL,1,70,'2026-02-05 17:08:44.169372','오이 소금 김밥','아삭한 오이와 고소한 트러플 향이 조화로운 이색적인 한입 김밥입니다.','KOREAN','BEGINNER','SNACK','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,1,'2026-02-05 17:09:36.067197',74,NULL,1,71,'2026-02-05 17:09:36.067197','허브 원팬 파스타','허브 페스토를 활용하여 팬 하나로 간편하게 완성하는 향긋하고 크리미한 파스타입니다.','FUSION','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,20,1,1,'2026-02-05 17:10:15.931976',75,NULL,1,72,'2026-02-05 17:10:15.931976','허브 볶음밥','향긋한 허브 페스토와 씻은 김치가 조화를 이루는 흑백요리사 트리플스타 스타일의 이색 볶음밥입니다.','FUSION','BEGINNER','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,15,1,2,'2026-02-05 17:12:10.753049',77,NULL,1,73,'2026-02-05 17:12:10.753049','토마토 절임 카프레제','상큼한 토마토 절임과 모차렐라 치즈, 달콤한 파파할 멜론을 곁들인 고급스러운 샐러드입니다.','WESTERN','BEGINNER','SNACK','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,130,1,2,'2026-02-05 17:13:15.874994',78,NULL,1,74,'2026-02-05 17:13:15.874994','동파육','삼겹살을 간장 소스에 장시간 졸여 부드러운 식감과 깊은 풍미를 살린 중식 요리입니다.','CHINESE','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,60,1,2,'2026-02-05 17:28:03.984712',79,NULL,1,76,'2026-02-05 17:28:03.984712','떡볶이 디저트','에드워드 리 셰프의 레시피를 재현한 요리로, 떡 퓨레와 머랭을 활용해 만든 이색적인 세미 프레도 디저트입니다.','FUSION','INTERMEDIATE','DESSERT','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,60,1,2,'2026-02-05 17:28:24.308131',80,NULL,1,77,'2026-02-05 17:28:24.308131','무 스테이크','부드럽게 삶은 무를 들기름에 노릇하게 굽고, 소스를 곁들여 먹는 고급스러운 채소 스테이크입니다.','FUSION','INTERMEDIATE','MAIN','IMPORT');
+INSERT IGNORE INTO `recipe` (`bookmark_count`,`cooking_time`,`is_active`,`serving_size`,`created_at`,`id`,`main_img_file_id`,`member_id`,`source_content_id`,`updated_at`,`title`,`description`,`cuisine_type`,`difficulty`,`meal_type`,`source_type`) VALUES (1,45,1,2,'2026-02-05 17:30:18.000545',81,NULL,1,78,'2026-02-05 17:30:18.000545','치킨 프리카세','부드러운 크림 소스에 명란의 감칠맛을 더한 프랑스식 닭고기 스튜 요리입니다.','FUSION','INTERMEDIATE','MAIN','IMPORT');
 
 -- 태그
 INSERT IGNORE INTO tag (`created_at`, `id`, `updated_at`, `name`, `source_type`)
@@ -2065,7 +1707,6 @@ VALUES (150, '2026-02-05 16:42:30.839950', 158, NULL, 31, '2026-02-05 16:42:30.8
        (1, '2026-02-05 16:47:51.620650', 261, 5, 39, '2026-02-05 16:47:51.620650', '참기름', '컵');
 
 
-
 -- =============================================
 -- 큐레이션 데이터
 -- =============================================
@@ -2076,123 +1717,143 @@ INSERT IGNORE INTO `curation` (
     `keywords`, `tags`, `ingredients`, 
     `is_active`, `created_at`, `updated_at`
 ) VALUES
-('자취생을 위한 초간단 레시피', '바쁜 일상 속 10분 안에 뚝딱! 자취생 필수 레시피 모음',
+-- 1. 흑백요리사 특선 (필수 포함)
+('흑백요리사에서 본 그 맛!', 'TV에서 화제가 된 셰프들의 레시피를 집에서 도전해보세요',
+ 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
+ '', 'MAIN', 'INTERMEDIATE',
+ '흑백요리사,셰프,트리플스타,에드워드리,이연복', '홈파티,손님상', '',
+ 1, NOW(6), NOW(6)),
+
+-- 2. 초간단 자취 요리
+('자취생 필수! 10분 완성 레시피', '바쁜 일상 속에서도 뚝딱 만드는 간단 요리',
  'WEEKDAY,WEEKEND', 'MORNING,LUNCH,DINNER,LATE_NIGHT',
- 'KOREAN', 'SIDE_DISH', 'BEGINNER',
- '자취,초간단,간단,빠른,쉬운', '자취,초간단,집밥,반찬', '계란,두부,김치,콩나물',
+ 'KOREAN', 'MAIN,SNACK', 'BEGINNER',
+ '자취,초간단,간단,빠른,혼밥', '자취,초간단,한그릇', '계란,라면,참치',
  1, NOW(6), NOW(6)),
 
-('밥 한 공기 뚝딱! 밥도둑 반찬', '밥이 술술 넘어가는 짭짤하고 감칠맛 나는 반찬 모음',
+-- 3. 파스타 천국
+('오늘은 파스타 어때요?', '알리오 올리오부터 크림 파스타까지, 다양한 파스타 레시피',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH', 'BEGINNER,INTERMEDIATE',
- '밥도둑,짭짤,감칠맛,반찬', '밥도둑,반찬,밑반찬', '간장,고추장,멸치,진미채',
+ 'WESTERN,FUSION', 'MAIN', 'BEGINNER,INTERMEDIATE',
+ '파스타,알리오올리오,크림파스타,토마토파스타,까르보나라', '파스타,면요리', '스파게티,올리브오일,마늘',
  1, NOW(6), NOW(6)),
 
-('미리 만들어두는 든든한 밑반찬', '냉장고에 있으면 든든한 밑반찬 레시피',
+-- 4. 건강한 다이어트 식단
+('맛있게 먹으면서 건강하게!', '칼로리 걱정 없이 든든하게 즐기는 다이어트 레시피',
+ 'WEEKDAY,WEEKEND', 'MORNING,LUNCH,DINNER',
+ 'KOREAN,FUSION,ASIAN', 'MAIN,SIDE_DISH', 'BEGINNER',
+ '다이어트,저칼로리,건강,샐러드,닭가슴살,포케', '다이어트,건강식,단백질', '닭가슴살,양배추,오이',
+ 1, NOW(6), NOW(6)),
+
+-- 5. 이연복 셰프의 중화요리
+('이연복 셰프의 비법 레시피', '집에서 만드는 정통 중화요리의 맛',
+ 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
+ 'CHINESE,ASIAN', 'MAIN,SIDE_DISH', 'BEGINNER,INTERMEDIATE',
+ '이연복,중화요리,중식,계란,두부', '중식,아시안', '계란,두부,오이',
+ 1, NOW(6), NOW(6)),
+
+-- 6. 한식 밑반찬 특선
+('엄마 손맛 느끼는 밑반찬', '냉장고에 있으면 든든한 한식 밑반찬 모음',
  'WEEKEND', 'LUNCH,DINNER',
  'KOREAN', 'SIDE_DISH', 'BEGINNER,INTERMEDIATE',
- '밑반찬,보관,냉장,냉동', '밑반찬,반찬,집밥', '콩,멸치,어묵,두부',
+ '밑반찬,반찬,나물,무침,김치', '밑반찬,반찬,집밥', '고사리,양배추,오이',
  1, NOW(6), NOW(6)),
 
-('오늘 뭐 먹지? 든든한 메인요리', '한 끼 식사로 충분한 푸짐한 메인 요리',
+-- 7. 푸짐한 고기 요리
+('육식파를 위한 고기 특선', '스테이크부터 수육까지, 육즙 가득한 고기 요리',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'MAIN', 'BEGINNER,INTERMEDIATE',
- '메인,한끼,푸짐,든든', '메인요리,한그릇', '고기,생선,해산물',
+ 'KOREAN,WESTERN', 'MAIN', 'BEGINNER,INTERMEDIATE',
+ '고기,스테이크,수육,육전,삼겹살,돼지고기,소고기', '메인요리,단백질', '돼지고기,소고기',
  1, NOW(6), NOW(6)),
 
-('추운 날 생각나는 얼큰한 국물요리', '속까지 따뜻해지는 시원하고 얼큰한 국물 요리',
+-- 8. 볶음밥 & 덮밥 모음
+('한 그릇으로 든든하게!', '간단하지만 맛있는 볶음밥과 덮밥 레시피',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER,LATE_NIGHT',
- 'KOREAN', 'MAIN', 'BEGINNER,INTERMEDIATE',
- '국물,얼큰,시원,따뜻,찌개,탕', '국물요리,찌개,매운맛,칼칼', '무,두부,파',
+ 'KOREAN,CHINESE,FUSION', 'MAIN', 'BEGINNER',
+ '볶음밥,덮밥,한그릇,간편식,게살볶음밥,계란덮밥', '한그릇,볶음,덮밥', '밥,계란,김치',
  1, NOW(6), NOW(6)),
 
-('매운맛 마니아를 위한 칼칼한 요리', '스트레스 확 풀리는 매콤한 요리 모음',
+-- 9. 달콤한 디저트 타임
+('식후 달콤함을 더해줄 디저트', '집에서 만드는 특별한 디저트 레시피',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER,LATE_NIGHT',
- 'KOREAN', 'MAIN,SIDE_DISH', 'BEGINNER,INTERMEDIATE',
- '매콤,매운,칼칼,얼큰,고추', '매운맛,칼칼', '고춧가루,청양고추,고추장',
+ 'FUSION,ASIAN,WESTERN', 'DESSERT,SNACK', 'BEGINNER,INTERMEDIATE',
+ '디저트,달콤,프렌치토스트,쿠키,두쫀쿠', '디저트,간식', '초콜릿,버터,설탕',
  1, NOW(6), NOW(6)),
 
-('영양 가득 건강한 나물 반찬', '비타민과 식이섬유가 풍부한 건강 나물 요리',
- 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH', 'BEGINNER',
- '나물,건강,채소,영양,비타민', '나물,건강식,다이어트,채소요리', '시금치,콩나물,고사리',
+-- 10. 야식 특선
+('배고픈 밤을 위한 야식 메뉴', '늦은 밤 출출할 때 딱 좋은 야식 레시피',
+ 'WEEKDAY,WEEKEND', 'LATE_NIGHT',
+ 'KOREAN', 'MAIN,SNACK', 'BEGINNER',
+ '야식,라면,볶음밥,국물,닭발', '야식,한그릇,매운맛', '라면,치즈,계란',
  1, NOW(6), NOW(6)),
 
-('고소하고 담백한 생선 요리', '오메가3 가득! 건강하고 맛있는 생선 요리',
- 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'MAIN', 'INTERMEDIATE',
- '생선,고등어,갈치,조림,구이', '생선구이,해산물,건강식', '고등어,갈치,조기,꽁치',
- 1, NOW(6), NOW(6)),
-
-('바다의 맛! 쫄깃한 해산물 요리', '싱싱한 해산물로 만드는 맛있는 요리',
- 'WEEKDAY,WEEKEND', 'LUNCH,DINNER,LATE_NIGHT',
- 'KOREAN', 'MAIN', 'INTERMEDIATE',
- '해산물,오징어,낙지,쭈꾸미,조개', '해산물,메인요리,안주', '오징어,낙지,새우',
- 1, NOW(6), NOW(6)),
-
-('직접 담그는 정성 가득 김치', '우리 집 김치는 내가 만든다! 김치 레시피 모음',
+-- 11. 명절 음식 특선
+('정성 가득 명절 요리', '설날, 추석에 만드는 전통 명절 음식',
  'WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH', 'INTERMEDIATE',
- '김치,담그기,발효,절임', '김치,밑반찬', '배추,무,파,고춧가루',
+ 'KOREAN', 'MAIN,SIDE_DISH', 'INTERMEDIATE',
+ '명절,잡채,전,나물,김치,나박김치', '명절음식,한식,손님상', '고사리,도라지,버섯',
  1, NOW(6), NOW(6)),
 
-('감칠맛 폭발! 밥반찬 젓갈', '밥 위에 올려 먹으면 꿀맛인 젓갈 모음',
- 'WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH', 'INTERMEDIATE',
- '젓갈,명란,오징어,새우', '밑반찬,밥도둑', '명란,오징어,새우',
- 1, NOW(6), NOW(6)),
-
-('빠르고 맛있는 볶음 요리', '팬 하나로 뚝딱! 간편한 볶음 요리 모음',
+-- 12. 양식 입문자를 위한 쉬운 레시피
+('처음 만들어도 실패 없는 양식', '누구나 쉽게 도전할 수 있는 양식 레시피',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH,MAIN', 'BEGINNER',
- '볶음,빠른,간편,팬요리', '볶음,반찬,초간단', '양파,마늘,고추',
+ 'WESTERN', 'MAIN,SNACK', 'BEGINNER',
+ '양식,파스타,스튜,토스트,카나페', '양식,초간단', '파스타,토마토,치즈',
  1, NOW(6), NOW(6)),
 
-('깊은 맛이 배인 조림 요리', '달콤짭짤하게 졸여낸 감칠맛 조림 요리',
+-- 13. 생선 요리 모음
+('바다의 맛을 담은 생선 요리', '담백하고 건강한 생선 요리 레시피',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH,MAIN', 'BEGINNER,INTERMEDIATE',
- '조림,간장,달콤,짭짤', '밑반찬,반찬', '간장,설탕,무',
+ 'KOREAN,WESTERN', 'MAIN', 'BEGINNER,INTERMEDIATE',
+ '생선,조기,가자미,생선구이,뫼니에르', '생선구이,건강식', '조기,가자미,버터',
  1, NOW(6), NOW(6)),
 
-('입맛 돋우는 새콤달콤 무침', '식욕 없을 때 딱! 상큼한 무침 요리 모음',
- 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH', 'BEGINNER',
- '무침,새콤,상큼,입맛', '반찬,밑반찬,다이어트', '오이,파,부추,식초',
- 1, NOW(6), NOW(6)),
-
-('정성 가득 명절 음식', '설날, 추석에 꼭 만드는 전통 명절 요리',
- 'WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'SIDE_DISH,MAIN', 'INTERMEDIATE,ADVANCED',
- '명절,설날,추석,전통,제사', '명절음식,한식,손님상', '소고기,나물,전',
- 1, NOW(6), NOW(6)),
-
-('여유로운 주말 브런치', '주말 아침, 느긋하게 즐기는 특별한 한 끼',
- 'WEEKEND', 'MORNING,LUNCH',
- 'KOREAN', 'MAIN,SIDE_DISH', 'BEGINNER,INTERMEDIATE',
- '주말,브런치,아침,여유', '주말요리,홈파티', '계란,두부,야채',
- 1, NOW(6), NOW(6)),
-
-('맛있게 싸는 도시락 반찬', '식어도 맛있는 도시락용 반찬 레시피',
+-- 14. 도시락 & 밀프렙
+('내일 점심은 내가 싼다!', '도시락과 밀프렙에 딱 좋은 레시피 모음',
  'WEEKDAY', 'MORNING,LUNCH',
- 'KOREAN', 'SIDE_DISH', 'BEGINNER',
- '도시락,반찬,싸기좋은,식어도맛있는', '도시락,밑반찬,반찬', '계란,멸치,어묵',
+ 'KOREAN,FUSION', 'MAIN,SNACK', 'BEGINNER',
+ '도시락,밀프렙,밥버거,김밥,볶음밥', '도시락,간편식', '밥,참치,스팸',
  1, NOW(6), NOW(6)),
 
-('술이 술술 넘어가는 안주', '집에서 즐기는 최고의 안주 레시피',
- 'WEEKDAY,WEEKEND', 'DINNER,LATE_NIGHT',
- 'KOREAN', 'SIDE_DISH,MAIN,SIDE_FOR_DRINK', 'BEGINNER,INTERMEDIATE',
- '안주,술안주,야식,홈술', '안주,야식,홈파티', '두부,오징어,삼겹살',
+-- 15. 손님 초대 요리
+('손님 오는 날 특별한 한 끼', '홈파티에 내놓아도 손색없는 요리',
+ 'WEEKEND', 'LUNCH,DINNER',
+ 'WESTERN,FUSION,KOREAN', 'MAIN', 'INTERMEDIATE',
+ '홈파티,손님상,스테이크,동파육,잡채', '홈파티,손님상,메인요리', '소고기,삼겹살',
  1, NOW(6), NOW(6)),
 
-('흑백요리사에서 본 그 맛!', 'TV에서 봤던 화제의 레시피를 집에서 도전',
- 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
- 'KOREAN', 'MAIN,SIDE_DISH', 'INTERMEDIATE,ADVANCED',
- '흑백요리사,셰프,맛집,화제', '홈파티,손님상,메인요리', '고기,해산물,야채',
- 1, NOW(6), NOW(6)),
-
-('에어프라이어로 간편하게!', '기름 없이 바삭하게! 에어프라이어 요리 모음',
+-- 16. 매콤한 맛 특선
+('스트레스 날리는 매콤한 요리', '칼칼하고 얼큰한 맛이 필요할 때',
  'WEEKDAY,WEEKEND', 'LUNCH,DINNER,LATE_NIGHT',
- 'KOREAN', 'MAIN,SIDE_DISH,SNACK', 'BEGINNER',
- '에어프라이어,바삭,기름없이,간편', '에어프라이어,초간단,건강식', '생선,감자,닭',
+ 'KOREAN', 'MAIN', 'BEGINNER',
+ '매콤,매운,칼칼,닭발,김치,짬뽕', '매운맛,칼칼', '고춧가루,청양고추',
+ 1, NOW(6), NOW(6)),
+
+-- 17. 간식 & 스낵
+('출출할 때 딱! 간식 레시피', '감자튀김부터 토스트까지 맛있는 간식 모음',
+ 'WEEKDAY,WEEKEND', 'MORNING,LUNCH,DINNER,LATE_NIGHT',
+ 'WESTERN,KOREAN,FUSION', 'SNACK', 'BEGINNER',
+ '간식,감자튀김,토스트,김밥,쿠키', '간식,스낵', '감자,식빵,계란',
+ 1, NOW(6), NOW(6)),
+
+-- 18. 퓨전 요리 특선
+('동서양의 맛을 하나로!', '창의적인 퓨전 요리 레시피',
+ 'WEEKDAY,WEEKEND', 'LUNCH,DINNER',
+ 'FUSION', 'MAIN,DESSERT', 'BEGINNER,INTERMEDIATE',
+ '퓨전,명란파스타,허브볶음밥,무스테이크', '퓨전,창작요리', '명란,허브,트러플',
+ 1, NOW(6), NOW(6)),
+
+-- 19. 주말 브런치
+('여유로운 주말 아침', '늦잠 자고 일어나 즐기는 브런치 레시피',
+ 'WEEKEND', 'MORNING,LUNCH',
+ 'WESTERN,KOREAN', 'MAIN,SNACK', 'BEGINNER',
+ '브런치,토스트,프렌치토스트,계란,샐러드', '브런치,주말요리', '계란,식빵,버터',
+ 1, NOW(6), NOW(6)),
+
+-- 20. 국물 요리 특선
+('따뜻한 국물이 생각날 때', '속까지 따뜻해지는 국물 요리 모음',
+ 'WEEKDAY,WEEKEND', 'LUNCH,DINNER,LATE_NIGHT',
+ 'KOREAN,WESTERN', 'MAIN', 'BEGINNER,INTERMEDIATE',
+ '국물,스튜,곰탕,찌개,닭발', '국물요리,따뜻한', '무,콩나물,고기',
  1, NOW(6), NOW(6));
 
