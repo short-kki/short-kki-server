@@ -40,10 +40,6 @@ public class FileMetadata extends BaseEntity {
     @Column(nullable = false)
     private long size;
 
-    @Lob
-    @Column(length = 2000, nullable = false)
-    private String baseUrl;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "target_type")
     private FileTargetType targetType;
@@ -66,28 +62,31 @@ public class FileMetadata extends BaseEntity {
     @Column(name = "visibility", nullable = false)
     private FileVisibility visibility;
 
+    @Column(columnDefinition = "text")
+    private String publicUrl;
+
     public static FileMetadata createPending(
             String key,
             String originalName,
             String extension,
             long size,
-            String baseUrl,
             FileTargetType targetType,
             UploaderType uploaderType,
             Long uploaderId,
-            FileVisibility visibility
+            FileVisibility visibility,
+            String publicUrl
     ) {
         return FileMetadata.builder()
                 .objectKey(key)
                 .originalName(originalName)
                 .extension(extension)
                 .size(size)
-                .baseUrl(baseUrl)
                 .targetType(targetType)
                 .uploaderType(uploaderType)
                 .uploaderId(uploaderId)
                 .status(UploadStatus.PENDING)
                 .visibility(visibility)
+                .publicUrl(publicUrl)
                 .build();
     }
 
@@ -105,6 +104,6 @@ public class FileMetadata extends BaseEntity {
     }
 
     public String getUrl() {
-        return this.baseUrl + objectKey;
+        return FileVisibility.PUBLIC.equals(this.visibility) ? publicUrl : null;
     }
 }

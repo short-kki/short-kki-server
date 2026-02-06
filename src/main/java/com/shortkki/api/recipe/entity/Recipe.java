@@ -134,8 +134,7 @@ public class Recipe extends BaseEntity {
     }
 
     public String getAuthorProfileImgUrl() {
-        // TODO: 멤버 프로필 이미지 url 추가
-        return null;
+        return this.getMember().getProfileImgUrl();
     }
 
     public String getCreatorName() {

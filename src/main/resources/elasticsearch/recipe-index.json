@@ -1,0 +1,53 @@
+{
+  "settings": {
+    "analysis": {
+      "tokenizer": {
+        "nori_user_dict": {
+          "type": "nori_tokenizer",
+          "decompound_mode": "mixed",
+          "user_dictionary_rules": []
+        }
+      },
+      "analyzer": {
+        "korean": {
+          "type": "custom",
+          "tokenizer": "nori_user_dict",
+          "filter": ["lowercase"]
+        }
+      }
+    },
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "korean",
+        "search_analyzer": "korean"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean",
+        "search_analyzer": "korean"
+      },
+      "ingredients": {
+        "type": "text",
+        "analyzer": "korean",
+        "search_analyzer": "korean"
+      },
+      "tags": {
+        "type": "text",
+        "analyzer": "korean",
+        "search_analyzer": "korean"
+      },
+      "cuisineType": { "type": "keyword" },
+      "mealType": { "type": "keyword" },
+      "difficulty": { "type": "keyword" },
+      "sourceType": { "type": "keyword" },
+      "bookmarkCount": { "type": "integer" },
+      "isActive": { "type": "boolean" },
+      "createdAt": { "type": "date", "format": "yyyy-MM-dd" }
+    }
+  }
+}

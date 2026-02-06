@@ -5,7 +5,7 @@ spring:
     import: classpath:application-secret.properties   # TODO: 파일 복사로 바꾸기
 
   datasource:
-    url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/short_kki_dev?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
