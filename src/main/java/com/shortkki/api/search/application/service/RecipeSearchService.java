@@ -49,8 +49,9 @@ public class RecipeSearchService {
             Pageable pageable, String searchWord, RecipeSource recipeSource,
             Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     ) {
-        validateSearchWord(searchWord);
-        Set<String> keywords = SearchWordTokenizer.tokenize(searchWord);
+        Set<String> keywords = (searchWord != null && !searchWord.isBlank())
+                ? SearchWordTokenizer.tokenize(searchWord)
+                : Set.of();
         Slice<RecipeSearchItem> result = esSearchPort.search(
                 pageable, searchWord, keywords, keywords, recipeSource, cuisineTypes, mealTypes, difficulties
         );

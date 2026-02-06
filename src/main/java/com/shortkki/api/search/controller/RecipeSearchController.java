@@ -39,7 +39,7 @@ public class RecipeSearchController {
 
     @GetMapping("/api/v2/recipes/search")
     public ResponseEntity<BaseResponse<RecipeSearchResponse>> searchV2(
-            @RequestParam String searchWord,
+            @RequestParam(required = false) String searchWord,
             @PageableDefault(size = 20) Pageable pageable,
             @RequestParam(required = false) RecipeSource recipeSource,
             @RequestParam(required = false) Set<CuisineType> cuisineTypes,
