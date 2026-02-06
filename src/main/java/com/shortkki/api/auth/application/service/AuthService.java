@@ -234,7 +234,7 @@ public class AuthService {
 
     private Member createNewMember(String email, String name, String oauthId,
             OAuthProvider provider) {
-        Member newMember = Member.create(email, name, oauthId, provider);
+        Member newMember = Member.create(email, name, oauthId, provider, null);
         Member savedMember = memberRepository.save(newMember);
         log.info("Created new member: {}", savedMember.getEmail());
         return savedMember;

@@ -19,15 +19,18 @@ public class FileMetadataService {
     private final FileMetadataRepository fileMetadataRepository;
     private final FileUploadProperties fileProps;
     private final String baseUrl;
+    private final String defaultPath;
 
     public FileMetadataService(
-            @Value("${file.cdn.public-base-url}")
-            String baseUrl, FileMetadataRepository fileMetadataRepository,
+            @Value("${file.cdn.public-base-url}") String baseUrl,
+            @Value("${file.cdn.default-path}") String defaultPath,
+            FileMetadataRepository fileMetadataRepository,
             FileUploadProperties fileProps
     ) {
         this.baseUrl = baseUrl;
         this.fileMetadataRepository = fileMetadataRepository;
         this.fileProps = fileProps;
+        this.defaultPath = defaultPath;
     }
 
     public FileMetadata createFileMetadata(
@@ -37,17 +40,18 @@ public class FileMetadataService {
         String prefix = generatePrefix(LocalDate.now(), targetType, visibility);
         String key = FileKeyUtil.generateKey(prefix, filename);
         String extension = FileKeyUtil.extractSafeExtension(filename);
+        String publicUrl = resolvePublicUrl(visibility, key);
 
         FileMetadata fileMetadata = FileMetadata.createPending(
                 key,
                 filename,
                 extension,
                 size,
-                baseUrl,
                 targetType,
                 uploaderType,
                 uploaderId,
-                visibility
+                visibility,
+                publicUrl
         );
 
         return fileMetadataRepository.save(fileMetadata);
@@ -64,5 +68,17 @@ public class FileMetadataService {
                 String.valueOf(today.getYear()),
                 String.valueOf(today.getMonthValue())
         );
+    }
+
+    private String resolvePublicUrl(FileVisibility visibility, String key) {
+        if (FileVisibility.PRIVATE.equals(visibility)) {
+            return null;
+        }
+
+        String normalizedKey = key.startsWith(defaultPath)
+                ? key.substring(defaultPath.length())
+                : key;
+
+        return baseUrl + normalizedKey;
     }
 }

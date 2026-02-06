@@ -40,6 +40,7 @@ aws:
 file:
   cdn:
     public-base-url: https://d36jasu56jneaq.cloudfront.net/
+    default-path: public/
   upload:
     public-prefix: ${FILE_PUBLIC_PREFIX:public/uploads}
     private-prefix: ${FILE_PRIVATE_PREFIX:private/uploads}
