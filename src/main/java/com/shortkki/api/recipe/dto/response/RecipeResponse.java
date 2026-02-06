@@ -26,11 +26,13 @@ public record RecipeResponse(
         String sourceUrl,
         SourcePlatform sourcePlatform,
         SourceContentType sourceContentType,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        RecipeAuthorResponse author,
+        RecipeCreatorResponse creator,
         List<StepResponse> steps,
         List<IngredientResponse> ingredients,
-        List<String> tags
+        List<String> tags,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 
     public static RecipeResponse toDto(
@@ -62,11 +64,13 @@ public record RecipeResponse(
                 recipe.getSourceUrl(),
                 recipe.getSourcePlatform(),
                 recipe.getSourceContentType(),
-                recipe.getCreatedAt(),
-                recipe.getUpdatedAt(),
+                new RecipeAuthorResponse(recipe.getAuthorName(), recipe.getAuthorProfileImgUrl()),
+                new RecipeCreatorResponse(recipe.getSourcePlatform(), recipe.getCreatorName(), recipe.getCreatorProfileImgUrl()),
                 stepResponses,
                 ingredientResponses,
-                tags != null ? tags : List.of()
+                tags != null ? tags : List.of(),
+                recipe.getCreatedAt(),
+                recipe.getUpdatedAt()
         );
     }
 }
