@@ -15,8 +15,8 @@ import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.group.entity.Group;
-import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
 import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
+import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.event.DomainEventPublisher;
@@ -64,7 +64,7 @@ public class RecipeBookService {
     }
 
     public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId) {
-        Group group = recipeBookValidationService.findGroupById(groupId);
+        recipeBookValidationService.findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, groupId);
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
         return toRecipeBookResponses(recipeBooks);
@@ -86,15 +86,12 @@ public class RecipeBookService {
                         item -> item.getRecipeBook().getId(),
                         Collectors.mapping(
                                 item -> RecipeSummaryResponse.from(item.getRecipe()),
-                                Collectors.toList()
-                        )
-                ));
+                                Collectors.toList())));
 
         return recipeBooks.stream()
                 .map(book -> RecipeBookResponse.from(
                         book,
-                        recipesByBookId.getOrDefault(book.getId(), List.of())
-                ))
+                        recipesByBookId.getOrDefault(book.getId(), List.of())))
                 .toList();
     }
 
@@ -126,48 +123,70 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeBookOwnership(recipeBook, memberId);
         recipeBookValidationService.validateNotDefaultRecipeBook(recipeBook);
 
-        List<Long> recipeIds = recipeBookItemRepository.findRecipeIdsByRecipeBookId(id);
-        if (!recipeIds.isEmpty()) {
-            recipeRepository.decrementBookmarkCountBulk(recipeIds);
-        }
+        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
 
         recipeBookItemRepository.deleteAllByRecipeBookId(id);
+
+        List<Long> recipeIds = items.stream()
+                .map(item -> item.getRecipe().getId())
+                .toList();
+
+        List<Long> bookmarkedRecipeIds;
+        if (recipeBook.getMemberId() != null) {
+            bookmarkedRecipeIds = recipeBookItemRepository
+                    .findRecipeIdsBookmarkedByMemberExcludingBook(recipeBook.getMemberId(), recipeIds, id);
+        } else {
+            bookmarkedRecipeIds = recipeBookItemRepository
+                    .findRecipeIdsBookmarkedByGroupExcludingBook(recipeBook.getGroupId(), recipeIds, id);
+        }
+
+        List<Long> recipeIdsToDecrement = recipeIds.stream()
+                .filter(recipeId -> !bookmarkedRecipeIds.contains(recipeId))
+                .toList();
+
+        if (!recipeIdsToDecrement.isEmpty()) {
+            recipeRepository.decrementBookmarkCountBulk(recipeIdsToDecrement);
+        }
+
         recipeBookRepository.delete(recipeBook);
     }
 
     @Transactional
     public void addRecipe(Long memberId, Long recipeBookId, Long recipeId) {
-        RecipeBook recipeBook = recipeBookValidationService.findRecipeBookById(recipeBookId);
-        recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
-
-        Recipe recipe = recipeBookValidationService.findRecipeById(recipeId);
-        recipeBookValidationService.validateRecipeNotInBook(recipeBookId, recipeId);
-
-        RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
-        recipeBookItemRepository.save(item);
-
-        recipeRepository.incrementBookmarkCount(recipeId);
-        domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
-
-        if (recipeBook.getGroupId() != null) {
-            domainEventPublisher.publish(new GroupRecipeAddedEvent(recipeBook.getGroupId(), memberId, recipeId));
-        }
+        addRecipeInternal(memberId, recipeBookId, recipeId, false);
     }
 
     @Transactional
     public void addRecipeIfNotExists(Long memberId, Long recipeBookId, Long recipeId) {
+        addRecipeInternal(memberId, recipeBookId, recipeId, true);
+    }
+
+    private void addRecipeInternal(Long memberId, Long recipeBookId, Long recipeId, boolean skipIfExists) {
         RecipeBook recipeBook = recipeBookValidationService.findRecipeBookById(recipeBookId);
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
         Recipe recipe = recipeBookValidationService.findRecipeById(recipeId);
 
-        if (recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
+        if (skipIfExists && recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId, recipeId)) {
             return;
+        }
+
+        if (!skipIfExists) {
+            recipeBookValidationService.validateRecipeNotInBook(recipeBookId, recipeId);
         }
 
         RecipeBookItem item = RecipeBookItem.create(recipeBook, recipe);
         recipeBookItemRepository.save(item);
 
-        recipeRepository.incrementBookmarkCount(recipeId);
+        boolean hasOtherBookmarks = recipeBook.getMemberId() != null
+                ? recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(recipeBook.getMemberId(), recipeId,
+                        recipeBookId)
+                : recipeBookItemRepository.existsByGroupAndRecipeExcludingBook(recipeBook.getGroupId(), recipeId,
+                        recipeBookId);
+
+        if (!hasOtherBookmarks) {
+            recipeRepository.incrementBookmarkCount(recipeId);
+        }
+
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
 
         if (recipeBook.getGroupId() != null) {
@@ -181,9 +200,18 @@ public class RecipeBookService {
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
         recipeBookValidationService.validateRecipeInBook(recipeBookId, recipeId);
 
+        boolean hasOtherBookmarks;
+        if (recipeBook.getMemberId() != null) {
+            hasOtherBookmarks = recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(
+                    recipeBook.getMemberId(), recipeId, recipeBookId);
+        } else {
+            hasOtherBookmarks = recipeBookItemRepository.existsByGroupAndRecipeExcludingBook(
+                    recipeBook.getGroupId(), recipeId, recipeBookId);
+        }
+
         long deleted = recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(recipeBookId,
                 recipeId);
-        if (deleted > 0) {
+        if (deleted > 0 && !hasOtherBookmarks) {
             recipeRepository.decrementBookmarkCount(recipeId);
         }
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
@@ -260,6 +288,5 @@ public class RecipeBookService {
             throw new NotFoundException(ErrorCode.RECIPE_NOT_IN_BOOK);
         }
     }
-
 
 }
