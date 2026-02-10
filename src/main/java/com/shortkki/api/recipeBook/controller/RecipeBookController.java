@@ -30,95 +30,95 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RecipeBookController {
 
-        private final RecipeBookService recipeBookService;
+    private final RecipeBookService recipeBookService;
 
-        @PostMapping
-        public ResponseEntity<BaseResponse<RecipeBookResponse>> create(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @Valid @RequestBody RecipeBookCreateRequest request) {
-                RecipeBookResponse response = recipeBookService.create(loginMember.getId(), request);
-                return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
-        }
+    @PostMapping
+    public ResponseEntity<BaseResponse<RecipeBookResponse>> create(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @Valid @RequestBody RecipeBookCreateRequest request) {
+        RecipeBookResponse response = recipeBookService.create(loginMember.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
+    }
 
-        @GetMapping
-        public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
-                        @AuthenticationPrincipal LoginMember loginMember) {
-                List<RecipeBookResponse> responses = recipeBookService.findAllByMember(loginMember.getId());
-                return ResponseEntity.ok(BaseResponse.success(responses));
-        }
+    @GetMapping
+    public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
+            @AuthenticationPrincipal LoginMember loginMember) {
+        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(loginMember.getId());
+        return ResponseEntity.ok(BaseResponse.success(responses));
+    }
 
-        @GetMapping("groups/{groupId}")
-        public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAllByGroup(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long groupId) {
-                List<RecipeBookResponse> responses = recipeBookService.findAllByGroup(
-                                loginMember.getId(), groupId);
-                return ResponseEntity.ok(BaseResponse.success(responses));
-        }
+    @GetMapping("/groups/{groupId}")
+    public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAllByGroup(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId) {
+        List<RecipeBookResponse> responses = recipeBookService.findAllByGroup(
+                loginMember.getId(), groupId);
+        return ResponseEntity.ok(BaseResponse.success(responses));
+    }
 
-        @GetMapping("/{id}")
-        public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long id) {
-                RecipeBookResponse response = recipeBookService.findById(loginMember.getId(), id);
-                return ResponseEntity.ok(BaseResponse.success(response));
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id) {
+        RecipeBookResponse response = recipeBookService.findById(loginMember.getId(), id);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
 
-        @PatchMapping("/{id}")
-        public ResponseEntity<BaseResponse<Void>> updateTitle(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long id,
-                        @Valid @RequestBody RecipeBookUpdateRequest request) {
-                recipeBookService.updateTitle(loginMember.getId(), id, request);
-                return ResponseEntity.ok(BaseResponse.success());
-        }
+    @PatchMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> updateTitle(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id,
+            @Valid @RequestBody RecipeBookUpdateRequest request) {
+        recipeBookService.updateTitle(loginMember.getId(), id, request);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 
-        @PatchMapping("/order")
-        public ResponseEntity<BaseResponse<Void>> reorder(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @Valid @RequestBody RecipeBookReorderRequest request) {
-                recipeBookService.reorder(loginMember.getId(), request);
-                return ResponseEntity.ok(BaseResponse.success());
-        }
+    @PatchMapping("/order")
+    public ResponseEntity<BaseResponse<Void>> reorder(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @Valid @RequestBody RecipeBookReorderRequest request) {
+        recipeBookService.reorder(loginMember.getId(), request);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 
-        @DeleteMapping("/{id}")
-        public ResponseEntity<BaseResponse<Void>> delete(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long id) {
-                recipeBookService.delete(loginMember.getId(), id);
-                return ResponseEntity.ok(BaseResponse.success());
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> delete(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id) {
+        recipeBookService.delete(loginMember.getId(), id);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 
-        @PostMapping("/{id}/recipes")
-        public ResponseEntity<BaseResponse<Void>> addRecipe(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long id,
-                        @Valid @RequestBody RecipeBookAddRecipeRequest request) {
-                recipeBookService.addRecipe(loginMember.getId(), id, request.recipeId());
-                return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
-        }
+    @PostMapping("/{id}/recipes")
+    public ResponseEntity<BaseResponse<Void>> addRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id,
+            @Valid @RequestBody RecipeBookAddRecipeRequest request) {
+        recipeBookService.addRecipe(loginMember.getId(), id, request.recipeId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+    }
 
-        @DeleteMapping("/{id}/recipes/{recipeId}")
-        public ResponseEntity<BaseResponse<Void>> removeRecipe(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long id,
-                        @PathVariable Long recipeId) {
-                recipeBookService.removeRecipe(loginMember.getId(), id, recipeId);
-                return ResponseEntity.ok(BaseResponse.success());
-        }
+    @DeleteMapping("/{id}/recipes/{recipeId}")
+    public ResponseEntity<BaseResponse<Void>> removeRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id,
+            @PathVariable Long recipeId) {
+        recipeBookService.removeRecipe(loginMember.getId(), id, recipeId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 
-        @PatchMapping("/{fromBookId}/recipes/{recipeId}")
-        public ResponseEntity<BaseResponse<Void>> moveRecipe(
-                        @AuthenticationPrincipal LoginMember loginMember,
-                        @PathVariable Long fromBookId,
-                        @PathVariable Long recipeId,
-                        @Valid @RequestBody RecipeMoveRequest request) {
-                recipeBookService.moveRecipe(
-                                loginMember.getId(),
-                                fromBookId,
-                                request.toRecipeBookId(),
-                                recipeId);
-                return ResponseEntity.ok(BaseResponse.success());
-        }
+    @PatchMapping("/{fromBookId}/recipes/{recipeId}")
+    public ResponseEntity<BaseResponse<Void>> moveRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long fromBookId,
+            @PathVariable Long recipeId,
+            @Valid @RequestBody RecipeMoveRequest request) {
+        recipeBookService.moveRecipe(
+                loginMember.getId(),
+                fromBookId,
+                request.toRecipeBookId(),
+                recipeId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 
 }

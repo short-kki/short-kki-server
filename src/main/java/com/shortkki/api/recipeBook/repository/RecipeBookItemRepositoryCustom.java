@@ -1,5 +1,7 @@
 package com.shortkki.api.recipeBook.repository;
 
+import java.util.List;
+
 public interface RecipeBookItemRepositoryCustom {
 
     /**
@@ -39,4 +41,24 @@ public interface RecipeBookItemRepositoryCustom {
      * @return 하나라도 존재하면 true, 없으면 false
      */
     boolean existsByGroupAndRecipe(Long groupId, Long recipeId);
+
+    /**
+     * 특정 사용자의 북마크된 레시피 ID 목록을 조회합니다. (특정 레시피북 제외)
+     *
+     * @param memberId      사용자 ID
+     * @param recipeIds     확인할 레시피 ID 목록
+     * @param excludeBookId 제외할 레시피북 ID
+     * @return 다른 레시피북에 존재하는 레시피 ID 목록
+     */
+    List<Long> findRecipeIdsBookmarkedByMemberExcludingBook(Long memberId, List<Long> recipeIds, Long excludeBookId);
+
+    /**
+     * 특정 그룹의 북마크된 레시피 ID 목록을 조회합니다. (특정 레시피북 제외)
+     *
+     * @param groupId       그룹 ID
+     * @param recipeIds     확인할 레시피 ID 목록
+     * @param excludeBookId 제외할 레시피북 ID
+     * @return 다른 레시피북에 존재하는 레시피 ID 목록
+     */
+    List<Long> findRecipeIdsBookmarkedByGroupExcludingBook(Long groupId, List<Long> recipeIds, Long excludeBookId);
 }
