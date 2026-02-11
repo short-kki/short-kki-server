@@ -35,7 +35,6 @@ public class RecipeBookValidationService {
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
     private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
 
     public void validateReorderRequest(List<Long> requestIds, List<RecipeBook> memberBooks) {
         if (requestIds.size() != memberBooks.size()) {

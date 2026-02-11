@@ -16,31 +16,41 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RecipeBookQueryService {
 
-    private final JPAQueryFactory queryFactory;
+        private final JPAQueryFactory queryFactory;
 
-    public List<RecipeBook> findAllByMemberId(Long memberId) {
-        return queryFactory
-                .selectFrom(recipeBook)
-                .where(recipeBook.member.id.eq(memberId))
-                .orderBy(recipeBook.sortOrder.asc())
-                .fetch();
-    }
+        public List<RecipeBook> findAllByMemberId(Long memberId) {
+                return queryFactory
+                                .selectFrom(recipeBook)
+                                .where(recipeBook.member.id.eq(memberId))
+                                .orderBy(recipeBook.sortOrder.asc())
+                                .fetch();
+        }
 
-    public List<RecipeBook> findAllByGroupId(Long groupId) {
-        return queryFactory
-                .selectFrom(recipeBook)
-                .where(recipeBook.groupId.eq(groupId))
-                .orderBy(recipeBook.title.asc())
-                .fetch();
-    }
+        public List<RecipeBook> findAllByGroupId(Long groupId) {
+                return queryFactory
+                                .selectFrom(recipeBook)
+                                .where(recipeBook.groupId.eq(groupId))
+                                .orderBy(recipeBook.title.asc())
+                                .fetch();
+        }
 
-    public Optional<RecipeBook> findDefaultByMemberId(Long memberId) {
-        return Optional.ofNullable(
-                queryFactory
-                        .selectFrom(recipeBook)
-                        .where(
-                                recipeBook.member.id.eq(memberId),
-                                recipeBook.isDefault.isTrue())
-                        .fetchOne());
-    }
+        public Optional<RecipeBook> findDefaultByMemberId(Long memberId) {
+                return Optional.ofNullable(
+                                queryFactory
+                                                .selectFrom(recipeBook)
+                                                .where(
+                                                                recipeBook.member.id.eq(memberId),
+                                                                recipeBook.isDefault.isTrue())
+                                                .fetchOne());
+        }
+
+        public Optional<RecipeBook> findDefaultByGroupId(Long groupId) {
+                return Optional.ofNullable(
+                                queryFactory
+                                                .selectFrom(recipeBook)
+                                                .where(
+                                                                recipeBook.groupId.eq(groupId),
+                                                                recipeBook.isDefault.isTrue())
+                                                .fetchOne());
+        }
 }

@@ -118,37 +118,55 @@ public class RecipeBookService {
 
     @Transactional
     public void delete(Long memberId, Long id) {
-        RecipeBook recipeBook = recipeBookValidationService.findRecipeBookById(id);
+        RecipeBook recipeBook = validateDeleteAction(memberId, id);
+
+        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
+        recipeBookItemRepository.deleteAllByRecipeBookId(id);
+
+        decreaseBookmarkCounts(recipeBook, items);
+
+        recipeBookRepository.delete(recipeBook);
+    }
+
+    private RecipeBook validateDeleteAction(Long memberId, Long recipeBookId) {
+        RecipeBook recipeBook = recipeBookValidationService.findRecipeBookById(recipeBookId);
         recipeBookValidationService.validateNotGroupRecipeBook(recipeBook);
         recipeBookValidationService.validateRecipeBookOwnership(recipeBook, memberId);
         recipeBookValidationService.validateNotDefaultRecipeBook(recipeBook);
+        return recipeBook;
+    }
 
-        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
-
-        recipeBookItemRepository.deleteAllByRecipeBookId(id);
+    private void decreaseBookmarkCounts(RecipeBook recipeBook, List<RecipeBookItem> items) {
+        if (items.isEmpty()) {
+            return;
+        }
 
         List<Long> recipeIds = items.stream()
                 .map(item -> item.getRecipe().getId())
                 .toList();
 
-        List<Long> bookmarkedRecipeIds;
-        if (recipeBook.getMemberId() != null) {
-            bookmarkedRecipeIds = recipeBookItemRepository
-                    .findRecipeIdsBookmarkedByMemberExcludingBook(recipeBook.getMemberId(), recipeIds, id);
-        } else {
-            bookmarkedRecipeIds = recipeBookItemRepository
-                    .findRecipeIdsBookmarkedByGroupExcludingBook(recipeBook.getGroupId(), recipeIds, id);
+        if (recipeIds.isEmpty()) {
+            return;
         }
 
+        List<Long> otherBookmarkedIds = findBookmarkedRecipeIdsInOtherBooks(recipeBook, recipeIds);
+
         List<Long> recipeIdsToDecrement = recipeIds.stream()
-                .filter(recipeId -> !bookmarkedRecipeIds.contains(recipeId))
+                .filter(id -> !otherBookmarkedIds.contains(id))
                 .toList();
 
         if (!recipeIdsToDecrement.isEmpty()) {
             recipeRepository.decrementBookmarkCountBulk(recipeIdsToDecrement);
         }
+    }
 
-        recipeBookRepository.delete(recipeBook);
+    private List<Long> findBookmarkedRecipeIdsInOtherBooks(RecipeBook recipeBook, List<Long> recipeIds) {
+        if (recipeBook.getMemberId() != null) {
+            return recipeBookItemRepository.findRecipeIdsBookmarkedByMemberExcludingBook(
+                    recipeBook.getMemberId(), recipeIds, recipeBook.getId());
+        }
+        return recipeBookItemRepository.findRecipeIdsBookmarkedByGroupExcludingBook(
+                recipeBook.getGroupId(), recipeIds, recipeBook.getId());
     }
 
     @Transactional
@@ -237,10 +255,7 @@ public class RecipeBookService {
     public void createDefaultForGroup(Long groupId, String groupName) {
         recipeBookValidationService.findGroupById(groupId);
 
-        boolean hasDefault = recipeBookQueryService.findAllByGroupId(groupId).stream()
-                .anyMatch(RecipeBook::getIsDefault);
-
-        if (hasDefault) {
+        if (recipeBookQueryService.findDefaultByGroupId(groupId).isPresent()) {
             return;
         }
 
