@@ -1,8 +1,9 @@
 package com.shortkki.api.recipebook;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -166,6 +167,7 @@ class RecipeBookServiceTest {
         Long recipeId2 = 200L;
 
         RecipeBook bookA = mock(RecipeBook.class);
+        given(bookA.getId()).willReturn(bookIdA);
         given(bookA.getMemberId()).willReturn(memberId);
 
         given(recipeBookValidationService.findRecipeBookById(bookIdA)).willReturn(bookA);
@@ -182,8 +184,8 @@ class RecipeBookServiceTest {
 
         given(recipeBookItemRepository.findAllByRecipeBookId(bookIdA)).willReturn(List.of(item1, item2));
         // recipeId1은 다른 레시피북에도 존재, recipeId2는 이 레시피북에만 존재
-        given(recipeBookItemRepository.findRecipeIdsBookmarkedByMemberExcludingBook(memberId,
-                List.of(recipeId1, recipeId2), bookIdA))
+        given(recipeBookItemRepository.findRecipeIdsBookmarkedByMemberExcludingBook(eq(memberId), anyList(),
+                eq(bookIdA)))
                 .willReturn(List.of(recipeId1));
 
         // when
