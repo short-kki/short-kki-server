@@ -23,6 +23,8 @@ import com.shortkki.global.event.DomainEventPublisher;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +68,10 @@ public class RecipeBookService {
         return toRecipeBookResponses(recipeBooks, pageable);
     }
 
+    public List<Long> findRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
+        return recipeBookItemRepository.findRecipeBookIdsByRecipeIdAndMemberId(recipeId, memberId);
+    }
+
     public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
         recipeBookQueryService.findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, groupId);
@@ -96,10 +102,14 @@ public class RecipeBookService {
         SlicePageInfoResponse pageInfo = SlicePageInfoResponse.from(slice);
 
         return recipeBooks.stream()
-                .map(book -> RecipeBookResponse.from(
-                        book,
-                        recipesByBookId.getOrDefault(book.getId(), List.of()),
-                        pageInfo))
+                .map(book -> {
+                    long recipeCount = recipeBookItemRepository.countByRecipeBookId(book.getId());
+                    return RecipeBookResponse.from(
+                            book,
+                            recipesByBookId.getOrDefault(book.getId(), List.of()),
+                            pageInfo,
+                            recipeCount);
+                })
                 .toList();
     }
 
@@ -112,8 +122,9 @@ public class RecipeBookService {
         List<RecipeSummaryResponse> recipes = slice.getContent().stream()
                 .map(item -> RecipeSummaryResponse.from(item.getRecipe()))
                 .toList();
+        long recipeCount = recipeBookItemRepository.countByRecipeBookId(id);
 
-        return RecipeBookResponse.from(recipeBook, recipes, SlicePageInfoResponse.from(slice));
+        return RecipeBookResponse.from(recipeBook, recipes, SlicePageInfoResponse.from(slice), recipeCount);
     }
 
     @Transactional
@@ -133,14 +144,22 @@ public class RecipeBookService {
         List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookId(id);
         recipeBookItemRepository.deleteAllByRecipeBookId(id);
 
-        decreaseBookmarkCounts(recipeBook, items);
+        @SuppressWarnings("unused")
+        List<Long> decrementedIds = decreaseBookmarkCounts(recipeBook, items);
+
+        // TODO: 추후 검색 인덱싱 로직이 준비되면 주석 해제 (데이터 불일치 방지)
+        /*
+         * for (Long recipeId : decrementedIds) {
+         * domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipeId));
+         * }
+         */
 
         recipeBookRepository.delete(recipeBook);
     }
 
-    private void decreaseBookmarkCounts(RecipeBook recipeBook, List<RecipeBookItem> items) {
+    private List<Long> decreaseBookmarkCounts(RecipeBook recipeBook, List<RecipeBookItem> items) {
         if (items.isEmpty()) {
-            return;
+            return List.of();
         }
 
         List<Long> recipeIds = items.stream()
@@ -148,18 +167,21 @@ public class RecipeBookService {
                 .toList();
 
         if (recipeIds.isEmpty()) {
-            return;
+            return List.of();
         }
 
         List<Long> otherBookmarkedIds = findBookmarkedRecipeIdsInOtherBooks(recipeBook, recipeIds);
+        Set<Long> otherBookmarkedIdSet = new HashSet<>(otherBookmarkedIds);
 
         List<Long> recipeIdsToDecrement = recipeIds.stream()
-                .filter(id -> !otherBookmarkedIds.contains(id))
+                .filter(id -> !otherBookmarkedIdSet.contains(id))
                 .toList();
 
         if (!recipeIdsToDecrement.isEmpty()) {
             recipeRepository.decrementBookmarkCountBulk(recipeIdsToDecrement);
         }
+
+        return recipeIdsToDecrement;
     }
 
     private List<Long> findBookmarkedRecipeIdsInOtherBooks(RecipeBook recipeBook,

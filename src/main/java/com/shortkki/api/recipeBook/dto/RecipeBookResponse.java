@@ -11,6 +11,7 @@ public record RecipeBookResponse(
                 Boolean isDefault,
                 Integer sortOrder,
                 LocalDateTime createdAt,
+                Long recipeCount,
                 List<RecipeSummaryResponse> recipes,
                 SlicePageInfoResponse pageInfo) {
 
@@ -21,19 +22,22 @@ public record RecipeBookResponse(
                                 recipeBook.getIsDefault(),
                                 recipeBook.getSortOrder(),
                                 recipeBook.getCreatedAt(),
+                                0L,
                                 List.of(),
                                 null);
         }
 
         public static RecipeBookResponse from(RecipeBook recipeBook,
                         List<RecipeSummaryResponse> recipes,
-                        SlicePageInfoResponse pageInfo) {
+                        SlicePageInfoResponse pageInfo,
+                        long recipeCount) {
                 return new RecipeBookResponse(
                                 recipeBook.getId(),
                                 recipeBook.getTitle(),
                                 recipeBook.getIsDefault(),
                                 recipeBook.getSortOrder(),
                                 recipeBook.getCreatedAt(),
+                                recipeCount,
                                 recipes,
                                 pageInfo);
         }

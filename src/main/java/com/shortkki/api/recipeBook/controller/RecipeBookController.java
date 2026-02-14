@@ -61,6 +61,15 @@ public class RecipeBookController {
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 
+    @GetMapping("/recipes/{recipeId}")
+    public ResponseEntity<BaseResponse<List<Long>>> findRecipeBookIdsByRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long recipeId) {
+        List<Long> bookIds = recipeBookService.findRecipeBookIdsByRecipe(
+                loginMember.getId(), recipeId);
+        return ResponseEntity.ok(BaseResponse.success(bookIds));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(
             @AuthenticationPrincipal LoginMember loginMember,

@@ -26,18 +26,6 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
         }
 
         @Override
-        public boolean existsByMemberAndRecipe(Long memberId, Long recipeId) {
-                Integer fetchOne = queryFactory
-                                .selectOne()
-                                .from(recipeBookItem)
-                                .where(
-                                                recipeBookItem.recipeBook.member.id.eq(memberId),
-                                                recipeBookItem.recipe.id.eq(recipeId))
-                                .fetchFirst();
-                return fetchOne != null;
-        }
-
-        @Override
         public boolean existsByGroupAndRecipeExcludingBook(Long groupId, Long recipeId,
                         Long excludeBookId) {
 
@@ -48,18 +36,6 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
                                                 recipeBookItem.recipeBook.groupId.eq(groupId),
                                                 recipeBookItem.recipe.id.eq(recipeId),
                                                 recipeBookItem.recipeBook.id.ne(excludeBookId))
-                                .fetchFirst();
-                return fetchOne != null;
-        }
-
-        @Override
-        public boolean existsByGroupAndRecipe(Long groupId, Long recipeId) {
-                Integer fetchOne = queryFactory
-                                .selectOne()
-                                .from(recipeBookItem)
-                                .where(
-                                                recipeBookItem.recipeBook.groupId.eq(groupId),
-                                                recipeBookItem.recipe.id.eq(recipeId))
                                 .fetchFirst();
                 return fetchOne != null;
         }
