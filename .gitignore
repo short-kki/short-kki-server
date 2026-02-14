@@ -319,3 +319,6 @@ gradle-app.setting
 
 ### secret
 **-secret.properties
+
+### Firebase
+src/main/resources/firebase/

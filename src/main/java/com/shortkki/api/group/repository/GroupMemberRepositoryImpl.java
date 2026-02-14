@@ -70,4 +70,13 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
                 .fetchOne();
         return count != null ? count : 0L;
     }
+
+    @Override
+    public List<Long> findMemberIdsByGroupId(Long groupId) {
+        return queryFactory
+                .select(groupMember.member.id)
+                .from(groupMember)
+                .where(groupMember.group.id.eq(groupId))
+                .fetch();
+    }
 }

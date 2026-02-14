@@ -84,7 +84,10 @@ public enum ErrorCode {
 
     // Curation
     CURATION_TITLE_DUPLICATE(HttpStatus.CONFLICT, "CURATION_001", "이미 존재하는 큐레이션 제목입니다."),
-    CURATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CURATION_002", "큐레이션을 찾을 수 없습니다.")
+    CURATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CURATION_002", "큐레이션을 찾을 수 없습니다."),
+
+    // Notification
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_001", "알림을 찾을 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;

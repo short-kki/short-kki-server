@@ -48,10 +48,7 @@ public class FeedService {
         List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
         Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feeds);
         return feeds.stream()
-                .map(feed -> {
-                    log.info(feed.getImageUrl());
-                    return FeedResponse.from(feed, likedFeedIds.contains(feed.getId()));
-                })
+                .map(feed -> FeedResponse.from(feed, likedFeedIds.contains(feed.getId())))
                 .toList();
     }
 
