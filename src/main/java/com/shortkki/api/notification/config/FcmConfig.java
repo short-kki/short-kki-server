@@ -39,11 +39,12 @@ public class FcmConfig {
 
     private FirebaseMessaging initializeFirebaseMessaging() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
-            InputStream credentialsStream = getCredentialsStream();
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(credentialsStream))
-                    .build();
-            FirebaseApp.initializeApp(options);
+            try (InputStream credentialsStream = getCredentialsStream()) {
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(credentialsStream))
+                        .build();
+                FirebaseApp.initializeApp(options);
+            }
             log.info("FirebaseApp initialized successfully.");
         }
         return FirebaseMessaging.getInstance();

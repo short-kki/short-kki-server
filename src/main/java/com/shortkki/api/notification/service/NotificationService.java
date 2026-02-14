@@ -61,10 +61,7 @@ public class NotificationService {
         } else {
             memberDeviceRepository.findByFcmToken(fcmToken)
                     .ifPresentOrElse(
-                            device -> {
-                                device.updateToken(fcmToken);
-                                log.info("기존 토큰 업데이트.");
-                            },
+                            device -> log.info("기존 토큰 존재 확인. memberId={}", device.getMemberId()),
                             () -> {
                                 memberDeviceRepository.save(
                                         MemberDevice.create(memberId, fcmToken, deviceId, platform));
