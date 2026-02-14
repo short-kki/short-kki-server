@@ -22,6 +22,17 @@ public record NotificationEvent(
         );
     }
 
+    public static NotificationEvent memberJoined(List<Long> receiverIds, Long joinedMemberId, Long groupId, String memberName) {
+        return new NotificationEvent(
+                receiverIds,
+                joinedMemberId,
+                NotificationType.GROUP_MEMBER_JOINED,
+                memberName + "님이 그룹에 참여했습니다.",
+                "/groups/" + groupId,
+                groupId
+        );
+    }
+
     public static NotificationEvent recipeShared(List<Long> receiverIds, Long senderId, Long recipeId, String recipeName, Long groupId) {
         return new NotificationEvent(
                 receiverIds,

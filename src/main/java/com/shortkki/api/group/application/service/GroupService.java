@@ -19,11 +19,13 @@ import com.shortkki.api.group.repository.InviteLinkRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.shopping_list.repository.ShoppingListRepository;
+import com.shortkki.api.notification.event.NotificationEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.InternalServerException;
 import com.shortkki.global.error.exception.NotFoundException;
+import com.shortkki.global.event.DomainEventPublisher;
 import com.shortkki.global.utils.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,7 @@ public class GroupService {
     private final FeedRepository feedRepository;
     private final ShoppingListRepository shoppingListRepository;
     private final RecipeCalendarRepository recipeCalendarRepository;
+    private final DomainEventPublisher domainEventPublisher;
   
     @Transactional
     public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
@@ -122,8 +125,29 @@ public class GroupService {
         GroupMember groupMember = GroupMember.createMember(member, group);
         groupMemberRepository.save(groupMember);
 
+        // 기존 그룹원들에게 새 멤버 가입 알림
+        publishMemberJoinedNotification(group, member);
+
         long memberCount = groupMemberRepository.countByGroup(group);
         return GroupResponse.from(group, memberCount);
+    }
+
+    private void publishMemberJoinedNotification(Group group, Member joinedMember) {
+        List<Long> receiverIds = groupMemberRepository.findMemberIdsByGroupId(group.getId())
+                .stream()
+                .filter(id -> !id.equals(joinedMember.getId()))
+                .toList();
+
+        if (!receiverIds.isEmpty()) {
+            domainEventPublisher.publish(
+                    NotificationEvent.memberJoined(
+                            receiverIds,
+                            joinedMember.getId(),
+                            group.getId(),
+                            joinedMember.getName()
+                    )
+            );
+        }
     }
 
     public GroupPreviewResponse getGroupPreviewByInviteCode(String inviteCode) {
