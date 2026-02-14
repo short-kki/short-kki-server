@@ -28,11 +28,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class RecipeBookServiceTest {
 
     @InjectMocks
@@ -62,14 +59,13 @@ class RecipeBookServiceTest {
         Long recipeId = 100L;
 
         RecipeBook bookA = mock(RecipeBook.class);
-        given(bookA.getId()).willReturn(bookIdA);
         given(bookA.getMemberId()).willReturn(memberId);
         given(bookA.getGroupId()).willReturn(null);
 
         Recipe recipe = mock(Recipe.class);
 
-        given(recipeBookValidationService.findRecipeBookById(bookIdA)).willReturn(bookA);
-        given(recipeBookValidationService.findRecipeById(recipeId)).willReturn(recipe);
+        given(recipeBookQueryService.findRecipeBookById(bookIdA)).willReturn(bookA);
+        given(recipeBookQueryService.findRecipeById(recipeId)).willReturn(recipe);
         given(recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(memberId, recipeId, bookIdA))
                 .willReturn(false);
 
@@ -90,14 +86,13 @@ class RecipeBookServiceTest {
         Long recipeId = 100L;
 
         RecipeBook bookB = mock(RecipeBook.class);
-        given(bookB.getId()).willReturn(bookIdB);
         given(bookB.getMemberId()).willReturn(memberId);
         given(bookB.getGroupId()).willReturn(null);
 
         Recipe recipe = mock(Recipe.class);
 
-        given(recipeBookValidationService.findRecipeBookById(bookIdB)).willReturn(bookB);
-        given(recipeBookValidationService.findRecipeById(recipeId)).willReturn(recipe);
+        given(recipeBookQueryService.findRecipeBookById(bookIdB)).willReturn(bookB);
+        given(recipeBookQueryService.findRecipeById(recipeId)).willReturn(recipe);
         given(recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(memberId, recipeId, bookIdB))
                 .willReturn(true);
 
@@ -120,7 +115,7 @@ class RecipeBookServiceTest {
         RecipeBook bookA = mock(RecipeBook.class);
         given(bookA.getMemberId()).willReturn(memberId);
 
-        given(recipeBookValidationService.findRecipeBookById(bookIdA)).willReturn(bookA);
+        given(recipeBookQueryService.findRecipeBookById(bookIdA)).willReturn(bookA);
         given(recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(memberId, recipeId, bookIdA))
                 .willReturn(true);
         given(recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(bookIdA, recipeId)).willReturn(1L);
@@ -144,7 +139,7 @@ class RecipeBookServiceTest {
         RecipeBook bookB = mock(RecipeBook.class);
         given(bookB.getMemberId()).willReturn(memberId);
 
-        given(recipeBookValidationService.findRecipeBookById(bookIdB)).willReturn(bookB);
+        given(recipeBookQueryService.findRecipeBookById(bookIdB)).willReturn(bookB);
         given(recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(memberId, recipeId, bookIdB))
                 .willReturn(false);
         given(recipeBookItemRepository.deleteByRecipeBookIdAndRecipeId(bookIdB, recipeId)).willReturn(1L);
@@ -170,7 +165,7 @@ class RecipeBookServiceTest {
         given(bookA.getId()).willReturn(bookIdA);
         given(bookA.getMemberId()).willReturn(memberId);
 
-        given(recipeBookValidationService.findRecipeBookById(bookIdA)).willReturn(bookA);
+        given(recipeBookQueryService.findRecipeBookById(bookIdA)).willReturn(bookA);
 
         Recipe recipe1 = mock(Recipe.class);
         given(recipe1.getId()).willReturn(recipeId1);
@@ -212,8 +207,8 @@ class RecipeBookServiceTest {
 
         Recipe recipe = mock(Recipe.class);
 
-        given(recipeBookValidationService.findRecipeBookById(recipeBookId)).willReturn(groupRecipeBook);
-        given(recipeBookValidationService.findRecipeById(recipeId)).willReturn(recipe);
+        given(recipeBookQueryService.findRecipeBookById(recipeBookId)).willReturn(groupRecipeBook);
+        given(recipeBookQueryService.findRecipeById(recipeId)).willReturn(recipe);
         given(recipeBookItemRepository.existsByGroupAndRecipeExcludingBook(groupId, recipeId, recipeBookId))
                 .willReturn(false);
 

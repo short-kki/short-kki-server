@@ -9,43 +9,44 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, Long>,
-                RecipeBookItemRepositoryCustom {
+    RecipeBookItemRepositoryCustom {
 
-        List<RecipeBookItem> findAllByRecipeBookId(Long recipeBookId);
+  List<RecipeBookItem> findAllByRecipeBookId(Long recipeBookId);
 
-        boolean existsByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
+  boolean existsByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
-        long deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
+  long deleteByRecipeBookIdAndRecipeId(Long recipeBookId, Long recipeId);
 
-        long deleteAllByRecipeBookId(Long recipeBookId);
+  long deleteAllByRecipeBookId(Long recipeBookId);
 
-        @Query("""
-                        select i from RecipeBookItem i
-                        join fetch i.recipe
-                        where i.recipeBook.id = :recipeBookId
-                        order by i.createdAt desc, i.id desc
-                        """)
-        List<RecipeBookItem> findAllByRecipeBookIdWithRecipe(@Param("recipeBookId") Long recipeBookId);
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id = :recipeBookId
+      order by i.createdAt desc, i.id desc
+      """)
+  List<RecipeBookItem> findAllByRecipeBookIdWithRecipe(@Param("recipeBookId") Long recipeBookId);
 
-        @Modifying(clearAutomatically = true, flushAutomatically = true)
-        @Query("""
-                            update RecipeBookItem rbi
-                               set rbi.recipeBook = :toBook
-                             where rbi.recipeBook = :fromBook
-                               and rbi.recipe.id = :recipeId
-                        """)
-        long moveRecipe(@Param("fromBook") RecipeBook fromBook,
-                        @Param("toBook") RecipeBook toBook,
-                        @Param("recipeId") Long recipeId);
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("""
+          update RecipeBookItem rbi
+             set rbi.recipeBook = :toBook
+           where rbi.recipeBook = :fromBook
+             and rbi.recipe.id = :recipeId
+      """)
+  long moveRecipe(@Param("fromBook") RecipeBook fromBook,
+      @Param("toBook") RecipeBook toBook,
+      @Param("recipeId") Long recipeId);
 
-        @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
-        List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
+  @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
+  List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
 
-        @Query("""
-                        select i from RecipeBookItem i
-                        join fetch i.recipe
-                        where i.recipeBook.id in :recipeBookIds
-                        """)
-        List<RecipeBookItem> findAllByRecipeBookIdsWithRecipe(
-                        @Param("recipeBookIds") List<Long> recipeBookIds);
+  // TODO: 페이지네이션으로 수정
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id in :recipeBookIds
+      """)
+  List<RecipeBookItem> findAllByRecipeBookIdsWithRecipe(
+      @Param("recipeBookIds") List<Long> recipeBookIds);
 }
