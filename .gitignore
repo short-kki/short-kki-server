@@ -319,3 +319,7 @@ gradle-app.setting
 
 ### secret
 **-secret.properties
+
+# nGrinder Data Volumes
+ngrinder-controller/
+ngrinder-agent/

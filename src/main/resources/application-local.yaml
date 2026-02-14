@@ -5,14 +5,14 @@ spring:
     import: classpath:application-secret.properties
 
   datasource:
-    url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/short_kki_tmp?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
+    username: short_kki_admin
+    password: 1234
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     open-in-view: false
     properties:
       hibernate:
@@ -54,19 +54,15 @@ logging:
 oauth2:
   provider:
     google-ios:
-      client-id: local-google-ios-client-id
-      redirect-uri: com.googleusercontent.apps.local://
+      client-id: ${GOOGLE_IOS_CLIENT_ID}
+      redirect-uri: ${GOOGLE_IOS_REDIRECT_URI}
     google-android:
-      client-id: local-google-android-client-id
-      redirect-uri: shortkki://oauth/google
-    kakao:
-      client-id: local-kakao-client-id
-      client-secret: local-kakao-client-secret
-      redirect-uri: http://localhost:3000/oauth/callback/kakao
+      client-id: ${GOOGLE_ANDROID_CLIENT_ID}
+      redirect-uri: ${GOOGLE_ANDROID_REDIRECT_URI}
     naver:
-      client-id: local-naver-client-id
-      client-secret: local-naver-client-secret
-      redirect-uri: http://localhost:3000/oauth/callback/naver
+      client-id: ${NAVER_CLIENT_ID}
+      client-secret: ${NAVER_CLIENT_SECRET}
+      redirect-uri: ${NAVER_REDIRECT_URI}
 
 aws:
   service:
