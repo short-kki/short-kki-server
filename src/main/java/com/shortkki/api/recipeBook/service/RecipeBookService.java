@@ -20,10 +20,13 @@ import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.event.DomainEventPublisher;
+import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,19 +61,20 @@ public class RecipeBookService {
         return RecipeBookResponse.from(saved);
     }
 
-    public List<RecipeBookResponse> findAllByMember(Long memberId) {
+    public List<RecipeBookResponse> findAllByMember(Long memberId, Pageable pageable) {
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
-        return toRecipeBookResponses(recipeBooks);
+        return toRecipeBookResponses(recipeBooks, pageable);
     }
 
-    public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId) {
+    public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
         recipeBookQueryService.findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, groupId);
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
-        return toRecipeBookResponses(recipeBooks);
+        return toRecipeBookResponses(recipeBooks, pageable);
     }
 
-    private List<RecipeBookResponse> toRecipeBookResponses(List<RecipeBook> recipeBooks) {
+    private List<RecipeBookResponse> toRecipeBookResponses(List<RecipeBook> recipeBooks,
+            Pageable pageable) {
         if (recipeBooks.isEmpty()) {
             return List.of();
         }
@@ -79,32 +83,37 @@ public class RecipeBookService {
                 .map(RecipeBook::getId)
                 .toList();
 
-        Map<Long, List<RecipeSummaryResponse>> recipesByBookId = recipeBookItemRepository
-                .findAllByRecipeBookIdsWithRecipe(recipeBookIds)
-                .stream()
+        Slice<RecipeBookItem> slice = recipeBookItemRepository
+                .findAllByRecipeBookIdsWithRecipe(recipeBookIds, pageable);
+
+        Map<Long, List<RecipeSummaryResponse>> recipesByBookId = slice.getContent().stream()
                 .collect(Collectors.groupingBy(
                         item -> item.getRecipeBook().getId(),
                         Collectors.mapping(
                                 item -> RecipeSummaryResponse.from(item.getRecipe()),
                                 Collectors.toList())));
 
+        SlicePageInfoResponse pageInfo = SlicePageInfoResponse.from(slice);
+
         return recipeBooks.stream()
                 .map(book -> RecipeBookResponse.from(
                         book,
-                        recipesByBookId.getOrDefault(book.getId(), List.of())))
+                        recipesByBookId.getOrDefault(book.getId(), List.of()),
+                        pageInfo))
                 .toList();
     }
 
-    public RecipeBookResponse findById(Long memberId, Long id) {
+    public RecipeBookResponse findById(Long memberId, Long id, Pageable pageable) {
         RecipeBook recipeBook = recipeBookQueryService.findRecipeBookById(id);
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
 
-        List<RecipeBookItem> items = recipeBookItemRepository.findAllByRecipeBookIdWithRecipe(id);
-        List<RecipeSummaryResponse> recipes = items.stream()
+        Slice<RecipeBookItem> slice = recipeBookItemRepository
+                .findAllByRecipeBookIdWithRecipe(id, pageable);
+        List<RecipeSummaryResponse> recipes = slice.getContent().stream()
                 .map(item -> RecipeSummaryResponse.from(item.getRecipe()))
                 .toList();
 
-        return RecipeBookResponse.from(recipeBook, recipes);
+        return RecipeBookResponse.from(recipeBook, recipes, SlicePageInfoResponse.from(slice));
     }
 
     @Transactional
@@ -162,7 +171,7 @@ public class RecipeBookService {
         return recipeBookItemRepository.findRecipeIdsBookmarkedByGroupExcludingBook(
                 recipeBook.getGroupId(), recipeIds, recipeBook.getId());
     }
-    
+
     @Transactional
     public void addRecipe(Long memberId, Long recipeBookId, Long recipeId) {
         addRecipeInternal(memberId, recipeBookId, recipeId, false);
@@ -193,8 +202,8 @@ public class RecipeBookService {
 
         boolean hasOtherBookmarks = recipeBook.getMemberId() != null
                 ? recipeBookItemRepository.existsByMemberAndRecipeExcludingBook(
-                recipeBook.getMemberId(), recipeId,
-                recipeBookId)
+                        recipeBook.getMemberId(), recipeId,
+                        recipeBookId)
                 : recipeBookItemRepository.existsByGroupAndRecipeExcludingBook(
                         recipeBook.getGroupId(), recipeId,
                         recipeBookId);
