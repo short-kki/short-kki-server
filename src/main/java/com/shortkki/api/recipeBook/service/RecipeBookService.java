@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +70,7 @@ public class RecipeBookService {
 
     public RecipeBookListResponse findAllByMember(Long memberId, Pageable pageable) {
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
-        return buildRecipeBookListResponse(recipeBooks);
+        return buildRecipeBookListResponse(recipeBooks, pageable);
     }
 
     public List<Long> findOwnedRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
@@ -80,7 +81,7 @@ public class RecipeBookService {
     public RecipeBookListResponse findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
         validateGroupMembership(memberId, groupId);
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
-        return buildRecipeBookListResponse(recipeBooks);
+        return buildRecipeBookListResponse(recipeBooks, pageable);
     }
 
     private void validateGroupMembership(Long memberId, Long groupId) {
@@ -88,24 +89,46 @@ public class RecipeBookService {
         groupMemberValidationService.validateGroupMember(memberId, groupId);
     }
 
-    private RecipeBookListResponse buildRecipeBookListResponse(List<RecipeBook> recipeBooks) {
+    private RecipeBookListResponse buildRecipeBookListResponse(List<RecipeBook> recipeBooks,
+            Pageable pageable) {
         if (recipeBooks.isEmpty()) {
             return new RecipeBookListResponse(List.of(), null);
         }
 
-        List<Long> recipeBookIds = extractRecipeBookIds(recipeBooks);
+        Slice<RecipeBook> recipeBookSlice = sliceRecipeBooks(recipeBooks, pageable);
+        List<RecipeBook> pagedRecipeBooks = recipeBookSlice.getContent();
+        if (pagedRecipeBooks.isEmpty()) {
+            return new RecipeBookListResponse(List.of(), SlicePageInfoResponse.from(recipeBookSlice));
+        }
+
+        List<Long> recipeBookIds = extractRecipeBookIds(pagedRecipeBooks);
         List<RecipeBookItem> previewItems = recipeBookItemRepository.findPreviewItemsByRecipeBookIds(
                 recipeBookIds);
         Map<Long, List<RecipeSummaryResponse>> recipesByBookId = mapRecipesByBookId(previewItems);
         Map<Long, Long> recipeCountByBookId = recipeBookItemRepository.countByRecipeBookIds(
                 recipeBookIds);
 
-        List<RecipeBookResponse> responses = recipeBooks.stream()
+        List<RecipeBookResponse> responses = pagedRecipeBooks.stream()
                 .map(book -> buildRecipeBookSummaryResponse(book, recipesByBookId,
                         recipeCountByBookId))
                 .toList();
 
-        return new RecipeBookListResponse(responses, null);
+        return new RecipeBookListResponse(responses, SlicePageInfoResponse.from(recipeBookSlice));
+    }
+
+    private Slice<RecipeBook> sliceRecipeBooks(List<RecipeBook> recipeBooks, Pageable pageable) {
+        int totalSize = recipeBooks.size();
+        int fromIndex = (int) pageable.getOffset();
+
+        if (fromIndex >= totalSize) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
+
+        int toIndex = Math.min(fromIndex + pageable.getPageSize(), totalSize);
+        boolean hasNext = toIndex < totalSize;
+        List<RecipeBook> content = recipeBooks.subList(fromIndex, toIndex);
+
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     private List<Long> extractRecipeBookIds(List<RecipeBook> recipeBooks) {
