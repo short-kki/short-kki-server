@@ -89,8 +89,9 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
 
     @Override
     public Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds) {
+        NumberExpression<Long> countExpr = recipeBookItem.count();
         List<Tuple> rows = queryFactory
-                .select(recipeBookItem.recipeBook.id, recipeBookItem.count())
+                .select(recipeBookItem.recipeBook.id, countExpr)
                 .from(recipeBookItem)
                 .where(recipeBookItem.recipeBook.id.in(recipeBookIds))
                 .groupBy(recipeBookItem.recipeBook.id)
@@ -99,6 +100,6 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
         return rows.stream()
                 .collect(Collectors.toMap(
                         row -> row.get(recipeBookItem.recipeBook.id),
-                        row -> row.get(recipeBookItem.count())));
+                        row -> row.get(countExpr)));
     }
 }
