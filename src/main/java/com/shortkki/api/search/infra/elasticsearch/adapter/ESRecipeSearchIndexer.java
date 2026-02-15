@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "spring.elasticsearch.uris")
+@Transactional(readOnly = true)
 public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
 
     private final RecipeQueryService recipeQueryService;
@@ -31,7 +32,6 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
     private final RecipeDocumentRepository recipeDocumentRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public void upsert(long recipeId) {
         Recipe recipe = recipeQueryService.findById(recipeId);
         RecipeDocument doc = toDocument(recipe);
@@ -39,7 +39,7 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
         recipeDocumentRepository.save(doc);
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public void upsertAll(List<Recipe> recipes) {
         List<RecipeDocument> docs = recipes.stream()
                 .map(this::toDocument)

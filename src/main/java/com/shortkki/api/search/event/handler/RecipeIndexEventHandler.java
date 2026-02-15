@@ -5,6 +5,7 @@ import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.transaction.event.TransactionPhase;
 
@@ -15,6 +16,7 @@ public class RecipeIndexEventHandler {
 
     private final RecipeSearchIndexer indexer;
 
+    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(RecipeIndexUpsertEvent event) {
         try {
