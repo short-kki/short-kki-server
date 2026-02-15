@@ -38,14 +38,18 @@ public abstract class IntegrationTestBase {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private static List<String> cachedTableNames;
+
     @BeforeEach
     void cleanUp() {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
-        List<String> tables = jdbcTemplate.queryForList(
-                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE()",
-                String.class
-        );
-        tables.forEach(table -> jdbcTemplate.execute("TRUNCATE TABLE `" + table + "`"));
+        if (cachedTableNames == null) {
+            cachedTableNames = jdbcTemplate.queryForList(
+                    "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE()",
+                    String.class
+            );
+        }
+        cachedTableNames.forEach(table -> jdbcTemplate.execute("TRUNCATE TABLE `" + table + "`"));
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
     }
 }
