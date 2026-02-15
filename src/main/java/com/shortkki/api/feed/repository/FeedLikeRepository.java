@@ -16,6 +16,9 @@ public interface FeedLikeRepository extends JpaRepository<FeedLike, Long> {
 
     boolean existsByFeedAndMember(Feed feed, Member member);
 
+    @Query("SELECT COUNT(fl) > 0 FROM FeedLike fl WHERE fl.feed = :feed AND fl.member.id = :memberId")
+    boolean existsByFeedAndMemberId(@Param("feed") Feed feed, @Param("memberId") Long memberId);
+
     Optional<FeedLike> findByFeedAndMember(Feed feed, Member member);
 
     long countByFeed(Feed feed);

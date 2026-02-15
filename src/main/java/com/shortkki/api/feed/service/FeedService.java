@@ -1,6 +1,7 @@
 package com.shortkki.api.feed.service;
 
 import com.shortkki.api.feed.dto.request.CreateFeedRequest;
+import com.shortkki.api.feed.dto.request.UpdateFeedRequest;
 import com.shortkki.api.feed.dto.response.FeedResponse;
 import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
@@ -50,6 +51,51 @@ public class FeedService {
         return feeds.stream()
                 .map(feed -> FeedResponse.from(feed, likedFeedIds.contains(feed.getId())))
                 .toList();
+    }
+
+    public FeedResponse getFeed(Long memberId, Long groupId, Long feedId) {
+        Group group = findGroupById(groupId);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
+        Feed feed = findFeedById(feedId);
+        validateFeedBelongsToGroup(feed, group);
+        boolean isLiked = feedLikeRepository.existsByFeedAndMemberId(feed, memberId);
+        return FeedResponse.from(feed, isLiked);
+    }
+
+    @Transactional
+    public void updateFeed(Long memberId, Long groupId, Long feedId, UpdateFeedRequest request) {
+        Group group = findGroupById(groupId);
+        validateGroupMember(memberId, groupId);
+        Feed feed = findFeedById(feedId);
+        validateFeedOwner(memberId, feed);
+        validateFeedBelongsToGroup(feed, group);
+
+        feed.updateContent(request.content());
+
+        Long currentImageId = feed.getImage() != null ? feed.getImage().getId() : null;
+        Long requestImageId = request.imageFileId();
+
+        // 이미지 변경 없음
+        if (java.util.Objects.equals(currentImageId, requestImageId)) {
+            return;
+        }
+
+        // 이미지 삭제 (requestImageId가 null이고 기존 이미지가 있는 경우)
+        if (requestImageId == null && currentImageId != null) {
+            fileMetadataRepository.delete(feed.getImage());
+            feed.removeImage();
+            return;
+        }
+
+        // 이미지 추가/교체
+        if (requestImageId != null) {
+            if (feed.getImage() != null) {
+                fileMetadataRepository.delete(feed.getImage());
+            }
+            FileMetadata newImage = fileMetadataQueryService.findByIdWithOwnerValidation(requestImageId, memberId);
+            feed.updateImage(newImage);
+            newImage.bindTarget(FileTargetType.FEED_IMG, feed.getId());
+        }
     }
 
     @Transactional
