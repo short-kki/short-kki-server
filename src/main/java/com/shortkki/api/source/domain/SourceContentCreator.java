@@ -19,10 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "source_content_creator",
-        uniqueConstraints = @UniqueConstraint(
-                name = "UK_SOURCE_CREATOR_PLATFORM_KEY",
-                columnNames = {"platform", "external_key"}
-        ))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"platform", "external_key"}))
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
