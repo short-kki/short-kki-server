@@ -32,6 +32,24 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
   Slice<RecipeBookItem> findAllByRecipeBookIdWithRecipe(
       @Param("recipeBookId") Long recipeBookId, Pageable pageable);
 
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id = :recipeBookId
+      order by i.createdAt asc, i.id asc
+      """)
+  Slice<RecipeBookItem> findAllByRecipeBookIdWithRecipeOldest(
+      @Param("recipeBookId") Long recipeBookId, Pageable pageable);
+
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id = :recipeBookId
+      order by i.recipe.bookmarkCount desc, i.createdAt desc, i.id desc
+      """)
+  Slice<RecipeBookItem> findAllByRecipeBookIdWithRecipeByBookmarkDesc(
+      @Param("recipeBookId") Long recipeBookId, Pageable pageable);
+
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query("""
           update RecipeBookItem rbi

@@ -1,7 +1,6 @@
 package com.shortkki.api.recipeBook.dto;
 
 import com.shortkki.api.recipeBook.entity.RecipeBook;
-import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,8 +11,7 @@ public record RecipeBookResponse(
                 Integer sortOrder,
                 LocalDateTime createdAt,
                 Long recipeCount,
-                List<RecipeSummaryResponse> recipes,
-                SlicePageInfoResponse pageInfo) {
+                List<RecipeSummaryResponse> recipes) {
 
         public static RecipeBookResponse from(RecipeBook recipeBook) {
                 return new RecipeBookResponse(
@@ -23,13 +21,11 @@ public record RecipeBookResponse(
                                 recipeBook.getSortOrder(),
                                 recipeBook.getCreatedAt(),
                                 0L,
-                                List.of(),
-                                null);
+                                List.of());
         }
 
         public static RecipeBookResponse from(RecipeBook recipeBook,
                         List<RecipeSummaryResponse> recipes,
-                        SlicePageInfoResponse pageInfo,
                         long recipeCount) {
                 return new RecipeBookResponse(
                                 recipeBook.getId(),
@@ -38,7 +34,6 @@ public record RecipeBookResponse(
                                 recipeBook.getSortOrder(),
                                 recipeBook.getCreatedAt(),
                                 recipeCount,
-                                recipes,
-                                pageInfo);
+                                recipes);
         }
 }
