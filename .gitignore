@@ -319,6 +319,13 @@ gradle-app.setting
 
 ### secret
 **-secret.properties
+.env
+.env.*
+!.env.example
+
+
+### code agent
+.claude
 
 # nGrinder Data Volumes
 ngrinder-controller/

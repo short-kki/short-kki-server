@@ -1,7 +1,6 @@
 spring:
   profiles:
     active: local
-
   application:
     name: short-kki
   jackson:
@@ -15,6 +14,13 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
     open-in-view: false
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    try-it-out-enabled: true
+    filter: true
 
 oauth2:
   provider:
