@@ -86,4 +86,19 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
                         row -> row.get(recipeBookItem.recipeBook.id),
                         row -> row.get(countExpr)));
     }
+
+    @Override
+    public Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds) {
+        List<Tuple> rows = queryFactory
+                .select(recipeBookItem.recipeBook.id, recipeBookItem.count())
+                .from(recipeBookItem)
+                .where(recipeBookItem.recipeBook.id.in(recipeBookIds))
+                .groupBy(recipeBookItem.recipeBook.id)
+                .fetch();
+
+        return rows.stream()
+                .collect(Collectors.toMap(
+                        row -> row.get(recipeBookItem.recipeBook.id),
+                        row -> row.get(recipeBookItem.count())));
+    }
 }
