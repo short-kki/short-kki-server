@@ -1,5 +1,6 @@
 package com.shortkki.api.notification.event.handler;
 
+import com.shortkki.api.notification.application.dto.PushMessage;
 import com.shortkki.api.notification.event.NotificationEvent;
 import com.shortkki.api.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class NotificationEventHandler {
 
         for (Long receiverId : event.receiverIds()) {
             try {
-                notificationService.createAndSendNotification(
+                notificationService.createNotification(
                         receiverId,
                         event.senderId(),
                         event.type(),
@@ -31,6 +32,13 @@ public class NotificationEventHandler {
                         event.relatedUrl(),
                         event.targetId()
                 );
+                PushMessage message = PushMessage.of(
+                        event.type().getDescription(),
+                        event.content(),
+                        event.type(),
+                        event.targetId()
+                );
+                notificationService.sendPushToMember(receiverId, message);
             } catch (Exception e) {
                 log.error("Failed to send notification to receiver: {}. error={}", receiverId, e.getMessage());
             }

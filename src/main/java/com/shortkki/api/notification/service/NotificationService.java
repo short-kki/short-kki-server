@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -102,14 +103,13 @@ public class NotificationService {
         return notificationRepository.markAllAsReadByReceiverId(memberId);
     }
 
-    public void createAndSendNotification(Long receiverId, Long senderId, NotificationType type,
+    public void createNotification(Long receiverId, Long senderId, NotificationType type,
             String content, String relatedUrl, Long targetId) {
         Notification notification = Notification.create(receiverId, senderId, type, content, relatedUrl, targetId);
         notificationRepository.save(notification);
-
-        sendPushToMember(receiverId, PushMessage.of(type.getDescription(), content, type, targetId));
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void sendPushToMember(Long memberId, PushMessage message) {
         List<MemberDevice> devices = memberDeviceRepository.findByMemberIdAndIsActiveTrue(memberId);
         if (devices.isEmpty()) {
@@ -124,6 +124,7 @@ public class NotificationService {
         pushNotificationPort.sendToTokens(tokens, message);
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void sendPushToMembers(List<Long> memberIds, PushMessage message) {
         if (memberIds == null || memberIds.isEmpty()) {
             return;
