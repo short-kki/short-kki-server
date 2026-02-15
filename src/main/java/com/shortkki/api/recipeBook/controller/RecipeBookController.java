@@ -12,6 +12,8 @@ import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,39 +35,48 @@ public class RecipeBookController {
     private final RecipeBookService recipeBookService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> create(
+    public ResponseEntity<BaseResponse<RecipeBookResponse>> create(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody RecipeBookCreateRequest request
-    ) {
-        recipeBookService.create(loginMember.getId(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
+            @Valid @RequestBody RecipeBookCreateRequest request) {
+        RecipeBookResponse response = recipeBookService.create(loginMember.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
-            @AuthenticationPrincipal LoginMember loginMember
-    ) {
-        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(loginMember.getId());
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PageableDefault(size = 10) Pageable pageable) {
+        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(
+                loginMember.getId(), pageable);
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 
-    @GetMapping("groups/{groupId}")
+    @GetMapping("/groups/{groupId}")
     public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAllByGroup(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long groupId
-    ) {
+            @PathVariable Long groupId,
+            @PageableDefault(size = 10) Pageable pageable) {
         List<RecipeBookResponse> responses = recipeBookService.findAllByGroup(
-                loginMember.getId(), groupId
-        );
+                loginMember.getId(), groupId, pageable);
         return ResponseEntity.ok(BaseResponse.success(responses));
+    }
+
+    @GetMapping("/recipes/{recipeId}")
+    public ResponseEntity<BaseResponse<List<Long>>> findRecipeBookIdsByRecipe(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long recipeId) {
+        List<Long> bookIds = recipeBookService.findRecipeBookIdsByRecipe(
+                loginMember.getId(), recipeId);
+        return ResponseEntity.ok(BaseResponse.success(bookIds));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long id
-    ) {
-        RecipeBookResponse response = recipeBookService.findById(loginMember.getId(), id);
+            @PathVariable Long id,
+            @PageableDefault(size = 12) Pageable pageable) {
+        RecipeBookResponse response = recipeBookService.findById(
+                loginMember.getId(), id, pageable);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
@@ -73,8 +84,7 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<Void>> updateTitle(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @Valid @RequestBody RecipeBookUpdateRequest request
-    ) {
+            @Valid @RequestBody RecipeBookUpdateRequest request) {
         recipeBookService.updateTitle(loginMember.getId(), id, request);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -82,8 +92,7 @@ public class RecipeBookController {
     @PatchMapping("/order")
     public ResponseEntity<BaseResponse<Void>> reorder(
             @AuthenticationPrincipal LoginMember loginMember,
-            @Valid @RequestBody RecipeBookReorderRequest request
-    ) {
+            @Valid @RequestBody RecipeBookReorderRequest request) {
         recipeBookService.reorder(loginMember.getId(), request);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -91,8 +100,7 @@ public class RecipeBookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> delete(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long id
-    ) {
+            @PathVariable Long id) {
         recipeBookService.delete(loginMember.getId(), id);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -101,8 +109,7 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<Void>> addRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @Valid @RequestBody RecipeBookAddRecipeRequest request
-    ) {
+            @Valid @RequestBody RecipeBookAddRecipeRequest request) {
         recipeBookService.addRecipe(loginMember.getId(), id, request.recipeId());
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success());
     }
@@ -111,8 +118,7 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<Void>> removeRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @PathVariable Long recipeId
-    ) {
+            @PathVariable Long recipeId) {
         recipeBookService.removeRecipe(loginMember.getId(), id, recipeId);
         return ResponseEntity.ok(BaseResponse.success());
     }
@@ -122,14 +128,12 @@ public class RecipeBookController {
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long fromBookId,
             @PathVariable Long recipeId,
-            @Valid @RequestBody RecipeMoveRequest request
-    ) {
+            @Valid @RequestBody RecipeMoveRequest request) {
         recipeBookService.moveRecipe(
                 loginMember.getId(),
                 fromBookId,
                 request.toRecipeBookId(),
-                recipeId
-        );
+                recipeId);
         return ResponseEntity.ok(BaseResponse.success());
     }
 

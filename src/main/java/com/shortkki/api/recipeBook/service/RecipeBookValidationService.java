@@ -1,16 +1,8 @@
 package com.shortkki.api.recipeBook.service;
 
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
-import com.shortkki.api.group.entity.Group;
-import com.shortkki.api.group.repository.GroupMemberRepository;
-import com.shortkki.api.group.repository.GroupRepository;
-import com.shortkki.api.member.entity.Member;
-import com.shortkki.api.member.repository.MemberRepository;
-import com.shortkki.api.recipe.entity.Recipe;
-import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.repository.RecipeBookItemRepository;
-import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
@@ -29,15 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecipeBookValidationService {
 
     private final GroupMemberValidationService groupMemberValidationService;
+    private final RecipeBookQueryService recipeBookQueryService;
 
-    private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
-    private final MemberRepository memberRepository;
-    private final RecipeRepository recipeRepository;
-    private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
 
-    public void validateReorderRequest(List<Long> requestIds, List<RecipeBook> memberBooks) {
+    public void validateReorderable(List<Long> requestIds, List<RecipeBook> memberBooks) {
         if (requestIds.size() != memberBooks.size()) {
             throw new BadRequestException(ErrorCode.INVALID_REORDER_REQUEST);
         }
@@ -88,30 +76,17 @@ public class RecipeBookValidationService {
 
     public void validateRecipeBookAccess(RecipeBook recipeBook, Long memberId) {
         if (recipeBook.getGroupId() != null) {
-            Group group = findGroupById(recipeBook.getGroupId());
-            groupMemberValidationService.validateGroupMember(memberId, group.getId());
+            recipeBookQueryService.findGroupById(recipeBook.getGroupId());
+            groupMemberValidationService.validateGroupMember(memberId, recipeBook.getGroupId());
         } else {
             validateRecipeBookOwnership(recipeBook, memberId);
         }
     }
 
-    public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
-    public RecipeBook findRecipeBookById(Long recipeBookId) {
-        return recipeBookRepository.findById(recipeBookId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_BOOK_NOT_FOUND));
-    }
-
-    public Recipe findRecipeById(Long recipeId) {
-        return recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
-    }
-
-    public Group findGroupById(Long groupId) {
-        return groupRepository.findById(groupId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_FOUND));
+    public void validateDeletable(Long memberId, Long recipeBookId) {
+        RecipeBook recipeBook = recipeBookQueryService.findRecipeBookById(recipeBookId);
+        validateNotGroupRecipeBook(recipeBook);
+        validateRecipeBookOwnership(recipeBook, memberId);
+        validateNotDefaultRecipeBook(recipeBook);
     }
 }
