@@ -69,7 +69,7 @@ public class RecipeBookService {
 
     public RecipeBookListResponse findAllByMember(Long memberId, Pageable pageable) {
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
-        return buildRecipeBookListResponse(recipeBooks, pageable);
+        return buildRecipeBookListResponse(recipeBooks);
     }
 
     public List<Long> findOwnedRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
@@ -80,7 +80,7 @@ public class RecipeBookService {
     public RecipeBookListResponse findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
         validateGroupMembership(memberId, groupId);
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
-        return buildRecipeBookListResponse(recipeBooks, pageable);
+        return buildRecipeBookListResponse(recipeBooks);
     }
 
     private void validateGroupMembership(Long memberId, Long groupId) {
@@ -88,26 +88,24 @@ public class RecipeBookService {
         groupMemberValidationService.validateGroupMember(memberId, groupId);
     }
 
-    private RecipeBookListResponse buildRecipeBookListResponse(List<RecipeBook> recipeBooks,
-            Pageable pageable) {
+    private RecipeBookListResponse buildRecipeBookListResponse(List<RecipeBook> recipeBooks) {
         if (recipeBooks.isEmpty()) {
             return new RecipeBookListResponse(List.of(), null);
         }
 
         List<Long> recipeBookIds = extractRecipeBookIds(recipeBooks);
-        Slice<RecipeBookItem> slice = recipeBookItemRepository.findAllByRecipeBookIdsWithRecipe(
-                recipeBookIds, pageable);
-        Map<Long, List<RecipeSummaryResponse>> recipesByBookId = mapRecipesByBookId(slice);
+        List<RecipeBookItem> previewItems = recipeBookItemRepository.findPreviewItemsByRecipeBookIds(
+                recipeBookIds);
+        Map<Long, List<RecipeSummaryResponse>> recipesByBookId = mapRecipesByBookId(previewItems);
         Map<Long, Long> recipeCountByBookId = recipeBookItemRepository.countByRecipeBookIds(
                 recipeBookIds);
 
-        SlicePageInfoResponse pageInfo = SlicePageInfoResponse.from(slice);
         List<RecipeBookResponse> responses = recipeBooks.stream()
                 .map(book -> buildRecipeBookSummaryResponse(book, recipesByBookId,
                         recipeCountByBookId))
                 .toList();
 
-        return new RecipeBookListResponse(responses, pageInfo);
+        return new RecipeBookListResponse(responses, null);
     }
 
     private List<Long> extractRecipeBookIds(List<RecipeBook> recipeBooks) {
@@ -116,8 +114,8 @@ public class RecipeBookService {
                 .toList();
     }
 
-    private Map<Long, List<RecipeSummaryResponse>> mapRecipesByBookId(Slice<RecipeBookItem> slice) {
-        return slice.getContent().stream()
+    private Map<Long, List<RecipeSummaryResponse>> mapRecipesByBookId(List<RecipeBookItem> items) {
+        return items.stream()
                 .collect(Collectors.groupingBy(
                         item -> item.getRecipeBook().getId(),
                         Collectors.mapping(

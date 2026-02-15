@@ -3,6 +3,7 @@ package com.shortkki.api.recipeBook.repository;
 import static com.shortkki.api.group.entity.QGroupMember.groupMember;
 import static com.shortkki.api.recipeBook.entity.QRecipeBookItem.recipeBookItem;
 
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.core.Tuple;
 import java.util.List;
@@ -85,8 +86,9 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
 
     @Override
     public Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds) {
+        NumberExpression<Long> countExpr = recipeBookItem.count();
         List<Tuple> rows = queryFactory
-                .select(recipeBookItem.recipeBook.id, recipeBookItem.count())
+                .select(recipeBookItem.recipeBook.id, countExpr)
                 .from(recipeBookItem)
                 .where(recipeBookItem.recipeBook.id.in(recipeBookIds))
                 .groupBy(recipeBookItem.recipeBook.id)
@@ -95,6 +97,6 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
         return rows.stream()
                 .collect(Collectors.toMap(
                         row -> row.get(recipeBookItem.recipeBook.id),
-                        row -> row.get(recipeBookItem.count())));
+                        row -> row.get(countExpr)));
     }
 }

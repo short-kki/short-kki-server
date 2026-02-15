@@ -72,4 +72,21 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
       """)
   Slice<RecipeBookItem> findAllByRecipeBookIdsWithRecipe(
       @Param("recipeBookIds") List<Long> recipeBookIds, Pageable pageable);
+
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id in :recipeBookIds
+        and (
+          select count(i2) from RecipeBookItem i2
+          where i2.recipeBook.id = i.recipeBook.id
+            and (
+              i2.createdAt > i.createdAt
+              or (i2.createdAt = i.createdAt and i2.id >= i.id)
+            )
+        ) <= 3
+      order by i.recipeBook.id asc, i.createdAt desc, i.id desc
+      """)
+  List<RecipeBookItem> findPreviewItemsByRecipeBookIds(
+      @Param("recipeBookIds") List<Long> recipeBookIds);
 }
