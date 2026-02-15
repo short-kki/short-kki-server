@@ -47,6 +47,26 @@ services:
     depends_on:
       - elasticsearch
 
+  controller:
+    image: ngrinder/controller
+    restart: always
+    ports:
+      - "80:80"    # 웹 UI 포트
+      - "16001:16001"
+      - "12000-12009:12000-12009"
+    volumes:
+      - ./ngrinder-controller:/opt/ngrinder-controller
+
+  agent:
+    image: ngrinder/agent
+    restart: always
+    links:
+      - controller
+    environment:
+      - CONTROLLER_ADDR=controller:16001
+    volumes:
+      - ./ngrinder-agent:/opt/ngrinder-agent
+
 volumes:
   mysql-data:
   es-data:

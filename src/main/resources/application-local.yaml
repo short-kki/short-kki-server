@@ -59,10 +59,6 @@ oauth2:
     google-android:
       client-id: local-google-android-client-id
       redirect-uri: shortkki://oauth/google
-    kakao:
-      client-id: local-kakao-client-id
-      client-secret: local-kakao-client-secret
-      redirect-uri: http://localhost:3000/oauth/callback/kakao
     naver:
       client-id: local-naver-client-id
       client-secret: local-naver-client-secret
