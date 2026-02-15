@@ -91,6 +91,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          # TODO: ELB 붙이고 매칭 포트 변경 (80 -> 8080)
           script: |
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -102,7 +103,7 @@ jobs:
             docker run -d \
               --name shortkki-server \
               --restart unless-stopped \
-              -p 8080:8080 \
+              -p 80:8080 \
               --env-file ~/shortkki/.env \
               -e SPRING_PROFILES_ACTIVE=dev \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
