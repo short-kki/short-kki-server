@@ -4,7 +4,10 @@ import static com.shortkki.api.group.entity.QGroupMember.groupMember;
 import static com.shortkki.api.recipeBook.entity.QRecipeBookItem.recipeBookItem;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.core.Tuple;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -78,5 +81,20 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
                         recipeBookItem.recipe.id.in(recipeIds),
                         recipeBookItem.recipeBook.id.ne(excludeBookId))
                 .fetch();
+    }
+
+    @Override
+    public Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds) {
+        List<Tuple> rows = queryFactory
+                .select(recipeBookItem.recipeBook.id, recipeBookItem.count())
+                .from(recipeBookItem)
+                .where(recipeBookItem.recipeBook.id.in(recipeBookIds))
+                .groupBy(recipeBookItem.recipeBook.id)
+                .fetch();
+
+        return rows.stream()
+                .collect(Collectors.toMap(
+                        row -> row.get(recipeBookItem.recipeBook.id),
+                        row -> row.get(recipeBookItem.count())));
     }
 }

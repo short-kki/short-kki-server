@@ -1,6 +1,7 @@
 package com.shortkki.api.recipeBook.repository;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RecipeBookItemRepositoryCustom {
 
@@ -15,4 +16,6 @@ public interface RecipeBookItemRepositoryCustom {
 
     List<Long> findRecipeIdsBookmarkedByGroupExcludingBook(Long groupId, List<Long> recipeIds,
             Long excludeBookId);
+
+    Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds);
 }
