@@ -54,15 +54,15 @@ logging:
 oauth2:
   provider:
     google-ios:
-      client-id: ${GOOGLE_IOS_CLIENT_ID}
-      redirect-uri: ${GOOGLE_IOS_REDIRECT_URI}
+      client-id: local-google-ios-client-id
+      redirect-uri: com.googleusercontent.apps.local://
     google-android:
-      client-id: ${GOOGLE_ANDROID_CLIENT_ID}
-      redirect-uri: ${GOOGLE_ANDROID_REDIRECT_URI}
+      client-id: local-google-android-client-id
+      redirect-uri: shortkki://oauth/google
     naver:
-      client-id: ${NAVER_CLIENT_ID}
-      client-secret: ${NAVER_CLIENT_SECRET}
-      redirect-uri: ${NAVER_REDIRECT_URI}
+      client-id: local-naver-client-id
+      client-secret: local-naver-client-secret
+      redirect-uri: http://localhost:3000/oauth/callback/naver
 
 aws:
   service:
