@@ -28,6 +28,8 @@ public record RecipeResponse(
         SourceContentType sourceContentType,
         RecipeAuthorResponse author,
         RecipeCreatorResponse creator,
+        List<Long> ownedRecipeBookIds,
+        Integer ownedRecipeBookCount,
         List<StepResponse> steps,
         List<IngredientResponse> ingredients,
         List<String> tags,
@@ -36,7 +38,11 @@ public record RecipeResponse(
 ) {
 
     public static RecipeResponse toDto(
-            Recipe recipe, List<RecipeStep> steps, List<RecipeIngredient> ingredients, List<String> tags
+            Recipe recipe,
+            List<RecipeStep> steps,
+            List<RecipeIngredient> ingredients,
+            List<String> tags,
+            List<Long> ownedRecipeBookIds
     ) {
         List<StepResponse> stepResponses = steps.stream()
                 .map(s -> new StepResponse(s.getStepOrder(), s.getDescription()))
@@ -65,7 +71,12 @@ public record RecipeResponse(
                 recipe.getSourcePlatform(),
                 recipe.getSourceContentType(),
                 new RecipeAuthorResponse(recipe.getAuthorName(), recipe.getAuthorProfileImgUrl()),
-                new RecipeCreatorResponse(recipe.getSourcePlatform(), recipe.getCreatorName(), recipe.getCreatorProfileImgUrl()),
+                new RecipeCreatorResponse(
+                        recipe.getSourcePlatform(),
+                        recipe.getCreatorName(),
+                        recipe.getCreatorProfileImgUrl()),
+                ownedRecipeBookIds != null ? ownedRecipeBookIds : List.of(),
+                ownedRecipeBookIds != null ? ownedRecipeBookIds.size() : 0,
                 stepResponses,
                 ingredientResponses,
                 tags != null ? tags : List.of(),

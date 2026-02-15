@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface RecipeBookItemRepositoryCustom {
 
+    List<Long> findOwnedRecipeBookIdsByRecipeIdAndMemberId(Long recipeId, Long memberId);
+
     boolean existsByMemberAndRecipeExcludingBook(Long memberId, Long recipeId, Long excludeBookId);
 
     boolean existsByGroupAndRecipeExcludingBook(Long groupId, Long recipeId, Long excludeBookId);

@@ -68,8 +68,9 @@ public class RecipeBookService {
         return toRecipeBookResponses(recipeBooks, pageable);
     }
 
-    public List<Long> findRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
-        return recipeBookItemRepository.findRecipeBookIdsByRecipeIdAndMemberId(recipeId, memberId);
+    public List<Long> findOwnedRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
+        return recipeBookItemRepository.findOwnedRecipeBookIdsByRecipeIdAndMemberId(recipeId,
+                memberId);
     }
 
     public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
