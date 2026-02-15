@@ -90,6 +90,10 @@ tasks.named('jacocoTestReport') {
     }
 }
 
+jar {
+    enabled = false
+}
+
 // QueryDSL path
 def querydslSrcDir = 'src/main/generated'
 
