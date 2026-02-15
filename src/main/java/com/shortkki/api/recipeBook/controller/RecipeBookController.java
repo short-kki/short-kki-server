@@ -65,7 +65,7 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<List<Long>>> findRecipeBookIdsByRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long recipeId) {
-        List<Long> bookIds = recipeBookService.findRecipeBookIdsByRecipe(
+        List<Long> bookIds = recipeBookService.findOwnedRecipeBookIdsByRecipe(
                 loginMember.getId(), recipeId);
         return ResponseEntity.ok(BaseResponse.success(bookIds));
     }
