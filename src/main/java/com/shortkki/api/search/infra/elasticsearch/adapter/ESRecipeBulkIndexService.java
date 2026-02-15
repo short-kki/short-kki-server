@@ -7,14 +7,12 @@ import com.shortkki.api.search.application.port.RecipeSearchIndexer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "spring.elasticsearch.uris")
 public class ESRecipeBulkIndexService {
 
     private final RecipeRepository recipeRepository;

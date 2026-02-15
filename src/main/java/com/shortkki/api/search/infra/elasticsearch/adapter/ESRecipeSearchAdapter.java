@@ -37,13 +37,11 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @Qualifier("esRecipeSearch")
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "spring.elasticsearch.uris")
 @Slf4j
 public class ESRecipeSearchAdapter implements RecipeSearchPort {
 

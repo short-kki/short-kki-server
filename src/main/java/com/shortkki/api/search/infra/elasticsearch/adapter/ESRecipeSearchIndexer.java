@@ -15,13 +15,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "spring.elasticsearch.uris")
 @Transactional(readOnly = true)
 public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
 
