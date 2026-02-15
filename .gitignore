@@ -322,3 +322,6 @@ gradle-app.setting
 
 ### Firebase
 src/main/resources/firebase/
+# nGrinder Data Volumes
+ngrinder-controller/
+ngrinder-agent/
