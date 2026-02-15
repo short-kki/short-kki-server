@@ -2,6 +2,9 @@ package com.shortkki.api.recipeBook.controller;
 
 import com.shortkki.api.recipeBook.dto.RecipeBookAddRecipeRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookDetailResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookListResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookRecipeSortType;
 import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
@@ -13,6 +16,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,20 +48,20 @@ public class RecipeBookController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAll(
+    public ResponseEntity<BaseResponse<RecipeBookListResponse>> findAll(
             @AuthenticationPrincipal LoginMember loginMember,
             @PageableDefault(size = 10) Pageable pageable) {
-        List<RecipeBookResponse> responses = recipeBookService.findAllByMember(
+        RecipeBookListResponse responses = recipeBookService.findAllByMember(
                 loginMember.getId(), pageable);
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 
     @GetMapping("/groups/{groupId}")
-    public ResponseEntity<BaseResponse<List<RecipeBookResponse>>> findAllByGroup(
+    public ResponseEntity<BaseResponse<RecipeBookListResponse>> findAllByGroup(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
             @PageableDefault(size = 10) Pageable pageable) {
-        List<RecipeBookResponse> responses = recipeBookService.findAllByGroup(
+        RecipeBookListResponse responses = recipeBookService.findAllByGroup(
                 loginMember.getId(), groupId, pageable);
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
@@ -71,12 +76,14 @@ public class RecipeBookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<RecipeBookResponse>> findById(
+    public ResponseEntity<BaseResponse<RecipeBookDetailResponse>> findById(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
-            @PageableDefault(size = 12) Pageable pageable) {
-        RecipeBookResponse response = recipeBookService.findById(
-                loginMember.getId(), id, pageable);
+            @PageableDefault(size = 12) Pageable pageable,
+            @RequestParam(name = "recipeSort", defaultValue = "RECENT") RecipeBookRecipeSortType recipeSort) {
+        Pageable sanitizedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        RecipeBookDetailResponse response = recipeBookService.findById(
+                loginMember.getId(), id, sanitizedPageable, recipeSort);
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 

@@ -4,6 +4,9 @@ import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
+import com.shortkki.api.recipeBook.dto.RecipeBookDetailResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookListResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookRecipeSortType;
 import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookUpdateRequest;
@@ -18,6 +21,7 @@ import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.event.DomainEventPublisher;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
@@ -63,7 +67,7 @@ public class RecipeBookService {
         return RecipeBookResponse.from(saved);
     }
 
-    public List<RecipeBookResponse> findAllByMember(Long memberId, Pageable pageable) {
+    public RecipeBookListResponse findAllByMember(Long memberId, Pageable pageable) {
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
         return toRecipeBookResponses(recipeBooks, pageable);
     }
@@ -73,17 +77,17 @@ public class RecipeBookService {
                 memberId);
     }
 
-    public List<RecipeBookResponse> findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
+    public RecipeBookListResponse findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
         recipeBookQueryService.findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, groupId);
         List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
         return toRecipeBookResponses(recipeBooks, pageable);
     }
 
-    private List<RecipeBookResponse> toRecipeBookResponses(List<RecipeBook> recipeBooks,
+    private RecipeBookListResponse toRecipeBookResponses(List<RecipeBook> recipeBooks,
             Pageable pageable) {
         if (recipeBooks.isEmpty()) {
-            return List.of();
+            return new RecipeBookListResponse(List.of(), null);
         }
 
         List<Long> recipeBookIds = recipeBooks.stream()
@@ -102,30 +106,36 @@ public class RecipeBookService {
 
         SlicePageInfoResponse pageInfo = SlicePageInfoResponse.from(slice);
 
-        return recipeBooks.stream()
+        List<RecipeBookResponse> responses = recipeBooks.stream()
                 .map(book -> {
                     long recipeCount = recipeBookItemRepository.countByRecipeBookId(book.getId());
                     return RecipeBookResponse.from(
                             book,
                             recipesByBookId.getOrDefault(book.getId(), List.of()),
-                            pageInfo,
                             recipeCount);
                 })
                 .toList();
+
+        return new RecipeBookListResponse(responses, pageInfo);
     }
 
-    public RecipeBookResponse findById(Long memberId, Long id, Pageable pageable) {
+    public RecipeBookDetailResponse findById(
+            Long memberId,
+            Long id,
+            Pageable pageable,
+            RecipeBookRecipeSortType sortType
+    ) {
         RecipeBook recipeBook = recipeBookQueryService.findRecipeBookById(id);
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
 
-        Slice<RecipeBookItem> slice = recipeBookItemRepository
-                .findAllByRecipeBookIdWithRecipe(id, pageable);
+        Slice<RecipeBookItem> slice = findRecipeItemsBySort(id, pageable, sortType);
         List<RecipeSummaryResponse> recipes = slice.getContent().stream()
                 .map(item -> RecipeSummaryResponse.from(item.getRecipe()))
                 .toList();
         long recipeCount = recipeBookItemRepository.countByRecipeBookId(id);
 
-        return RecipeBookResponse.from(recipeBook, recipes, SlicePageInfoResponse.from(slice), recipeCount);
+        RecipeBookResponse response = RecipeBookResponse.from(recipeBook, recipes, recipeCount);
+        return new RecipeBookDetailResponse(response, SlicePageInfoResponse.from(slice));
     }
 
     @Transactional
@@ -298,18 +308,57 @@ public class RecipeBookService {
     public void reorder(Long memberId, RecipeBookReorderRequest request) {
         List<Long> recipeBookIds = request.recipeBookIds();
         List<RecipeBook> memberRecipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
+        Set<Long> memberBookIdSet = memberRecipeBooks.stream()
+                .map(RecipeBook::getId)
+                .collect(Collectors.toSet());
+        List<RecipeBook> fixedBooks = memberRecipeBooks.stream()
+                .filter(RecipeBook::getIsDefault)
+                .sorted((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()))
+                .toList();
+        List<RecipeBook> mutableBooks = memberRecipeBooks.stream()
+                .filter(book -> !book.getIsDefault())
+                .toList();
+        Set<Long> mutableBookIdSet = mutableBooks.stream()
+                .map(RecipeBook::getId)
+                .collect(Collectors.toSet());
 
-        recipeBookValidationService.validateReorderable(recipeBookIds, memberRecipeBooks);
+        if (recipeBookIds.stream().anyMatch(id -> !memberBookIdSet.contains(id))) {
+            throw new BadRequestException(ErrorCode.INVALID_REORDER_REQUEST);
+        }
+        List<Long> mutableOrder = recipeBookIds.stream()
+                .filter(mutableBookIdSet::contains)
+                .toList();
+
+        recipeBookValidationService.validateReorderable(mutableOrder, mutableBooks);
 
         Map<Long, RecipeBook> recipeBookMap = memberRecipeBooks.stream()
                 .collect(Collectors.toMap(RecipeBook::getId, book -> book));
 
-        for (int i = 0; i < recipeBookIds.size(); i++) {
-            RecipeBook book = recipeBookMap.get(recipeBookIds.get(i));
-            book.updateSortOrder(i + 1);
+        int nextSortOrder = 1;
+        for (RecipeBook fixedBook : fixedBooks) {
+            fixedBook.updateSortOrder(nextSortOrder++);
+        }
+
+        for (int i = 0; i < mutableOrder.size(); i++) {
+            RecipeBook book = recipeBookMap.get(mutableOrder.get(i));
+            book.updateSortOrder(nextSortOrder + i);
         }
 
         recipeBookRepository.saveAll(recipeBookMap.values());
+    }
+
+    private Slice<RecipeBookItem> findRecipeItemsBySort(
+            Long recipeBookId,
+            Pageable pageable,
+            RecipeBookRecipeSortType sortType
+    ) {
+        if (sortType == null || sortType == RecipeBookRecipeSortType.RECENT) {
+            return recipeBookItemRepository.findAllByRecipeBookIdWithRecipe(recipeBookId, pageable);
+        }
+        if (sortType == RecipeBookRecipeSortType.OLDEST) {
+            return recipeBookItemRepository.findAllByRecipeBookIdWithRecipeOldest(recipeBookId, pageable);
+        }
+        return recipeBookItemRepository.findAllByRecipeBookIdWithRecipeByBookmarkDesc(recipeBookId, pageable);
     }
 
     @Transactional
