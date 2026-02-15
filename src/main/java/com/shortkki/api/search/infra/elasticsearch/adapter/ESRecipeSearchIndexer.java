@@ -66,18 +66,11 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
                 basicInfo.getDescription(),
                 recipe.getSourceType().name(),
                 recipe.getBookmarkCount(),
-                recipe.getMainImgUrl(),
                 categoryInfo.getCuisineType().name(),
                 categoryInfo.getMealType().name(),
                 categoryInfo.getDifficulty().name(),
                 ingredients,
                 tags,
-                recipe.getAuthorName(),
-                recipe.getAuthorProfileImgUrl(),
-                recipe.getCreatorName(),
-                recipe.getCreatorProfileImgUrl(),
-                recipe.isImported() ? recipe.getSourcePlatform().name() : null,
-                recipe.getSourceUrl(),
                 recipe.getIsActive(),
                 recipe.getCreatedAt().toLocalDate()
         );

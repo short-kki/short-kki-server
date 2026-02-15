@@ -93,7 +93,7 @@ public class CurationQueryService {
     }
 
     private Slice<RecipeSearchItem> searchV2(Curation curation, Pageable pageable) {
-        return esSearchPort.search(
+        return esSearchPort.searchForCuration(
                 pageable, curation.getSearchWord(), curation.getTags(), curation.getIngredients(),
                 RecipeSource.IMPORT, curation.getCuisineTypes(), curation.getMealTypes(), curation.getDifficulties()
         );

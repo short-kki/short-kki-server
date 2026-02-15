@@ -9,6 +9,14 @@ import org.springframework.data.repository.query.Param;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
+    @Query("SELECT r FROM Recipe r " +
+            "LEFT JOIN FETCH r.member " +
+            "LEFT JOIN FETCH r.sourceContent sc " +
+            "LEFT JOIN FETCH sc.sourceCreator " +
+            "LEFT JOIN FETCH r.mainImgFile " +
+            "WHERE r.id IN :ids AND r.isActive = true")
+    List<Recipe> findActiveByIdsWithAssociations(@Param("ids") List<Long> ids);
+
     @Modifying
     @Query("UPDATE Recipe r SET r.bookmarkCount = r.bookmarkCount + 1 WHERE r.id = :recipeId")
     void incrementBookmarkCount(@Param("recipeId") Long recipeId);
