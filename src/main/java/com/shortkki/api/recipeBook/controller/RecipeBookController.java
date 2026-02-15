@@ -51,8 +51,9 @@ public class RecipeBookController {
     public ResponseEntity<BaseResponse<RecipeBookListResponse>> findAll(
             @AuthenticationPrincipal LoginMember loginMember,
             @PageableDefault(size = 10) Pageable pageable) {
+        Pageable sanitizedPageable = sanitizePageable(pageable);
         RecipeBookListResponse responses = recipeBookService.findAllByMember(
-                loginMember.getId(), pageable);
+                loginMember.getId(), sanitizedPageable);
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 
@@ -61,8 +62,9 @@ public class RecipeBookController {
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
             @PageableDefault(size = 10) Pageable pageable) {
+        Pageable sanitizedPageable = sanitizePageable(pageable);
         RecipeBookListResponse responses = recipeBookService.findAllByGroup(
-                loginMember.getId(), groupId, pageable);
+                loginMember.getId(), groupId, sanitizedPageable);
         return ResponseEntity.ok(BaseResponse.success(responses));
     }
 
@@ -81,7 +83,7 @@ public class RecipeBookController {
             @PathVariable Long id,
             @PageableDefault(size = 12) Pageable pageable,
             @RequestParam(name = "recipeSort", defaultValue = "RECENT") RecipeBookRecipeSortType recipeSort) {
-        Pageable sanitizedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Pageable sanitizedPageable = sanitizePageable(pageable);
         RecipeBookDetailResponse response = recipeBookService.findById(
                 loginMember.getId(), id, sanitizedPageable, recipeSort);
         return ResponseEntity.ok(BaseResponse.success(response));
@@ -144,4 +146,7 @@ public class RecipeBookController {
         return ResponseEntity.ok(BaseResponse.success());
     }
 
+    private Pageable sanitizePageable(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+    }
 }
