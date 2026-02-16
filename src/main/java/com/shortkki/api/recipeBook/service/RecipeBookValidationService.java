@@ -22,7 +22,6 @@ public class RecipeBookValidationService {
 
     private final GroupMemberValidationService groupMemberValidationService;
     private final RecipeBookQueryService recipeBookQueryService;
-
     private final RecipeBookItemRepository recipeBookItemRepository;
 
     public void validateReorderable(List<Long> requestIds, List<RecipeBook> memberBooks) {
@@ -76,7 +75,6 @@ public class RecipeBookValidationService {
 
     public void validateRecipeBookAccess(RecipeBook recipeBook, Long memberId) {
         if (recipeBook.getGroupId() != null) {
-            recipeBookQueryService.findGroupById(recipeBook.getGroupId());
             groupMemberValidationService.validateGroupMember(memberId, recipeBook.getGroupId());
         } else {
             validateRecipeBookOwnership(recipeBook, memberId);
