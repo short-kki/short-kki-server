@@ -48,7 +48,7 @@ public class GroupService {
     private final ShoppingListRepository shoppingListRepository;
     private final RecipeCalendarRepository recipeCalendarRepository;
     private final DomainEventPublisher domainEventPublisher;
-  
+
     @Transactional
     public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
@@ -81,6 +81,11 @@ public class GroupService {
         Group group = findGroupById(groupId);
         GroupMember groupMember = findGroupMember(memberId, group);
         validateGroupMemberAdmin(groupMember);
+        // TODO(#67)
+        // recipe.bookmarkCount 보정 로직 연결 필요
+        // - 삭제 대상 recipeIds 수집
+        // - 다른 스코프(개인/다른 그룹)에서 잔존 여부 확인
+        // - 잔존하지 않는 recipeIds만 decrementBookmarkCountBulk
         feedRepository.deleteAllByGroup(group);
         shoppingListRepository.deleteAllByGroup(group);
         recipeCalendarRepository.deleteAllByGroup(group);
