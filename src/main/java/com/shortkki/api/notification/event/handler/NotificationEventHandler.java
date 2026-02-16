@@ -33,7 +33,6 @@ public class NotificationEventHandler {
                     event.senderId(),
                     event.type(),
                     event.content(),
-                    event.relatedUrl(),
                     event.targetId(),
                     event.payload()
             );

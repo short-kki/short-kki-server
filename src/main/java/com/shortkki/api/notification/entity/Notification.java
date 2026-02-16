@@ -40,8 +40,6 @@ public class Notification extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    private String relatedUrl;
-
     private Long targetId;
 
     @Column(columnDefinition = "json")
@@ -52,25 +50,23 @@ public class Notification extends BaseEntity {
 
     @Builder
     private Notification(Long receiverId, Long senderId, NotificationType notificationType,
-            String content, String relatedUrl, Long targetId, String payload) {
+            String content, Long targetId, String payload) {
         this.receiverId = receiverId;
         this.senderId = senderId;
         this.notificationType = notificationType;
         this.content = content;
-        this.relatedUrl = relatedUrl;
         this.targetId = targetId;
         this.payload = payload;
         this.isRead = false;
     }
 
     public static Notification create(Long receiverId, Long senderId, NotificationType notificationType,
-            String content, String relatedUrl, Long targetId, String payload) {
+            String content, Long targetId, String payload) {
         return Notification.builder()
                 .receiverId(receiverId)
                 .senderId(senderId)
                 .notificationType(notificationType)
                 .content(content)
-                .relatedUrl(relatedUrl)
                 .targetId(targetId)
                 .payload(payload)
                 .build();

@@ -11,7 +11,6 @@ public record NotificationEvent(
         Long senderId,
         NotificationType type,
         String content,
-        String relatedUrl,
         Long targetId,
         String payload
 ) {
@@ -23,7 +22,6 @@ public record NotificationEvent(
                 senderId,
                 NotificationType.GROUP_INVITE,
                 groupName + " 그룹에 초대되었습니다.",
-                "/groups/" + groupId,
                 groupId,
                 toJson(Map.of("groupId", String.valueOf(groupId)))
         );
@@ -35,7 +33,6 @@ public record NotificationEvent(
                 joinedMemberId,
                 NotificationType.GROUP_MEMBER_JOINED,
                 memberName + "님이 그룹에 참여했습니다.",
-                "/groups/" + groupId,
                 groupId,
                 toJson(Map.of("groupId", String.valueOf(groupId)))
         );
@@ -47,7 +44,6 @@ public record NotificationEvent(
                 senderId,
                 NotificationType.RECIPE_SHARED,
                 recipeName + " 레시피가 공유되었습니다.",
-                "/groups/" + groupId + "/recipes/" + recipeId,
                 recipeId,
                 toJson(Map.of(
                         "groupId", String.valueOf(groupId),
@@ -62,7 +58,6 @@ public record NotificationEvent(
                 senderId,
                 NotificationType.CALENDAR_UPDATE,
                 date + " 식단이 등록되었습니다.",
-                "/calendars/" + calendarId,
                 calendarId,
                 toJson(Map.of(
                         "groupId", String.valueOf(groupId),
@@ -78,20 +73,19 @@ public record NotificationEvent(
                 senderId,
                 NotificationType.COMMENT_ADDED,
                 senderName + "님이 댓글을 남겼습니다.",
-                "/recipes/" + recipeId,
                 recipeId,
                 toJson(Map.of("recipeId", String.valueOf(recipeId)))
         );
     }
 
     public static NotificationEvent single(Long receiverId, Long senderId, NotificationType type,
-            String content, String relatedUrl, Long targetId, Map<String, String> payload) {
-        return new NotificationEvent(List.of(receiverId), senderId, type, content, relatedUrl, targetId, toJson(payload));
+            String content, Long targetId, Map<String, String> payload) {
+        return new NotificationEvent(List.of(receiverId), senderId, type, content, targetId, toJson(payload));
     }
 
     public static NotificationEvent multiple(List<Long> receiverIds, Long senderId, NotificationType type,
-            String content, String relatedUrl, Long targetId, Map<String, String> payload) {
-        return new NotificationEvent(receiverIds, senderId, type, content, relatedUrl, targetId, toJson(payload));
+            String content, Long targetId, Map<String, String> payload) {
+        return new NotificationEvent(receiverIds, senderId, type, content, targetId, toJson(payload));
     }
 
     private static String toJson(Map<String, String> data) {

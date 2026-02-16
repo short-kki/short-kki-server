@@ -25,16 +25,16 @@ public class NotificationSendService {
 
     @Transactional
     public void createNotification(Long receiverId, Long senderId, NotificationType type,
-            String content, String relatedUrl, Long targetId, String payload) {
-        Notification notification = Notification.create(receiverId, senderId, type, content, relatedUrl, targetId, payload);
+            String content, Long targetId, String payload) {
+        Notification notification = Notification.create(receiverId, senderId, type, content, targetId, payload);
         notificationRepository.save(notification);
     }
 
     @Transactional
     public void createNotifications(List<Long> receiverIds, Long senderId, NotificationType type,
-            String content, String relatedUrl, Long targetId, String payload) {
+            String content, Long targetId, String payload) {
         List<Notification> notifications = receiverIds.stream()
-                .map(receiverId -> Notification.create(receiverId, senderId, type, content, relatedUrl, targetId, payload))
+                .map(receiverId -> Notification.create(receiverId, senderId, type, content, targetId, payload))
                 .toList();
         notificationRepository.saveAll(notifications);
     }
