@@ -4,15 +4,14 @@ import com.shortkki.api.notification.controller.dto.FcmTokenDeleteRequest;
 import com.shortkki.api.notification.controller.dto.FcmTokenRegisterRequest;
 import com.shortkki.api.notification.controller.dto.NotificationSliceResponse;
 import com.shortkki.api.notification.controller.dto.UnreadCountResponse;
-import com.shortkki.api.notification.entity.Notification;
-import com.shortkki.api.notification.service.NotificationService;
+import com.shortkki.api.notification.service.NotificationQueryService;
+import com.shortkki.api.notification.service.NotificationTokenService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final NotificationTokenService notificationTokenService;
+    private final NotificationQueryService notificationQueryService;
 
     @Operation(summary = "FCM 토큰 등록")
     @PostMapping("/fcm-token")
@@ -38,7 +38,7 @@ public class NotificationController {
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody FcmTokenRegisterRequest request
     ) {
-        notificationService.registerFcmToken(
+        notificationTokenService.registerFcmToken(
                 loginMember.getId(),
                 request.fcmToken(),
                 request.deviceId(),
@@ -53,7 +53,7 @@ public class NotificationController {
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody FcmTokenDeleteRequest request
     ) {
-        notificationService.deleteFcmToken(loginMember.getId(), request.fcmToken());
+        notificationTokenService.deleteFcmToken(loginMember.getId(), request.fcmToken());
         return BaseResponse.success();
     }
 
@@ -64,9 +64,9 @@ public class NotificationController {
             @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Slice<Notification> notifications = notificationService.getNotifications(
+        NotificationSliceResponse response = notificationQueryService.getNotifications(
                 loginMember.getId(), cursor, size);
-        return BaseResponse.success(NotificationSliceResponse.from(notifications));
+        return BaseResponse.success(response);
     }
 
     @Operation(summary = "읽지 않은 알림 수 조회")
@@ -74,7 +74,7 @@ public class NotificationController {
     public BaseResponse<UnreadCountResponse> getUnreadCount(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
-        long count = notificationService.getUnreadCount(loginMember.getId());
+        long count = notificationQueryService.getUnreadCount(loginMember.getId());
         return BaseResponse.success(UnreadCountResponse.of(count));
     }
 
@@ -84,7 +84,7 @@ public class NotificationController {
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id
     ) {
-        notificationService.markAsRead(loginMember.getId(), id);
+        notificationQueryService.markAsRead(loginMember.getId(), id);
         return BaseResponse.success();
     }
 
@@ -93,7 +93,7 @@ public class NotificationController {
     public BaseResponse<Void> markAllAsRead(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
-        notificationService.markAllAsRead(loginMember.getId());
+        notificationQueryService.markAllAsRead(loginMember.getId());
         return BaseResponse.success();
     }
 }

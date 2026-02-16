@@ -1,7 +1,10 @@
 package com.shortkki.api.notification.event;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shortkki.api.notification.entity.NotificationType;
 import java.util.List;
+import java.util.Map;
 
 public record NotificationEvent(
         List<Long> receiverIds,
@@ -9,8 +12,11 @@ public record NotificationEvent(
         NotificationType type,
         String content,
         String relatedUrl,
-        Long targetId
+        Long targetId,
+        String payload
 ) {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     public static NotificationEvent groupInvite(Long receiverId, Long senderId, Long groupId, String groupName) {
         return new NotificationEvent(
                 List.of(receiverId),
@@ -18,7 +24,8 @@ public record NotificationEvent(
                 NotificationType.GROUP_INVITE,
                 groupName + " 그룹에 초대되었습니다.",
                 "/groups/" + groupId,
-                groupId
+                groupId,
+                toJson(Map.of("groupId", String.valueOf(groupId)))
         );
     }
 
@@ -29,7 +36,8 @@ public record NotificationEvent(
                 NotificationType.GROUP_MEMBER_JOINED,
                 memberName + "님이 그룹에 참여했습니다.",
                 "/groups/" + groupId,
-                groupId
+                groupId,
+                toJson(Map.of("groupId", String.valueOf(groupId)))
         );
     }
 
@@ -40,18 +48,27 @@ public record NotificationEvent(
                 NotificationType.RECIPE_SHARED,
                 recipeName + " 레시피가 공유되었습니다.",
                 "/groups/" + groupId + "/recipes/" + recipeId,
-                recipeId
+                recipeId,
+                toJson(Map.of(
+                        "groupId", String.valueOf(groupId),
+                        "recipeId", String.valueOf(recipeId)
+                ))
         );
     }
 
-    public static NotificationEvent calendarUpdate(List<Long> receiverIds, Long senderId, Long calendarId, String date) {
+    public static NotificationEvent calendarUpdate(List<Long> receiverIds, Long senderId, Long calendarId, String date, Long groupId) {
         return new NotificationEvent(
                 receiverIds,
                 senderId,
                 NotificationType.CALENDAR_UPDATE,
                 date + " 식단이 등록되었습니다.",
                 "/calendars/" + calendarId,
-                calendarId
+                calendarId,
+                toJson(Map.of(
+                        "groupId", String.valueOf(groupId),
+                        "calendarId", String.valueOf(calendarId),
+                        "date", date
+                ))
         );
     }
 
@@ -62,15 +79,29 @@ public record NotificationEvent(
                 NotificationType.COMMENT_ADDED,
                 senderName + "님이 댓글을 남겼습니다.",
                 "/recipes/" + recipeId,
-                recipeId
+                recipeId,
+                toJson(Map.of("recipeId", String.valueOf(recipeId)))
         );
     }
 
-    public static NotificationEvent single(Long receiverId, Long senderId, NotificationType type, String content, String relatedUrl, Long targetId) {
-        return new NotificationEvent(List.of(receiverId), senderId, type, content, relatedUrl, targetId);
+    public static NotificationEvent single(Long receiverId, Long senderId, NotificationType type,
+            String content, String relatedUrl, Long targetId, Map<String, String> payload) {
+        return new NotificationEvent(List.of(receiverId), senderId, type, content, relatedUrl, targetId, toJson(payload));
     }
 
-    public static NotificationEvent multiple(List<Long> receiverIds, Long senderId, NotificationType type, String content, String relatedUrl, Long targetId) {
-        return new NotificationEvent(receiverIds, senderId, type, content, relatedUrl, targetId);
+    public static NotificationEvent multiple(List<Long> receiverIds, Long senderId, NotificationType type,
+            String content, String relatedUrl, Long targetId, Map<String, String> payload) {
+        return new NotificationEvent(receiverIds, senderId, type, content, relatedUrl, targetId, toJson(payload));
+    }
+
+    private static String toJson(Map<String, String> data) {
+        if (data == null || data.isEmpty()) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 }

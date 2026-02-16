@@ -1,4 +1,4 @@
-package com.shortkki.api.auth.entity;
+package com.shortkki.global.entity;
 
 public enum Platform {
     IOS,

@@ -11,6 +11,7 @@ public record NotificationResponse(
         String relatedUrl,
         Long targetId,
         Long senderId,
+        String payload,
         Boolean isRead,
         LocalDateTime createdAt
 ) {
@@ -22,6 +23,7 @@ public record NotificationResponse(
                 notification.getRelatedUrl(),
                 notification.getTargetId(),
                 notification.getSenderId(),
+                notification.getPayload(),
                 notification.getIsRead(),
                 notification.getCreatedAt()
         );

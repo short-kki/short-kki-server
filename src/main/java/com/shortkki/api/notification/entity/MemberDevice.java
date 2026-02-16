@@ -1,6 +1,7 @@
 package com.shortkki.api.notification.entity;
 
 import com.shortkki.global.entity.BaseEntity;
+import com.shortkki.global.entity.Platform;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,13 +40,13 @@ public class MemberDevice extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private DevicePlatform platform;
+    private Platform platform;
 
     @Column(nullable = false)
     private Boolean isActive = true;
 
     @Builder
-    private MemberDevice(Long memberId, String fcmToken, String deviceId, DevicePlatform platform) {
+    private MemberDevice(Long memberId, String fcmToken, String deviceId, Platform platform) {
         this.memberId = memberId;
         this.fcmToken = fcmToken;
         this.deviceId = deviceId;
@@ -53,7 +54,7 @@ public class MemberDevice extends BaseEntity {
         this.isActive = true;
     }
 
-    public static MemberDevice create(Long memberId, String fcmToken, String deviceId, DevicePlatform platform) {
+    public static MemberDevice create(Long memberId, String fcmToken, String deviceId, Platform platform) {
         return MemberDevice.builder()
                 .memberId(memberId)
                 .fcmToken(fcmToken)
