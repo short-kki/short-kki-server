@@ -1,8 +1,11 @@
 package com.shortkki.api.recipeBook.service;
 
 import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
+import com.shortkki.api.group.application.service.GroupQueryService;
 import com.shortkki.api.member.entity.Member;
+import com.shortkki.api.member.service.MemberQueryService;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookResponse;
@@ -30,7 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecipeBookCommandService {
 
     private final RecipeBookQueryService recipeBookQueryService;
+    private final MemberQueryService memberQueryService;
+    private final GroupQueryService groupQueryService;
     private final RecipeBookValidationService recipeBookValidationService;
+    private final RecipeRepository recipeRepository;
     private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
     private final RecipeBookBookmarkPolicy recipeBookBookmarkPolicy;
@@ -38,7 +44,7 @@ public class RecipeBookCommandService {
 
     @Transactional
     public RecipeBookResponse create(Long memberId, RecipeBookCreateRequest request) {
-        Member member = recipeBookQueryService.findMemberById(memberId);
+        Member member = memberQueryService.findMember(memberId);
 
         List<RecipeBook> existingBooks = recipeBookQueryService.findAllByMemberId(memberId);
         int nextSortOrder = existingBooks.stream()
@@ -118,13 +124,13 @@ public class RecipeBookCommandService {
 
     @Transactional
     public void createDefaultForMember(Long memberId) {
-        Member member = recipeBookQueryService.findMemberById(memberId);
+        Member member = memberQueryService.findMember(memberId);
         createDefaultForMember(member);
     }
 
     @Transactional
     public void createDefaultForGroup(Long groupId, String groupName) {
-        recipeBookQueryService.findGroupById(groupId);
+        groupQueryService.findGroup(groupId);
 
         if (recipeBookQueryService.findDefaultByGroupId(groupId).isPresent()) {
             return;
@@ -202,7 +208,8 @@ public class RecipeBookCommandService {
             boolean skipIfExists) {
         RecipeBook recipeBook = recipeBookQueryService.findRecipeBookById(recipeBookId);
         recipeBookValidationService.validateRecipeBookAccess(recipeBook, memberId);
-        Recipe recipe = recipeBookQueryService.findRecipeById(recipeId);
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
         if (skipIfExists && recipeBookItemRepository.existsByRecipeBookIdAndRecipeId(recipeBookId,
                 recipeId)) {
