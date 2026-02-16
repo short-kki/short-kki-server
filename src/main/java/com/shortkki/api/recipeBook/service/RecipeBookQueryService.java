@@ -16,6 +16,9 @@ import com.shortkki.global.error.exception.NotFoundException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +41,40 @@ public class RecipeBookQueryService {
                 .fetch();
     }
 
+    public Slice<RecipeBook> findSliceByMemberId(Long memberId, Pageable pageable) {
+        List<RecipeBook> books = queryFactory
+                .selectFrom(recipeBook)
+                .where(recipeBook.member.id.eq(memberId))
+                .orderBy(recipeBook.sortOrder.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1L)
+                .fetch();
+
+        boolean hasNext = books.size() > pageable.getPageSize();
+        List<RecipeBook> content = hasNext ? books.subList(0, pageable.getPageSize()) : books;
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
     public List<RecipeBook> findAllByGroupId(Long groupId) {
         return queryFactory
                 .selectFrom(recipeBook)
                 .where(recipeBook.groupId.eq(groupId))
                 .orderBy(recipeBook.title.asc())
                 .fetch();
+    }
+
+    public Slice<RecipeBook> findSliceByGroupId(Long groupId, Pageable pageable) {
+        List<RecipeBook> books = queryFactory
+                .selectFrom(recipeBook)
+                .where(recipeBook.groupId.eq(groupId))
+                .orderBy(recipeBook.title.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1L)
+                .fetch();
+
+        boolean hasNext = books.size() > pageable.getPageSize();
+        List<RecipeBook> content = hasNext ? books.subList(0, pageable.getPageSize()) : books;
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     public Optional<RecipeBook> findDefaultByMemberId(Long memberId) {
