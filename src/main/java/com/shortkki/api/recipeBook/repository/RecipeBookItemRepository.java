@@ -84,9 +84,10 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
               i2.createdAt > i.createdAt
               or (i2.createdAt = i.createdAt and i2.id >= i.id)
             )
-        ) <= 3
+        ) <= :previewLimit
       order by i.recipeBook.id asc, i.createdAt desc, i.id desc
       """)
   List<RecipeBookItem> findPreviewItemsByRecipeBookIds(
-      @Param("recipeBookIds") List<Long> recipeBookIds);
+      @Param("recipeBookIds") List<Long> recipeBookIds,
+      @Param("previewLimit") long previewLimit);
 }

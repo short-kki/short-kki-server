@@ -14,8 +14,5 @@ public interface RecipeBookItemRepositoryCustom {
     List<Long> findRecipeIdsBookmarkedByMemberExcludingBook(Long memberId, List<Long> recipeIds,
             Long excludeBookId);
 
-    List<Long> findRecipeIdsBookmarkedByGroupExcludingBook(Long groupId, List<Long> recipeIds,
-            Long excludeBookId);
-
     Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds);
 }

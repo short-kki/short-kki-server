@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +48,7 @@ public class RecipeBookService {
     private final RecipeBookRepository recipeBookRepository;
     private final RecipeBookItemRepository recipeBookItemRepository;
     private final RecipeRepository recipeRepository;
+    private final RecipeBookListResponseAssembler recipeBookListResponseAssembler;
 
     private final DomainEventPublisher domainEventPublisher;
 
@@ -69,8 +69,9 @@ public class RecipeBookService {
     }
 
     public RecipeBookListResponse findAllByMember(Long memberId, Pageable pageable) {
-        List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByMemberId(memberId);
-        return buildRecipeBookListResponse(recipeBooks, pageable);
+        Slice<RecipeBook> recipeBookSlice = recipeBookQueryService.findSliceByMemberId(
+                memberId, pageable);
+        return recipeBookListResponseAssembler.assemble(recipeBookSlice);
     }
 
     public List<Long> findOwnedRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
@@ -80,82 +81,14 @@ public class RecipeBookService {
 
     public RecipeBookListResponse findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
         validateGroupMembership(memberId, groupId);
-        List<RecipeBook> recipeBooks = recipeBookQueryService.findAllByGroupId(groupId);
-        return buildRecipeBookListResponse(recipeBooks, pageable);
+        Slice<RecipeBook> recipeBookSlice = recipeBookQueryService.findSliceByGroupId(groupId,
+                pageable);
+        return recipeBookListResponseAssembler.assemble(recipeBookSlice);
     }
 
     private void validateGroupMembership(Long memberId, Long groupId) {
         recipeBookQueryService.findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, groupId);
-    }
-
-    private RecipeBookListResponse buildRecipeBookListResponse(List<RecipeBook> recipeBooks,
-            Pageable pageable) {
-        if (recipeBooks.isEmpty()) {
-            return new RecipeBookListResponse(List.of(), null);
-        }
-
-        Slice<RecipeBook> recipeBookSlice = sliceRecipeBooks(recipeBooks, pageable);
-        List<RecipeBook> pagedRecipeBooks = recipeBookSlice.getContent();
-        if (pagedRecipeBooks.isEmpty()) {
-            return new RecipeBookListResponse(List.of(), SlicePageInfoResponse.from(recipeBookSlice));
-        }
-
-        List<Long> recipeBookIds = extractRecipeBookIds(pagedRecipeBooks);
-        List<RecipeBookItem> previewItems = recipeBookItemRepository.findPreviewItemsByRecipeBookIds(
-                recipeBookIds);
-        Map<Long, List<RecipeSummaryResponse>> recipesByBookId = mapRecipesByBookId(previewItems);
-        Map<Long, Long> recipeCountByBookId = recipeBookItemRepository.countByRecipeBookIds(
-                recipeBookIds);
-
-        List<RecipeBookResponse> responses = pagedRecipeBooks.stream()
-                .map(book -> buildRecipeBookSummaryResponse(book, recipesByBookId,
-                        recipeCountByBookId))
-                .toList();
-
-        return new RecipeBookListResponse(responses, SlicePageInfoResponse.from(recipeBookSlice));
-    }
-
-    private Slice<RecipeBook> sliceRecipeBooks(List<RecipeBook> recipeBooks, Pageable pageable) {
-        int totalSize = recipeBooks.size();
-        int fromIndex = (int) pageable.getOffset();
-
-        if (fromIndex >= totalSize) {
-            return new SliceImpl<>(List.of(), pageable, false);
-        }
-
-        int toIndex = Math.min(fromIndex + pageable.getPageSize(), totalSize);
-        boolean hasNext = toIndex < totalSize;
-        List<RecipeBook> content = recipeBooks.subList(fromIndex, toIndex);
-
-        return new SliceImpl<>(content, pageable, hasNext);
-    }
-
-    private List<Long> extractRecipeBookIds(List<RecipeBook> recipeBooks) {
-        return recipeBooks.stream()
-                .map(RecipeBook::getId)
-                .toList();
-    }
-
-    private Map<Long, List<RecipeSummaryResponse>> mapRecipesByBookId(List<RecipeBookItem> items) {
-        return items.stream()
-                .collect(Collectors.groupingBy(
-                        item -> item.getRecipeBook().getId(),
-                        Collectors.mapping(
-                                item -> RecipeSummaryResponse.from(item.getRecipe()),
-                                Collectors.toList())));
-    }
-
-    private RecipeBookResponse buildRecipeBookSummaryResponse(
-            RecipeBook recipeBook,
-            Map<Long, List<RecipeSummaryResponse>> recipesByBookId,
-            Map<Long, Long> recipeCountByBookId
-    ) {
-        long recipeCount = recipeCountByBookId.getOrDefault(recipeBook.getId(), 0L);
-        return RecipeBookResponse.from(
-                recipeBook,
-                recipesByBookId.getOrDefault(recipeBook.getId(), List.of()),
-                recipeCount);
     }
 
     public RecipeBookDetailResponse findById(
@@ -236,12 +169,11 @@ public class RecipeBookService {
 
     private List<Long> findBookmarkedRecipeIdsInOtherBooks(RecipeBook recipeBook,
             List<Long> recipeIds) {
-        if (recipeBook.getMemberId() != null) {
-            return recipeBookItemRepository.findRecipeIdsBookmarkedByMemberExcludingBook(
-                    recipeBook.getMemberId(), recipeIds, recipeBook.getId());
+        if (recipeBook.getMemberId() == null) {
+            throw new BadRequestException(ErrorCode.CANNOT_DELETE_GROUP_RECIPE_BOOK);
         }
-        return recipeBookItemRepository.findRecipeIdsBookmarkedByGroupExcludingBook(
-                recipeBook.getGroupId(), recipeIds, recipeBook.getId());
+        return recipeBookItemRepository.findRecipeIdsBookmarkedByMemberExcludingBook(
+                recipeBook.getMemberId(), recipeIds, recipeBook.getId());
     }
 
     @Transactional

@@ -42,6 +42,7 @@ public enum ErrorCode {
     RECIPE_ALREADY_IN_BOOK(HttpStatus.CONFLICT, "RECIPE_BOOK_003", "이미 레시피북에 추가된 레시피입니다."),
     RECIPE_NOT_IN_BOOK(HttpStatus.NOT_FOUND, "RECIPE_BOOK_004", "레시피북에 해당 레시피가 없습니다."),
     INVALID_REORDER_REQUEST(HttpStatus.BAD_REQUEST, "RECIPE_BOOK_005", "전체 레시피북 목록을 전송해야 합니다."),
+    CANNOT_DELETE_GROUP_RECIPE_BOOK(HttpStatus.BAD_REQUEST, "RECIPE_BOOK_006", "그룹 레시피북은 삭제할 수 없습니다."),
 
     // Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "GROUP_001", "그룹을 찾을 수 없습니다."),

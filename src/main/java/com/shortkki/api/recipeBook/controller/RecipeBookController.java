@@ -3,6 +3,7 @@ package com.shortkki.api.recipeBook.controller;
 import com.shortkki.api.recipeBook.dto.RecipeBookAddRecipeRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookCreateRequest;
 import com.shortkki.api.recipeBook.dto.RecipeBookDetailResponse;
+import com.shortkki.api.recipeBook.dto.RecipeBookIdsResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookListResponse;
 import com.shortkki.api.recipeBook.dto.RecipeBookRecipeSortType;
 import com.shortkki.api.recipeBook.dto.RecipeBookReorderRequest;
@@ -13,7 +14,6 @@ import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -69,12 +69,13 @@ public class RecipeBookController {
     }
 
     @GetMapping("/recipes/{recipeId}")
-    public ResponseEntity<BaseResponse<List<Long>>> findRecipeBookIdsByRecipe(
+    public ResponseEntity<BaseResponse<RecipeBookIdsResponse>> findRecipeBookIdsByRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long recipeId) {
-        List<Long> bookIds = recipeBookService.findOwnedRecipeBookIdsByRecipe(
-                loginMember.getId(), recipeId);
-        return ResponseEntity.ok(BaseResponse.success(bookIds));
+        RecipeBookIdsResponse response = RecipeBookIdsResponse.from(
+                recipeBookService.findOwnedRecipeBookIdsByRecipe(
+                        loginMember.getId(), recipeId));
+        return ResponseEntity.ok(BaseResponse.success(response));
     }
 
     @GetMapping("/{id}")
