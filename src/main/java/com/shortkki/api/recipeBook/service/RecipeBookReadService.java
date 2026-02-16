@@ -28,7 +28,7 @@ public class RecipeBookReadService {
     private final RecipeBookItemRepository recipeBookItemRepository;
     private final RecipeBookListResponseAssembler recipeBookListResponseAssembler;
 
-    public RecipeBookListResponse findAllByMember(Long memberId, Pageable pageable) {
+    public RecipeBookListResponse getMemberRecipeBooks(Long memberId, Pageable pageable) {
         Slice<RecipeBook> recipeBookSlice = recipeBookQueryService.findSliceByMemberId(memberId,
                 pageable);
         return recipeBookListResponseAssembler.assemble(recipeBookSlice);
@@ -39,14 +39,15 @@ public class RecipeBookReadService {
                 memberId);
     }
 
-    public RecipeBookListResponse findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
-        validateGroupMembership(memberId, groupId);
+    public RecipeBookListResponse getGroupRecipeBooks(Long memberId, Long groupId,
+            Pageable pageable) {
+        groupMemberValidationService.validateGroupMember(memberId, groupId);
         Slice<RecipeBook> recipeBookSlice = recipeBookQueryService.findSliceByGroupId(groupId,
                 pageable);
         return recipeBookListResponseAssembler.assemble(recipeBookSlice);
     }
 
-    public RecipeBookDetailResponse findById(
+    public RecipeBookDetailResponse getRecipeBookDetail(
             Long memberId,
             Long id,
             Pageable pageable,
@@ -63,11 +64,6 @@ public class RecipeBookReadService {
 
         RecipeBookResponse response = RecipeBookResponse.from(recipeBook, recipes, recipeCount);
         return new RecipeBookDetailResponse(response, SlicePageInfoResponse.from(slice));
-    }
-
-    private void validateGroupMembership(Long memberId, Long groupId) {
-        recipeBookQueryService.findGroupById(groupId);
-        groupMemberValidationService.validateGroupMember(memberId, groupId);
     }
 
     private Slice<RecipeBookItem> findRecipeItemsBySort(
