@@ -25,7 +25,7 @@ public class RecipeBookService {
     }
 
     public RecipeBookListResponse findAllByMember(Long memberId, Pageable pageable) {
-        return recipeBookReadService.findAllByMember(memberId, pageable);
+        return recipeBookReadService.getMemberRecipeBooks(memberId, pageable);
     }
 
     public List<Long> findOwnedRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
@@ -33,16 +33,16 @@ public class RecipeBookService {
     }
 
     public RecipeBookListResponse findAllByGroup(Long memberId, Long groupId, Pageable pageable) {
-        return recipeBookReadService.findAllByGroup(memberId, groupId, pageable);
+        return recipeBookReadService.getGroupRecipeBooks(memberId, groupId, pageable);
     }
 
     public RecipeBookDetailResponse findById(
             Long memberId,
             Long id,
-            Pageable pageable,
-            RecipeBookRecipeSortType sortType
+        Pageable pageable,
+        RecipeBookRecipeSortType sortType
     ) {
-        return recipeBookReadService.findById(memberId, id, pageable, sortType);
+        return recipeBookReadService.getRecipeBookDetail(memberId, id, pageable, sortType);
     }
 
     public void updateTitle(Long memberId, Long id, RecipeBookUpdateRequest request) {
