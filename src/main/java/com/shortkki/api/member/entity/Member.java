@@ -37,11 +37,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "oauth_id", nullable = false)
+    @Column(name = "oauth_id")
     private String oauthId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "oauth_provider", nullable = false)
+    @Column(name = "oauth_provider")
     private OAuthProvider oauthProvider;
 
     @Enumerated(EnumType.STRING)

@@ -7,8 +7,8 @@ VALUES (1, 'public/assets/logo.png','profile.png','png',491363,'MEMBER_PROFILE_I
 -- =============================================
 -- 멤버
 -- =============================================
-INSERT INTO `member` (id, email, name, role, oauth_provider, oauth_id, profile_img_file_id, created_at, updated_at)
-VALUES (1, 'shortkki-dev1@gmail.com', '숏끼', 'USER', 'GOOGLE', 'SYSTEM', 1, NOW(6), NOW(6));
+INSERT INTO `member` (id, email, name, role, profile_img_file_id, created_at, updated_at)
+VALUES (1, 'shortkki_official@shortkki.kr', '숏끼', 'USER', 1, NOW(6), NOW(6));
 
 -- =============================================
 -- 큐레이션 데이터

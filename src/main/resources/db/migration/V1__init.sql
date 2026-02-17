@@ -30,8 +30,8 @@ CREATE TABLE member (
     id                    BIGINT          NOT NULL AUTO_INCREMENT,
     email                 VARCHAR(255)    NOT NULL,
     name                  VARCHAR(255)    NOT NULL,
-    oauth_id              VARCHAR(255)    NOT NULL,
-    oauth_provider        VARCHAR(255)    NOT NULL,
+    oauth_id              VARCHAR(255),
+    oauth_provider        VARCHAR(255),
     role                  VARCHAR(255)    NOT NULL,
     profile_img_file_id   BIGINT,
     created_at            DATETIME(6),
@@ -66,6 +66,7 @@ CREATE TABLE group_member (
     created_at  DATETIME(6),
     updated_at  DATETIME(6),
     PRIMARY KEY (id),
+    CONSTRAINT uk_group_member UNIQUE (member_id, group_id),
     CONSTRAINT fk_group_member_member FOREIGN KEY (member_id) REFERENCES member (id),
     CONSTRAINT fk_group_member_group FOREIGN KEY (group_id) REFERENCES member_group (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -141,7 +142,6 @@ CREATE TABLE source_content (
     created_at          DATETIME(6),
     updated_at          DATETIME(6),
     PRIMARY KEY (id),
-    CONSTRAINT uk_source_content_external_key UNIQUE (external_key),
     CONSTRAINT uk_source_content_canonical_url UNIQUE (canonical_url),
     CONSTRAINT uk_source_content_thumbnail_url UNIQUE (thumbnail_url),
     CONSTRAINT uk_source_content_platform_key UNIQUE (platform, external_key),
@@ -212,7 +212,9 @@ CREATE TABLE recipe_tag (
     recipe_id   BIGINT      NOT NULL,
     tag_id      BIGINT      NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT uk_recipe_tag UNIQUE (recipe_id, tag_id)
+    CONSTRAINT uk_recipe_tag UNIQUE (recipe_id, tag_id),
+    CONSTRAINT fk_recipe_tag_recipe FOREIGN KEY (recipe_id) REFERENCES recipe (id),
+    CONSTRAINT fk_recipe_tag_tag FOREIGN KEY (tag_id) REFERENCES tag (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------
@@ -228,7 +230,8 @@ CREATE TABLE recipe_book (
     created_at  DATETIME(6),
     updated_at  DATETIME(6),
     PRIMARY KEY (id),
-    CONSTRAINT fk_recipe_book_member FOREIGN KEY (member_id) REFERENCES member (id)
+    CONSTRAINT fk_recipe_book_member FOREIGN KEY (member_id) REFERENCES member (id),
+    CONSTRAINT fk_recipe_book_group FOREIGN KEY (group_id) REFERENCES member_group (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------

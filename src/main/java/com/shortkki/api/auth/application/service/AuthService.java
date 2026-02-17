@@ -21,6 +21,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -220,7 +221,7 @@ public class AuthService {
             needsUpdate = true;
         }
 
-        if (!member.getOauthId().equals(oauthId)) {
+        if (!Objects.equals(member.getOauthId(), oauthId)) {
             member.updateOAuthInfo(oauthId, provider);
             needsUpdate = true;
         }
