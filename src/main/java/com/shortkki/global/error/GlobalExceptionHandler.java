@@ -1,5 +1,6 @@
 package com.shortkki.global.error;
 
+import com.shortkki.api.source.domain.exception.DuplicateSourceContentException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +13,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DuplicateSourceContentException.class)
+    protected ResponseEntity<BaseResponse<Map<String, Object>>> handleDuplicateSourceContentException(
+            DuplicateSourceContentException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(BaseResponse.error(errorCode.getCode(), errorCode.getMessage(), e.getData()));
+    }
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<BaseResponse<Void>> handleBusinessException(BusinessException e) {

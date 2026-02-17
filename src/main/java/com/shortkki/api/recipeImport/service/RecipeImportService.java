@@ -17,6 +17,7 @@ import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResultResponse;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
+import com.shortkki.api.source.domain.exception.DuplicateSourceContentException;
 import com.shortkki.api.source.domain.ImportStatus;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceImportHistory;
@@ -30,7 +31,9 @@ import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
+import java.util.Map;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,7 +64,13 @@ public class RecipeImportService {
         Member member = findMemberById(memberId);
         String sourceUrl = request.sourceUrl();
 
-        validateNotDuplicateSource(sourceUrl);
+        Optional<Long> duplicatedRecipeId = findDuplicatedRecipeId(sourceUrl);
+        if (duplicatedRecipeId.isPresent()) {
+            throw new DuplicateSourceContentException(
+                    ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS,
+                    Map.of("recipeId", duplicatedRecipeId.get())
+            );
+        }
 
         SourceContent sourceContent = sourceContentService.resolveSourceContent(sourceUrl);
         SourceImportHistory history = createHistory(member, sourceContent, sourceUrl);
@@ -75,7 +84,8 @@ public class RecipeImportService {
                     @Override
                     public void afterCommit() {
                         recipeImportAsyncService.processImport(
-                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId, sourceUrl
+                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId,
+                                sourceUrl
                         );
                     }
                 });
@@ -149,18 +159,13 @@ public class RecipeImportService {
     // Helper methods (validation)
     // -------------------------
 
-    private void validateNotDuplicateSource(String sourceUrl) {
+    private Optional<Long> findDuplicatedRecipeId(String sourceUrl) {
         SourcePlatform platform = extractorRegistry.detectPlatform(sourceUrl)
                 .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
         String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
 
-        boolean isDuplicate = sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
-                .map(sc -> recipeRepository.existsBySourceContentId(sc.getId()))
-                .orElse(false);
-
-        if (isDuplicate) {
-            throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
-        }
+        return sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
+                .flatMap(sc -> recipeRepository.findIdBySourceContentId(sc.getId()));
     }
 
     private void validateHistoryOwnership(SourceImportHistory history, Long memberId) {
