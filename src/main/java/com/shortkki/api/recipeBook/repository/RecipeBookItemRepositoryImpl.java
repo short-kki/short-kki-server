@@ -59,7 +59,8 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
     }
 
     @Override
-    public List<Long> findRecipeIdsBookmarkedByMemberExcludingBook(Long memberId, List<Long> recipeIds,
+    public List<Long> findRecipeIdsBookmarkedByMemberExcludingBook(Long memberId,
+            List<Long> recipeIds,
             Long excludeBookId) {
         return queryFactory
                 .selectDistinct(recipeBookItem.recipe.id)
@@ -69,22 +70,6 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
                         recipeBookItem.recipe.id.in(recipeIds),
                         recipeBookItem.recipeBook.id.ne(excludeBookId))
                 .fetch();
-    }
-
-    @Override
-    public Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds) {
-        NumberExpression<Long> countExpr = recipeBookItem.count();
-        List<Tuple> rows = queryFactory
-                .select(recipeBookItem.recipeBook.id, countExpr)
-                .from(recipeBookItem)
-                .where(recipeBookItem.recipeBook.id.in(recipeBookIds))
-                .groupBy(recipeBookItem.recipeBook.id)
-                .fetch();
-
-        return rows.stream()
-                .collect(Collectors.toMap(
-                        row -> row.get(recipeBookItem.recipeBook.id),
-                        row -> row.get(countExpr)));
     }
 
     @Override
