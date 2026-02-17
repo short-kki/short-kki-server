@@ -1,6 +1,8 @@
 spring:
   application:
     name: short-kki
+  profiles:
+    default: local
   jackson:
     mapper:
       accept-case-insensitive-enums: true

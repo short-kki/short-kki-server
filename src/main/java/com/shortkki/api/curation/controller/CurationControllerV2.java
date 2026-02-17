@@ -3,7 +3,6 @@ package com.shortkki.api.curation.controller;
 import com.shortkki.api.curation.controller.dto.response.CurationRecommendsResponse;
 import com.shortkki.api.curation.controller.dto.response.RecipeCurationSearchResponse;
 import com.shortkki.api.curation.service.CurationQueryService;
-import com.shortkki.api.curation.service.CurationService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import java.time.LocalDateTime;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class CurationControllerV2 {
 
-    private final CurationService curationService;
     private final CurationQueryService curationQueryService;
 
     @GetMapping("/api/v2/recipes/curations/recommended")

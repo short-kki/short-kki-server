@@ -370,5 +370,8 @@ CREATE TABLE source_import_history (
     status                  VARCHAR(20)     NOT NULL,
     created_at              DATETIME(6),
     updated_at              DATETIME(6),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT fk_source_import_history_member FOREIGN KEY (member_id) REFERENCES member (id),
+    CONSTRAINT fk_source_import_history_source_content FOREIGN KEY (source_content_id) REFERENCES source_content (id),
+    CONSTRAINT fk_source_import_history_recipe FOREIGN KEY (recipe_id) REFERENCES recipe (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
