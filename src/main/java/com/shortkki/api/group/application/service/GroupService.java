@@ -31,7 +31,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -103,8 +105,19 @@ public class GroupService {
 
     public List<GroupListResponse> getMyGroups(Long memberId) {
         List<GroupMember> groupMembers = groupMemberRepository.findAllByMemberIdWithGroup(memberId);
+        List<Long> groupIds = groupMembers.stream()
+                .map(gm -> gm.getGroup().getId())
+                .toList();
+        Map<Long, Long> memberCountMap = groupMemberRepository.countByGroupIds(groupIds);
+        Map<Long, LocalDateTime> lastFeedAtMap = feedRepository.findLatestCreatedAtByGroupIds(groupIds);
+
         return groupMembers.stream()
-                .map(gm -> GroupListResponse.from(gm.getGroup(), gm.getRole()))
+                .map(gm -> GroupListResponse.from(
+                        gm.getGroup(),
+                        gm.getRole(),
+                        memberCountMap.getOrDefault(gm.getGroup().getId(), 0L),
+                        lastFeedAtMap.get(gm.getGroup().getId())
+                ))
                 .toList();
     }
 
@@ -178,6 +191,20 @@ public class GroupService {
         validateNotKickingSelf(requesterId, targetMemberId);
         GroupMember targetGroupMember = findGroupMemberByMemberIdAndGroup(targetMemberId, group);
         groupMemberRepository.delete(targetGroupMember);
+    }
+
+    @Transactional
+    public void leaveGroup(Long memberId, Long groupId) {
+        Group group = findGroupById(groupId);
+        GroupMember groupMember = findGroupMember(memberId, group);
+        validateNotAdmin(groupMember);
+        groupMemberRepository.delete(groupMember);
+    }
+
+    private void validateNotAdmin(GroupMember groupMember) {
+        if (groupMember.checkIsAdmin()) {
+            throw new BadRequestException(ErrorCode.GROUP_ADMIN_CANNOT_LEAVE);
+        }
     }
 
     private InviteLink createInviteLink(Group group) {

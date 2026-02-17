@@ -9,6 +9,7 @@ public record GroupMemberResponse(
         Long memberId,
         String name,
         String email,
+        String profileImgUrl,
         GroupRole role,
         LocalDateTime joinedAt
 ) {
@@ -18,6 +19,7 @@ public record GroupMemberResponse(
                 groupMember.getMember().getId(),
                 groupMember.getMember().getName(),
                 groupMember.getMember().getEmail(),
+                groupMember.getMember().getProfileImgUrl(),
                 groupMember.getRole(),
                 groupMember.getCreatedAt()
         );
