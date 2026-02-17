@@ -32,15 +32,11 @@ public class MemberService {
         if (Objects.equals(currentImageId, requestImageId)) {
             return;
         }
-        if (requestImageId == null && currentImageId != null) {
+        if (member.getProfileImgFile() != null) {
             member.getProfileImgFile().markDeleted();
             member.removeProfileImgFile();
-            return;
         }
         if (requestImageId != null) {
-            if (member.getProfileImgFile() != null) {
-                member.getProfileImgFile().markDeleted();
-            }
             FileMetadata newImage = fileMetadataQueryService.findByIdWithOwnerValidation(requestImageId, memberId);
             member.updateProfileImgFile(newImage);
         }
