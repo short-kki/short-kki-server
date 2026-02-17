@@ -2,6 +2,7 @@ package com.shortkki.global.error;
 
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.response.BaseResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -79,6 +81,12 @@ public class GlobalExceptionHandler {
                 .status(ErrorCode.ACCESS_DENIED.getHttpStatus())
                 .body(BaseResponse.error(ErrorCode.ACCESS_DENIED.getCode(),
                         ErrorCode.ACCESS_DENIED.getMessage()));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResource(NoResourceFoundException e, HttpServletRequest request) {
+        log.debug("NoResourceFound: {}", request.getRequestURI());
+        return ResponseEntity.notFound().build();
     }
 
     // todo : 도메인 예외 처리 관련 논의 필요
