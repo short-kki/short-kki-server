@@ -22,12 +22,6 @@ spring:
   elasticsearch:
     uris: http://localhost:9200
 
-elasticsearch:
-  index:
-    recipe:
-      name: recipes
-      settings-path: elasticsearch/index/recipe-index.json
-
 jwt:
   secret: local__dev_only__short-kki__jwt-secret__32chars_min
   access-token-validity: 86400000
