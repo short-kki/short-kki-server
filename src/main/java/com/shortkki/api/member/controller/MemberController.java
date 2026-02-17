@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,16 +31,16 @@ public class MemberController {
 
     @Operation(summary = "내 프로필 조회")
     @GetMapping("/profile")
-    public BaseResponse<MemberProfileResponse> getMyProfile(
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> getMyProfile(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
         Member member = memberQueryService.findMember(loginMember.getId());
-        return BaseResponse.success(MemberProfileResponse.from(member));
+        return ResponseEntity.ok(BaseResponse.success(MemberProfileResponse.from(member)));
     }
 
     @Operation(summary = "내 프로필 수정")
     @PatchMapping("/profile")
-    public BaseResponse<Void> updateMyProfile(
+    public ResponseEntity<BaseResponse<Void>> updateMyProfile(
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody UpdateProfileRequest request
     ) {
@@ -48,15 +49,15 @@ public class MemberController {
                 request.name(),
                 request.profileImgFileId()
         );
-        return BaseResponse.success();
+        return ResponseEntity.ok(BaseResponse.success());
     }
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping
-    public BaseResponse<Void> withdraw(
+    public ResponseEntity<BaseResponse<Void>> withdraw(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
         memberService.withdraw(loginMember.getId());
-        return BaseResponse.success();
+        return ResponseEntity.ok(BaseResponse.success());
     }
 }

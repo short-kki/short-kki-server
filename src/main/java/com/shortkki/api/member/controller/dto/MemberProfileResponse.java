@@ -6,6 +6,7 @@ public record MemberProfileResponse(
         Long id,
         String email,
         String name,
+        Long profileImgFileId,
         String profileImgUrl
 ) {
     public static MemberProfileResponse from(Member member) {
@@ -13,6 +14,7 @@ public record MemberProfileResponse(
                 member.getId(),
                 member.getEmail(),
                 member.getName(),
+                member.getProfileImgFile() != null ? member.getProfileImgFile().getId() : null,
                 member.getProfileImgUrl()
         );
     }

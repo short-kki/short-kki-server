@@ -5,6 +5,7 @@ import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +21,29 @@ public class MemberService {
     public void updateProfile(Long memberId, String name, Long profileImgFileId) {
         Member member = memberQueryService.findMember(memberId);
         validateNotDeleted(member);
-        FileMetadata profileImgFile = fileMetadataQueryService.findByIdWithOwnerValidation(profileImgFileId, memberId);
         member.updateName(name);
-        member.updateProfileImgFile(profileImgFile);
+        updateProfileImage(member, profileImgFileId, memberId);
+    }
+
+    private void updateProfileImage(Member member, Long requestImageId, Long memberId) {
+        Long currentImageId = member.getProfileImgFile() != null
+                ? member.getProfileImgFile().getId()
+                : null;
+        if (Objects.equals(currentImageId, requestImageId)) {
+            return;
+        }
+        if (requestImageId == null && currentImageId != null) {
+            member.getProfileImgFile().markDeleted();
+            member.removeProfileImgFile();
+            return;
+        }
+        if (requestImageId != null) {
+            if (member.getProfileImgFile() != null) {
+                member.getProfileImgFile().markDeleted();
+            }
+            FileMetadata newImage = fileMetadataQueryService.findByIdWithOwnerValidation(requestImageId, memberId);
+            member.updateProfileImgFile(newImage);
+        }
     }
 
     public void withdraw(Long memberId) {

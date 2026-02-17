@@ -77,6 +77,10 @@ public class Member extends BaseEntity {
         this.profileImgFile = profileImgFile;
     }
 
+    public void removeProfileImgFile() {
+        this.profileImgFile = null;
+    }
+
     public void updateOAuthInfo(String oauthId, OAuthProvider oauthProvider) {
         this.oauthId = oauthId;
         this.oauthProvider = oauthProvider;
