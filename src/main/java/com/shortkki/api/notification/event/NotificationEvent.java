@@ -13,6 +13,7 @@ public record NotificationEvent(
         Long targetId,
         String payload
 ) {
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static NotificationEvent groupInvite(Long receiverId, Long groupId, String groupName) {
@@ -25,7 +26,8 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent memberJoined(List<Long> receiverIds, Long groupId, String memberName) {
+    public static NotificationEvent memberJoined(List<Long> receiverIds, Long groupId,
+            String memberName) {
         return new NotificationEvent(
                 receiverIds,
                 NotificationType.GROUP_MEMBER_JOINED,
@@ -35,7 +37,8 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent recipeShared(List<Long> receiverIds, Long recipeId, String recipeName, Long groupId) {
+    public static NotificationEvent recipeShared(List<Long> receiverIds, Long recipeId,
+            String recipeName, Long groupId) {
         return new NotificationEvent(
                 receiverIds,
                 NotificationType.RECIPE_SHARED,
@@ -48,7 +51,8 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent calendarUpdate(List<Long> receiverIds, Long calendarId, String date, Long groupId) {
+    public static NotificationEvent calendarUpdate(List<Long> receiverIds, Long calendarId,
+            String date, Long groupId) {
         return new NotificationEvent(
                 receiverIds,
                 NotificationType.CALENDAR_UPDATE,
@@ -62,13 +66,27 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent commentAdded(Long receiverId, Long recipeId, String senderName) {
+    public static NotificationEvent commentAdded(Long receiverId, Long recipeId,
+            String senderName) {
         return new NotificationEvent(
                 List.of(receiverId),
                 NotificationType.COMMENT_ADDED,
                 senderName + "님이 댓글을 남겼습니다.",
                 recipeId,
                 toJson(Map.of("recipeId", String.valueOf(recipeId)))
+        );
+    }
+
+    public static NotificationEvent importedRecipeCompleted(Long receiverId, Long recipeId) {
+        return new NotificationEvent(
+                List.of(receiverId),
+                NotificationType.RECIPE_IMPORT_COMPLETED,
+                "외부 레시피 파싱이 완료되어 저장되었어요.",
+                recipeId,
+                toJson(Map.of(
+                        "recipeId", String.valueOf(recipeId),
+                        "route", "/recipe/" + recipeId
+                ))
         );
     }
 
