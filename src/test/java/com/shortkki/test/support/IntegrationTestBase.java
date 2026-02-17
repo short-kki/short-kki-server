@@ -2,7 +2,6 @@ package com.shortkki.test.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,17 +38,4 @@ public abstract class IntegrationTestBase {
     private JdbcTemplate jdbcTemplate;
 
     private static List<String> cachedTableNames;
-
-    @BeforeEach
-    void cleanUp() {
-        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
-        if (cachedTableNames == null) {
-            cachedTableNames = jdbcTemplate.queryForList(
-                    "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE()",
-                    String.class
-            );
-        }
-        cachedTableNames.forEach(table -> jdbcTemplate.execute("TRUNCATE TABLE `" + table + "`"));
-        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
-    }
 }
