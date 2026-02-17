@@ -7,4 +7,6 @@ public interface RecipeSearchIndexer {
     void upsert(long recipeId);
 
     void upsertAll(List<Recipe> recipes);
+
+    void delete(long recipeId);
 }

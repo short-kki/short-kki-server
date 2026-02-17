@@ -19,6 +19,7 @@ import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.search.event.RecipeIndexDeleteEvent;
 import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
@@ -120,6 +121,7 @@ public class RecipeService {
             recipeIngredientService.deleteByRecipeId(id);
             recipeTagRepository.deleteByRecipeId(id);
             recipeRepository.delete(recipe);
+            domainEventPublisher.publish(new RecipeIndexDeleteEvent(id));
         });
     }
 

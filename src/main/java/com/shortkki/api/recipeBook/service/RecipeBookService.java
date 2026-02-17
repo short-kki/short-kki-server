@@ -16,6 +16,7 @@ import com.shortkki.api.recipeBook.repository.RecipeBookRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
+import com.shortkki.api.search.event.RecipeIndexBulkUpsertEvent;
 import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
@@ -129,6 +130,7 @@ public class RecipeBookService {
         List<Long> recipeIds = recipeBookItemRepository.findRecipeIdsByRecipeBookId(id);
         if (!recipeIds.isEmpty()) {
             recipeRepository.decrementBookmarkCountBulk(recipeIds);
+            domainEventPublisher.publish(new RecipeIndexBulkUpsertEvent(recipeIds));
         }
 
         recipeBookItemRepository.deleteAllByRecipeBookId(id);

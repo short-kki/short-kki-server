@@ -45,6 +45,11 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
         recipeDocumentRepository.saveAll(docs);
     }
 
+    @Override
+    public void delete(long recipeId) {
+        recipeDocumentRepository.deleteById(recipeId);
+    }
+
     private RecipeDocument toDocument(Recipe recipe) {
         Set<String> ingredients = ingredientQueryService.findIngredientsByRecipeId(recipe.getId())
                 .stream()
