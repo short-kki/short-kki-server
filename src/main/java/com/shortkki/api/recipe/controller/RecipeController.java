@@ -31,8 +31,10 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<RecipeResponse>> findById(@PathVariable Long id) {
-        RecipeResponse response = recipeQueryService.getDetail(id);
+    public ResponseEntity<BaseResponse<RecipeResponse>> findById(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long id) {
+        RecipeResponse response = recipeQueryService.getDetail(loginMember.getId(), id);
         return ResponseEntity.ok(BaseResponse.success("레시피가 조회되었습니다.", response));
     }
 

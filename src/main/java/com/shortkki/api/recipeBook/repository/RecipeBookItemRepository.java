@@ -32,6 +32,24 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
   Slice<RecipeBookItem> findAllByRecipeBookIdWithRecipe(
       @Param("recipeBookId") Long recipeBookId, Pageable pageable);
 
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id = :recipeBookId
+      order by i.createdAt asc, i.id asc
+      """)
+  Slice<RecipeBookItem> findAllByRecipeBookIdWithRecipeOldest(
+      @Param("recipeBookId") Long recipeBookId, Pageable pageable);
+
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id = :recipeBookId
+      order by i.recipe.bookmarkCount desc, i.createdAt desc, i.id desc
+      """)
+  Slice<RecipeBookItem> findAllByRecipeBookIdWithRecipeByBookmarkDesc(
+      @Param("recipeBookId") Long recipeBookId, Pageable pageable);
+
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query("""
           update RecipeBookItem rbi
@@ -47,15 +65,6 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
   List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
 
   @Query("""
-      SELECT rbi.recipeBook.id FROM RecipeBookItem rbi
-      WHERE rbi.recipe.id = :recipeId
-      AND rbi.recipeBook.member.id = :memberId
-      """)
-  List<Long> findRecipeBookIdsByRecipeIdAndMemberId(
-      @Param("recipeId") Long recipeId,
-      @Param("memberId") Long memberId);
-
-  @Query("""
       select i from RecipeBookItem i
       join fetch i.recipe
       where i.recipeBook.id in :recipeBookIds
@@ -63,4 +72,22 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
       """)
   Slice<RecipeBookItem> findAllByRecipeBookIdsWithRecipe(
       @Param("recipeBookIds") List<Long> recipeBookIds, Pageable pageable);
+
+  @Query("""
+      select i from RecipeBookItem i
+      join fetch i.recipe
+      where i.recipeBook.id in :recipeBookIds
+        and (
+          select count(i2) from RecipeBookItem i2
+          where i2.recipeBook.id = i.recipeBook.id
+            and (
+              i2.createdAt > i.createdAt
+              or (i2.createdAt = i.createdAt and i2.id >= i.id)
+            )
+        ) <= :previewLimit
+      order by i.recipeBook.id asc, i.createdAt desc, i.id desc
+      """)
+  List<RecipeBookItem> findPreviewItemsByRecipeBookIds(
+      @Param("recipeBookIds") List<Long> recipeBookIds,
+      @Param("previewLimit") long previewLimit);
 }
