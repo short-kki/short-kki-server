@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,6 +53,8 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "profile_img_file_id")
     private FileMetadata profileImgFile;
 
+    private LocalDateTime deletedAt;
+
     public static Member create(
             String email, String name, String oauthId, OAuthProvider oauthProvider,
             FileMetadata profileImgFile
@@ -70,6 +73,10 @@ public class Member extends BaseEntity {
         this.name = name;
     }
 
+    public void updateProfileImgFile(FileMetadata profileImgFile) {
+        this.profileImgFile = profileImgFile;
+    }
+
     public void updateOAuthInfo(String oauthId, OAuthProvider oauthProvider) {
         this.oauthId = oauthId;
         this.oauthProvider = oauthProvider;
@@ -77,5 +84,13 @@ public class Member extends BaseEntity {
 
     public String getProfileImgUrl() {
         return profileImgFile != null ? profileImgFile.getUrl() : null;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }
