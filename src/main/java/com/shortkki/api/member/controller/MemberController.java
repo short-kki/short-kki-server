@@ -1,7 +1,7 @@
 package com.shortkki.api.member.controller;
 
-import com.shortkki.api.member.controller.dto.MemberProfileResponse;
-import com.shortkki.api.member.controller.dto.UpdateProfileRequest;
+import com.shortkki.api.member.dto.request.UpdateProfileRequest;
+import com.shortkki.api.member.dto.response.MemberProfileResponse;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.service.MemberQueryService;
 import com.shortkki.api.member.service.MemberService;

@@ -105,6 +105,10 @@ public class GroupService {
 
     public List<GroupListResponse> getMyGroups(Long memberId) {
         List<GroupMember> groupMembers = groupMemberRepository.findAllByMemberIdWithGroup(memberId);
+        if (groupMembers.isEmpty()) {
+            return List.of();
+        }
+
         List<Long> groupIds = groupMembers.stream()
                 .map(gm -> gm.getGroup().getId())
                 .toList();

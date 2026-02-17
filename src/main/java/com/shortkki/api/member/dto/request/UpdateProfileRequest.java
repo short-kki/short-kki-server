@@ -1,4 +1,4 @@
-package com.shortkki.api.member.controller.dto;
+package com.shortkki.api.member.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

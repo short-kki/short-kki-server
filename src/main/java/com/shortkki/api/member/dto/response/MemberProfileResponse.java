@@ -1,4 +1,4 @@
-package com.shortkki.api.member.controller.dto;
+package com.shortkki.api.member.dto.response;
 
 import com.shortkki.api.member.entity.Member;
 
