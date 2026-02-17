@@ -17,4 +17,6 @@ public interface GroupMemberRepositoryCustom {
     List<GroupMember> findAllByGroupWithMember(Group group);
 
     long countByGroup(Group group);
+
+    List<Long> findMemberIdsByGroupId(Long groupId);
 }

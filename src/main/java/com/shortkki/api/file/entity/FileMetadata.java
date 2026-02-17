@@ -98,6 +98,10 @@ public class FileMetadata extends BaseEntity {
         this.status = UploadStatus.FAILED;
     }
 
+    public void markDeleted() {
+        this.status = UploadStatus.DELETED;
+    }
+
     public void bindTarget(FileTargetType targetType, Long targetId) {
         this.targetType = targetType;
         this.targetId = targetId;

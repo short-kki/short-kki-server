@@ -1,19 +1,18 @@
 package com.shortkki.api.feed.event.handler;
 
-import com.shortkki.api.feed.entity.Feed;
-import com.shortkki.api.feed.entity.FeedType;
 import com.shortkki.api.feed.event.GroupRecipeAddedEvent;
-import com.shortkki.api.feed.repository.FeedRepository;
-import com.shortkki.api.group.entity.Group;
-import com.shortkki.api.group.repository.GroupRepository;
-import com.shortkki.api.member.entity.Member;
-import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.feed.service.FeedService;
+import com.shortkki.api.group.repository.GroupMemberRepository;
+import com.shortkki.api.notification.event.NotificationEvent;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
+import com.shortkki.global.event.DomainEventPublisher;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -23,24 +22,45 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class GroupRecipeAddedEventHandler {
 
-    private final GroupRepository groupRepository;
-    private final MemberRepository memberRepository;
+    private final FeedService feedService;
+    private final GroupMemberRepository groupMemberRepository;
     private final RecipeRepository recipeRepository;
-    private final FeedRepository feedRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
-    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(GroupRecipeAddedEvent event) {
-        Group group = groupRepository.findById(event.groupId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GROUP_NOT_FOUND));
-        Member member = memberRepository.findById(event.memberId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        Recipe recipe = recipeRepository.findById(event.recipeId())
+        try {
+            // 1. 피드 생성 (새 트랜잭션에서 실행)
+            feedService.createRecipeAddedFeed(event.groupId(), event.memberId(), event.recipeId());
+
+            // 2. 그룹원들에게 알림 발송
+            publishRecipeSharedNotification(event.groupId(), event.memberId(), event.recipeId());
+        } catch (Exception e) {
+            log.error("그룹 레시피 추가 이벤트 처리 실패. groupId={}, memberId={}, recipeId={}, error={}",
+                    event.groupId(), event.memberId(), event.recipeId(), e.getMessage());
+        }
+    }
+
+    private void publishRecipeSharedNotification(Long groupId, Long memberId, Long recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
-        Feed feed = Feed.create(group, member, "새 레시피를 추가했습니다.", FeedType.NEW_RECIPE_ADDED, recipe);
-        feedRepository.save(feed);
+        List<Long> receiverIds = groupMemberRepository.findMemberIdsByGroupId(groupId)
+                .stream()
+                .filter(id -> !id.equals(memberId))
+                .toList();
 
-        log.info("그룹 레시피 추가 피드 생성 완료. groupId={}, memberId={}, recipeId={}",
-                event.groupId(), event.memberId(), event.recipeId());
+        if (!receiverIds.isEmpty()) {
+            domainEventPublisher.publish(
+                    NotificationEvent.recipeShared(
+                            receiverIds,
+                            recipe.getId(),
+                            recipe.getBasicInfo().getTitle(),
+                            groupId
+                    )
+            );
+            log.info("레시피 공유 알림 이벤트 발행. receiverIds={}, recipeId={}", receiverIds, recipeId);
+        }
     }
 }

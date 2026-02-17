@@ -87,3 +87,7 @@ public-data:
     start-index: 1
     end-index: 1000
     api-key: ${INGREDIENT_API_KEY}
+
+fcm:
+  enabled: false
+  credentials-path: classpath:firebase/service-account-key.json

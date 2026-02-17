@@ -82,6 +82,14 @@ public class Feed extends BaseEntity {
         this.content = content;
     }
 
+    public void updateImage(FileMetadata image) {
+        this.image = image;
+    }
+
+    public void removeImage() {
+        this.image = null;
+    }
+
     public void incrementLikes() {
         this.likes++;
     }

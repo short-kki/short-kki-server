@@ -1,6 +1,7 @@
 package com.shortkki.api.feed.controller;
 
 import com.shortkki.api.feed.dto.request.CreateFeedRequest;
+import com.shortkki.api.feed.dto.request.UpdateFeedRequest;
 import com.shortkki.api.feed.dto.response.FeedResponse;
 import com.shortkki.api.feed.service.FeedService;
 import com.shortkki.global.auth.dto.LoginMember;
@@ -28,6 +29,27 @@ public class FeedController {
     ) {
         List<FeedResponse> response = feedService.getGroupFeeds(loginMember.getId(), groupId);
         return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @GetMapping("/{feedId}")
+    public ResponseEntity<BaseResponse<FeedResponse>> getFeed(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long feedId
+    ) {
+        FeedResponse response = feedService.getFeed(loginMember.getId(), groupId, feedId);
+        return ResponseEntity.ok(BaseResponse.success(response));
+    }
+
+    @PatchMapping("/{feedId}")
+    public ResponseEntity<BaseResponse<Void>> updateFeed(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId,
+            @PathVariable Long feedId,
+            @Valid @RequestBody UpdateFeedRequest request
+    ) {
+        feedService.updateFeed(loginMember.getId(), groupId, feedId, request);
+        return ResponseEntity.ok(BaseResponse.success());
     }
 
     @PostMapping

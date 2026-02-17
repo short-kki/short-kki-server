@@ -1,21 +1,24 @@
 package com.shortkki.api.feed.service;
 
 import com.shortkki.api.feed.dto.request.CreateFeedRequest;
+import com.shortkki.api.feed.dto.request.UpdateFeedRequest;
 import com.shortkki.api.feed.dto.response.FeedResponse;
 import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
+import com.shortkki.api.feed.entity.FeedType;
 import com.shortkki.api.feed.repository.FeedLikeRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
 import com.shortkki.api.file.application.service.FileMetadataQueryService;
 import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.file.entity.FileTargetType;
-import com.shortkki.api.file.repository.FileMetadataRepository;
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.ConflictException;
@@ -37,10 +40,10 @@ public class FeedService {
     private final GroupMemberRepository groupMemberRepository;
     private final FeedRepository feedRepository;
     private final FeedLikeRepository feedLikeRepository;
-    private final FileMetadataRepository fileMetadataRepository;
     private final FileMetadataQueryService fileMetadataQueryService;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
+    private final RecipeRepository recipeRepository;
 
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
@@ -48,11 +51,53 @@ public class FeedService {
         List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
         Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feeds);
         return feeds.stream()
-                .map(feed -> {
-                    log.info(feed.getImageUrl());
-                    return FeedResponse.from(feed, likedFeedIds.contains(feed.getId()));
-                })
+                .map(feed -> FeedResponse.from(feed, likedFeedIds.contains(feed.getId())))
                 .toList();
+    }
+
+    public FeedResponse getFeed(Long memberId, Long groupId, Long feedId) {
+        Group group = findGroupById(groupId);
+        groupMemberValidationService.validateGroupMember(memberId, group.getId());
+        Feed feed = findFeedById(feedId);
+        validateFeedBelongsToGroup(feed, group);
+        boolean isLiked = feedLikeRepository.existsByFeedAndMemberId(feed, memberId);
+        return FeedResponse.from(feed, isLiked);
+    }
+
+    @Transactional
+    public void updateFeed(Long memberId, Long groupId, Long feedId, UpdateFeedRequest request) {
+        Group group = findGroupById(groupId);
+        validateGroupMember(memberId, groupId);
+        Feed feed = findFeedById(feedId);
+        validateFeedOwner(memberId, feed);
+        validateFeedBelongsToGroup(feed, group);
+
+        feed.updateContent(request.content());
+
+        Long currentImageId = feed.getImage() != null ? feed.getImage().getId() : null;
+        Long requestImageId = request.imageFileId();
+
+        // 이미지 변경 없음
+        if (java.util.Objects.equals(currentImageId, requestImageId)) {
+            return;
+        }
+
+        // 이미지 삭제 (requestImageId가 null이고 기존 이미지가 있는 경우)
+        if (requestImageId == null && currentImageId != null) {
+            feed.getImage().markDeleted();
+            feed.removeImage();
+            return;
+        }
+
+        // 이미지 추가/교체
+        if (requestImageId != null) {
+            if (feed.getImage() != null) {
+                feed.getImage().markDeleted();
+            }
+            FileMetadata newImage = fileMetadataQueryService.findByIdWithOwnerValidation(requestImageId, memberId);
+            feed.updateImage(newImage);
+            newImage.bindTarget(FileTargetType.FEED_IMG, feed.getId());
+        }
     }
 
     @Transactional
@@ -71,6 +116,20 @@ public class FeedService {
         }
     }
 
+    @Transactional
+    public void createRecipeAddedFeed(Long groupId, Long memberId, Long recipeId) {
+        Group group = findGroupById(groupId);
+        Member member = findMemberById(memberId);
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
+
+        Feed feed = Feed.create(group, member, "새 레시피를 추가했습니다.", FeedType.NEW_RECIPE_ADDED, recipe);
+        feedRepository.save(feed);
+
+        log.info("그룹 레시피 추가 피드 생성 완료. groupId={}, memberId={}, recipeId={}",
+                groupId, memberId, recipeId);
+    }
+
     // TODO : FileUploadPort에 deleteFile(String objectKey) 메서드 추가
     @Transactional
     public void deleteFeed(Long memberId, Long groupId, Long feedId) {
@@ -81,7 +140,7 @@ public class FeedService {
         validateFeedBelongsToGroup(feed, group);
         feedLikeRepository.deleteByFeed(feed);
         if (feed.getImage() != null) {
-            fileMetadataRepository.delete(feed.getImage());
+            feed.getImage().markDeleted();
         }
         feedRepository.delete(feed);
     }

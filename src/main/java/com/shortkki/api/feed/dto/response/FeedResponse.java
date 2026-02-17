@@ -13,6 +13,7 @@ public record FeedResponse(
         String authorName,
         Long likes,
         boolean likedByMe,
+        Long imageFileId,
         String imageUrl,
         RecipeSummaryResponse recipe,
         LocalDateTime createdAt
@@ -27,6 +28,7 @@ public record FeedResponse(
                 feed.getMember().getName(),
                 feed.getLikes(),
                 likedByMe,
+                feed.getImage() != null ? feed.getImage().getId() : null,
                 feed.getImageUrl(),
                 feed.getRecipe() != null
                         ? RecipeSummaryResponse.from(feed.getRecipe())
