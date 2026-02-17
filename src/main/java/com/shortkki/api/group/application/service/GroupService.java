@@ -142,7 +142,6 @@ public class GroupService {
             domainEventPublisher.publish(
                     NotificationEvent.memberJoined(
                             receiverIds,
-                            joinedMember.getId(),
                             group.getId(),
                             joinedMember.getName()
                     )

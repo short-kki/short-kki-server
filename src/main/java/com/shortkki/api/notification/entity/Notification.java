@@ -31,8 +31,6 @@ public class Notification extends BaseEntity {
     @Column(nullable = false)
     private Long receiverId;
 
-    private Long senderId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType notificationType;
@@ -49,10 +47,9 @@ public class Notification extends BaseEntity {
     private Boolean isRead = false;
 
     @Builder
-    private Notification(Long receiverId, Long senderId, NotificationType notificationType,
+    private Notification(Long receiverId, NotificationType notificationType,
             String content, Long targetId, String payload) {
         this.receiverId = receiverId;
-        this.senderId = senderId;
         this.notificationType = notificationType;
         this.content = content;
         this.targetId = targetId;
@@ -60,11 +57,10 @@ public class Notification extends BaseEntity {
         this.isRead = false;
     }
 
-    public static Notification create(Long receiverId, Long senderId, NotificationType notificationType,
+    public static Notification create(Long receiverId, NotificationType notificationType,
             String content, Long targetId, String payload) {
         return Notification.builder()
                 .receiverId(receiverId)
-                .senderId(senderId)
                 .notificationType(notificationType)
                 .content(content)
                 .targetId(targetId)

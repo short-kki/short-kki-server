@@ -30,7 +30,6 @@ public class NotificationEventHandler {
             // 1. 알림 일괄 저장
             notificationSendService.createNotifications(
                     event.receiverIds(),
-                    event.senderId(),
                     event.type(),
                     event.content(),
                     event.targetId(),

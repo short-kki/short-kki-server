@@ -42,20 +42,19 @@ public class GroupRecipeAddedEventHandler {
         }
     }
 
-    private void publishRecipeSharedNotification(Long groupId, Long senderId, Long recipeId) {
+    private void publishRecipeSharedNotification(Long groupId, Long memberId, Long recipeId) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
 
         List<Long> receiverIds = groupMemberRepository.findMemberIdsByGroupId(groupId)
                 .stream()
-                .filter(id -> !id.equals(senderId))
+                .filter(id -> !id.equals(memberId))
                 .toList();
 
         if (!receiverIds.isEmpty()) {
             domainEventPublisher.publish(
                     NotificationEvent.recipeShared(
                             receiverIds,
-                            senderId,
                             recipe.getId(),
                             recipe.getBasicInfo().getTitle(),
                             groupId

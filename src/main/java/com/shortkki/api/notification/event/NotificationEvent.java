@@ -8,7 +8,6 @@ import java.util.Map;
 
 public record NotificationEvent(
         List<Long> receiverIds,
-        Long senderId,
         NotificationType type,
         String content,
         Long targetId,
@@ -16,10 +15,9 @@ public record NotificationEvent(
 ) {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static NotificationEvent groupInvite(Long receiverId, Long senderId, Long groupId, String groupName) {
+    public static NotificationEvent groupInvite(Long receiverId, Long groupId, String groupName) {
         return new NotificationEvent(
                 List.of(receiverId),
-                senderId,
                 NotificationType.GROUP_INVITE,
                 groupName + " 그룹에 초대되었습니다.",
                 groupId,
@@ -27,10 +25,9 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent memberJoined(List<Long> receiverIds, Long joinedMemberId, Long groupId, String memberName) {
+    public static NotificationEvent memberJoined(List<Long> receiverIds, Long groupId, String memberName) {
         return new NotificationEvent(
                 receiverIds,
-                joinedMemberId,
                 NotificationType.GROUP_MEMBER_JOINED,
                 memberName + "님이 그룹에 참여했습니다.",
                 groupId,
@@ -38,10 +35,9 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent recipeShared(List<Long> receiverIds, Long senderId, Long recipeId, String recipeName, Long groupId) {
+    public static NotificationEvent recipeShared(List<Long> receiverIds, Long recipeId, String recipeName, Long groupId) {
         return new NotificationEvent(
                 receiverIds,
-                senderId,
                 NotificationType.RECIPE_SHARED,
                 recipeName + " 레시피가 공유되었습니다.",
                 recipeId,
@@ -52,10 +48,9 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent calendarUpdate(List<Long> receiverIds, Long senderId, Long calendarId, String date, Long groupId) {
+    public static NotificationEvent calendarUpdate(List<Long> receiverIds, Long calendarId, String date, Long groupId) {
         return new NotificationEvent(
                 receiverIds,
-                senderId,
                 NotificationType.CALENDAR_UPDATE,
                 date + " 식단이 등록되었습니다.",
                 calendarId,
@@ -67,10 +62,9 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent commentAdded(Long receiverId, Long senderId, Long recipeId, String senderName) {
+    public static NotificationEvent commentAdded(Long receiverId, Long recipeId, String senderName) {
         return new NotificationEvent(
                 List.of(receiverId),
-                senderId,
                 NotificationType.COMMENT_ADDED,
                 senderName + "님이 댓글을 남겼습니다.",
                 recipeId,
@@ -78,14 +72,14 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent single(Long receiverId, Long senderId, NotificationType type,
+    public static NotificationEvent single(Long receiverId, NotificationType type,
             String content, Long targetId, Map<String, String> payload) {
-        return new NotificationEvent(List.of(receiverId), senderId, type, content, targetId, toJson(payload));
+        return new NotificationEvent(List.of(receiverId), type, content, targetId, toJson(payload));
     }
 
-    public static NotificationEvent multiple(List<Long> receiverIds, Long senderId, NotificationType type,
+    public static NotificationEvent multiple(List<Long> receiverIds, NotificationType type,
             String content, Long targetId, Map<String, String> payload) {
-        return new NotificationEvent(receiverIds, senderId, type, content, targetId, toJson(payload));
+        return new NotificationEvent(receiverIds, type, content, targetId, toJson(payload));
     }
 
     private static String toJson(Map<String, String> data) {

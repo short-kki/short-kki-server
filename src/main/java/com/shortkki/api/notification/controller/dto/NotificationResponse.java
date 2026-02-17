@@ -9,7 +9,6 @@ public record NotificationResponse(
         NotificationType type,
         String content,
         Long targetId,
-        Long senderId,
         String payload,
         Boolean isRead,
         LocalDateTime createdAt
@@ -20,7 +19,6 @@ public record NotificationResponse(
                 notification.getNotificationType(),
                 notification.getContent(),
                 notification.getTargetId(),
-                notification.getSenderId(),
                 notification.getPayload(),
                 notification.getIsRead(),
                 notification.getCreatedAt()

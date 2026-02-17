@@ -24,17 +24,17 @@ public class NotificationSendService {
     private final PushNotificationPort pushNotificationPort;
 
     @Transactional
-    public void createNotification(Long receiverId, Long senderId, NotificationType type,
+    public void createNotification(Long receiverId, NotificationType type,
             String content, Long targetId, String payload) {
-        Notification notification = Notification.create(receiverId, senderId, type, content, targetId, payload);
+        Notification notification = Notification.create(receiverId, type, content, targetId, payload);
         notificationRepository.save(notification);
     }
 
     @Transactional
-    public void createNotifications(List<Long> receiverIds, Long senderId, NotificationType type,
+    public void createNotifications(List<Long> receiverIds, NotificationType type,
             String content, Long targetId, String payload) {
         List<Notification> notifications = receiverIds.stream()
-                .map(receiverId -> Notification.create(receiverId, senderId, type, content, targetId, payload))
+                .map(receiverId -> Notification.create(receiverId, type, content, targetId, payload))
                 .toList();
         notificationRepository.saveAll(notifications);
     }
