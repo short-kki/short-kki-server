@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: local
   application:
     name: short-kki
   jackson:
@@ -58,6 +56,12 @@ google:
     youtube:
       api:
         base-url: https://www.googleapis.com/youtube/v3
+
+elasticsearch:
+  index:
+    recipe:
+      name: recipes
+      settings-path: search/index/recipe-index.json
 
 public-data:
   ingredient:
