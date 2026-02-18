@@ -32,6 +32,9 @@ public class RecipeImportController {
             @AuthenticationPrincipal LoginMember loginMember,
             @Valid @RequestBody RecipeImportRequest request) {
         RecipeImportResponse response = recipeImportService.importFromUrl(loginMember.getId(), request);
+        if (response.recipeId() != null && response.importHistoryId() == null) {
+            return ResponseEntity.ok(BaseResponse.success(response.message(), response));
+        }
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(BaseResponse.success("외부 레시피 파싱 요청을 접수했습니다.", response));
     }

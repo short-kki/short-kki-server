@@ -59,7 +59,8 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
     }
 
     @Override
-    public List<Long> findRecipeIdsBookmarkedByMemberExcludingBook(Long memberId, List<Long> recipeIds,
+    public List<Long> findRecipeIdsBookmarkedByMemberExcludingBook(Long memberId,
+            List<Long> recipeIds,
             Long excludeBookId) {
         return queryFactory
                 .selectDistinct(recipeBookItem.recipe.id)

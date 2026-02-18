@@ -21,6 +21,7 @@ import com.shortkki.api.recipe.service.TagService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.IngredientParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult.StepParseResult;
+import com.shortkki.api.notification.event.NotificationEvent;
 import com.shortkki.api.search.event.RecipeIndexUpsertEvent;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.global.event.DomainEventPublisher;
@@ -59,6 +60,9 @@ public class RecipeImportTransactionalService {
         saveTags(recipe, safeList(parseResult.tags()), originalParsedTags);
 
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
+        // TODO(#62): Notification 도메인 담당과 앱내 알림 저장/푸시 전송 분리 정책 확정 후 반영
+        domainEventPublisher.publish(
+                NotificationEvent.importedRecipeCompleted(member.getId(), recipe.getId()));
         return recipe;
     }
 
