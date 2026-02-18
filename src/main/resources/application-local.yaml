@@ -62,7 +62,7 @@ google:
 
 public-data:
   ingredient:
-    enabled: true
+    enabled: false
     type: xml
     api-url: Grid_20150827000000000227_1
     url-template: "http://211.237.50.150:7080/openapi/%s/%s/%s/%d/%d"
