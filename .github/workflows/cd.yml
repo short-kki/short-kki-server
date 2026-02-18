@@ -91,12 +91,16 @@ jobs:
 
       - name: Open SSH port for runner IP
         run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id "$SG_ID" \
+            --protocol tcp \
+            --port 22 \
+            --cidr "$RUNNER_IP/32" 2>/dev/null || true
           aws ec2 authorize-security-group-ingress \
             --group-id "$SG_ID" \
             --protocol tcp \
             --port 22 \
-            --cidr "$RUNNER_IP/32" \
-            --tag-specifications "ResourceType=security-group-rule,Tags=[{Key=Name,Value=github-actions-temp}]"
+            --cidr "$RUNNER_IP/32"
         env:
           SG_ID: ${{ secrets.EC2_SECURITY_GROUP_ID }}
           RUNNER_IP: ${{ steps.ip.outputs.runner_ip }}
