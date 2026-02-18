@@ -13,10 +13,12 @@ public record GroupListResponse(
         String thumbnailImgUrl,
         GroupType groupType,
         GroupRole myRole,
+        Long memberCount,
+        LocalDateTime lastFeedAt,
         LocalDateTime createdAt
 ) {
 
-    public static GroupListResponse from(Group group, GroupRole myRole) {
+    public static GroupListResponse from(Group group, GroupRole myRole, Long memberCount, LocalDateTime lastFeedAt) {
         return new GroupListResponse(
                 group.getId(),
                 group.getName(),
@@ -24,6 +26,8 @@ public record GroupListResponse(
                 group.getThumbnailImgUrl(),
                 group.getGroupType(),
                 myRole,
+                memberCount,
+                lastFeedAt,
                 group.getCreatedAt()
         );
     }

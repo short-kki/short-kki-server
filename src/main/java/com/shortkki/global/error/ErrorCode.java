@@ -29,6 +29,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_001", "회원을 찾을 수 없습니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_002", "이미 사용 중인 이메일입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER_003", "비밀번호가 일치하지 않습니다."),
+    MEMBER_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "MEMBER_004", "이미 탈퇴한 회원입니다."),
 
     // Recipe
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE_001", "레시피를 찾을 수 없습니다."),
@@ -56,6 +57,7 @@ public enum ErrorCode {
     GROUP_INVITE_LINK_EXPIRED(HttpStatus.BAD_REQUEST, "GROUP_009", "만료된 초대 링크입니다."),
     GROUP_CANNOT_KICK_SELF(HttpStatus.BAD_REQUEST, "GROUP_010", "본인을 강퇴할 수 없습니다."),
     GROUP_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "GROUP_011", "그룹 멤버를 찾을 수 없습니다."),
+    GROUP_ADMIN_CANNOT_LEAVE(HttpStatus.BAD_REQUEST, "GROUP_012", "방장은 그룹을 나갈 수 없습니다."),
 
     // Ingredient
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "INGREDIENT_001", "재료를 찾을 수 없습니다."),
