@@ -108,40 +108,6 @@ jobs:
           SG_ID: ${{ secrets.EC2_SECURITY_GROUP_ID }}
           RUNNER_IP: ${{ steps.ip.outputs.runner_ip }}
 
-      - name: Verify SSH connectivity
-        run: |
-          HOST="${{ secrets.EC2_HOST }}"
-          echo "=== Diagnostic Info ==="
-          echo "Target: $HOST:22"
-          echo "Runner IP (checkip): ${{ steps.ip.outputs.runner_ip }}"
-          echo "Runner IP (ipify): $(curl -s https://api.ipify.org)"
-          echo ""
-          echo "=== Trying SSH with verbose output ==="
-          ssh -vvv -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o BatchMode=yes \
-            -i /dev/null "${{ secrets.EC2_USERNAME }}@$HOST" exit 2>&1 | head -50 || true
-          echo ""
-          echo "=== Trying raw TCP connection ==="
-          timeout 10 bash -c "cat < /dev/tcp/$HOST/22" 2>&1 || echo "TCP connection failed (exit: $?)"
-          echo ""
-          echo "=== Traceroute ==="
-          traceroute -T -p 22 -m 15 "$HOST" 2>&1 | head -20 || true
-          echo ""
-          echo "=== SG Rules ==="
-          aws ec2 describe-security-groups --group-ids "${{ secrets.EC2_SECURITY_GROUP_ID }}" \
-            --query 'SecurityGroups[0].IpPermissions' --output json
-          echo ""
-          echo "=== Final connectivity test ==="
-          for i in $(seq 1 3); do
-            if nc -z -w 10 "$HOST" 22; then
-              echo "SSH port is reachable on attempt $i"
-              exit 0
-            fi
-            echo "Attempt $i failed, retrying in 10s..."
-            sleep 10
-          done
-          echo "ERROR: SSH port is not reachable"
-          exit 1
-
       - name: Create .env file
         run: printenv APP_ENV > .env
         env:
