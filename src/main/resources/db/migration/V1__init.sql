@@ -19,8 +19,8 @@ CREATE TABLE file_metadata
     upload_status VARCHAR(255) NOT NULL,
     visibility    VARCHAR(255) NOT NULL,
     public_url    TEXT,
-    created_at    DATETIME(6),
-    updated_at    DATETIME(6),
+    created_at    DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at    DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -38,8 +38,9 @@ CREATE TABLE member
     oauth_provider      VARCHAR(255),
     role                VARCHAR(255) NOT NULL,
     profile_img_file_id BIGINT,
-    created_at          DATETIME(6),
-    updated_at          DATETIME(6),
+    created_at          DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at          DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    deleted_at          DATETIME(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_member_email UNIQUE (email),
     CONSTRAINT fk_member_profile_img FOREIGN KEY (profile_img_file_id) REFERENCES file_metadata (id)
@@ -57,8 +58,8 @@ CREATE TABLE member_group
     description       TEXT,
     thumbnail_img_url VARCHAR(255),
     group_type        VARCHAR(255),
-    created_at        DATETIME(6),
-    updated_at        DATETIME(6),
+    created_at        DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at        DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -73,8 +74,8 @@ CREATE TABLE group_member
     role       VARCHAR(255) NOT NULL,
     member_id  BIGINT       NOT NULL,
     group_id   BIGINT       NOT NULL,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_group_member UNIQUE (member_id, group_id),
     CONSTRAINT fk_group_member_member FOREIGN KEY (member_id) REFERENCES member (id),
@@ -92,8 +93,8 @@ CREATE TABLE invite_link
     code       VARCHAR(10) NOT NULL,
     expires_at DATETIME(6) NOT NULL,
     group_id   BIGINT      NOT NULL,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_invite_link_code UNIQUE (code),
     CONSTRAINT fk_invite_link_group FOREIGN KEY (group_id) REFERENCES member_group (id)
@@ -108,8 +109,8 @@ CREATE TABLE ingredient
 (
     id         BIGINT      NOT NULL AUTO_INCREMENT,
     name       VARCHAR(50) NOT NULL,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_ingredient_name UNIQUE (name)
 ) ENGINE = InnoDB
@@ -124,8 +125,8 @@ CREATE TABLE tag
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
     source_type VARCHAR(255) NOT NULL,
-    created_at  DATETIME(6),
-    updated_at  DATETIME(6),
+    created_at  DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at  DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_tag_name UNIQUE (name)
 ) ENGINE = InnoDB
@@ -142,8 +143,8 @@ CREATE TABLE source_content_creator
     platform        VARCHAR(30)  NOT NULL,
     display_name    VARCHAR(100) NOT NULL,
     profile_img_url VARCHAR(500),
-    created_at      DATETIME(6),
-    updated_at      DATETIME(6),
+    created_at      DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at      DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_source_creator_platform_key UNIQUE (platform, external_key)
 ) ENGINE = InnoDB
@@ -164,8 +165,8 @@ CREATE TABLE source_content
     thumbnail_url    VARCHAR(500),
     content_type     VARCHAR(20)  NOT NULL,
     is_active        BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_at       DATETIME(6),
-    updated_at       DATETIME(6),
+    created_at       DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at       DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_source_content_canonical_url UNIQUE (canonical_url),
     CONSTRAINT uk_source_content_thumbnail_url UNIQUE (thumbnail_url),
@@ -194,8 +195,8 @@ CREATE TABLE recipe
     bookmark_count    INT          NOT NULL DEFAULT 0,
     main_img_file_id  BIGINT,
     is_active         BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_at        DATETIME(6),
-    updated_at        DATETIME(6),
+    created_at        DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at        DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_recipe_source_content UNIQUE (source_content_id),
     CONSTRAINT fk_recipe_member FOREIGN KEY (member_id) REFERENCES member (id),
@@ -216,8 +217,8 @@ CREATE TABLE recipe_ingredient
     name          VARCHAR(50) NOT NULL,
     amount        DOUBLE,
     unit          VARCHAR(50) NOT NULL,
-    created_at    DATETIME(6),
-    updated_at    DATETIME(6),
+    created_at    DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at    DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_recipe_ingredient_ingredient FOREIGN KEY (ingredient_id) REFERENCES ingredient (id),
     CONSTRAINT fk_recipe_ingredient_recipe FOREIGN KEY (recipe_id) REFERENCES recipe (id)
@@ -267,8 +268,8 @@ CREATE TABLE recipe_book
     title      VARCHAR(200) NOT NULL,
     is_default BOOLEAN      NOT NULL,
     sort_order INT          NOT NULL,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_recipe_book_member FOREIGN KEY (member_id) REFERENCES member (id),
     CONSTRAINT fk_recipe_book_group FOREIGN KEY (group_id) REFERENCES member_group (id)
@@ -284,8 +285,8 @@ CREATE TABLE recipe_book_item
     id         BIGINT NOT NULL AUTO_INCREMENT,
     book_id    BIGINT,
     recipe_id  BIGINT,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_recipe_book_item UNIQUE (book_id, recipe_id),
     CONSTRAINT fk_recipe_book_item_book FOREIGN KEY (book_id) REFERENCES recipe_book (id),
@@ -303,8 +304,8 @@ CREATE TABLE shopping_list
     name          VARCHAR(255) NOT NULL,
     ingredient_id BIGINT,
     group_id      BIGINT       NOT NULL,
-    created_at    DATETIME(6),
-    updated_at    DATETIME(6),
+    created_at    DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at    DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_shopping_list_ingredient FOREIGN KEY (ingredient_id) REFERENCES ingredient (id),
     CONSTRAINT fk_shopping_list_group FOREIGN KEY (group_id) REFERENCES member_group (id)
@@ -320,13 +321,13 @@ CREATE TABLE feed
     id         BIGINT       NOT NULL AUTO_INCREMENT,
     content    TEXT,
     feed_type  VARCHAR(255) NOT NULL,
-    likes      BIGINT DEFAULT 0,
+    likes      BIGINT      DEFAULT 0,
     group_id   BIGINT       NOT NULL,
     member_id  BIGINT       NOT NULL,
     recipe_id  BIGINT,
     image_id   BIGINT,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_feed_group FOREIGN KEY (group_id) REFERENCES member_group (id),
     CONSTRAINT fk_feed_member FOREIGN KEY (member_id) REFERENCES member (id),
@@ -344,8 +345,8 @@ CREATE TABLE feed_like
     id         BIGINT NOT NULL AUTO_INCREMENT,
     feed_id    BIGINT NOT NULL,
     member_id  BIGINT NOT NULL,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_feed_like UNIQUE (feed_id, member_id),
     CONSTRAINT fk_feed_like_feed FOREIGN KEY (feed_id) REFERENCES feed (id),
@@ -365,8 +366,8 @@ CREATE TABLE recipe_calendar
     group_id       BIGINT,
     scheduled_date DATE   NOT NULL,
     sort_order     INT    NOT NULL,
-    created_at     DATETIME(6),
-    updated_at     DATETIME(6),
+    created_at     DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at     DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_recipe_calendar_recipe FOREIGN KEY (recipe_id) REFERENCES recipe (id),
     CONSTRAINT fk_recipe_calendar_member FOREIGN KEY (member_id) REFERENCES member (id),
@@ -383,8 +384,8 @@ CREATE TABLE recipe_queue
     id         BIGINT NOT NULL AUTO_INCREMENT,
     recipe_id  BIGINT NOT NULL,
     member_id  BIGINT NOT NULL,
-    created_at DATETIME(6),
-    updated_at DATETIME(6),
+    created_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_recipe_queue_recipe FOREIGN KEY (recipe_id) REFERENCES recipe (id),
     CONSTRAINT fk_recipe_queue_member FOREIGN KEY (member_id) REFERENCES member (id)
@@ -409,8 +410,8 @@ CREATE TABLE curation
     tags          VARCHAR(2000),
     ingredients   VARCHAR(2000),
     is_active     BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_at    DATETIME(6),
-    updated_at    DATETIME(6),
+    created_at    DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at    DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT uk_curation_title UNIQUE (title)
 ) ENGINE = InnoDB
@@ -432,12 +433,75 @@ CREATE TABLE source_import_history
     parsed_content       TEXT,
     error_message        TEXT,
     status               VARCHAR(20) NOT NULL,
-    created_at           DATETIME(6),
-    updated_at           DATETIME(6),
+    created_at           DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at           DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     PRIMARY KEY (id),
     CONSTRAINT fk_source_import_history_member FOREIGN KEY (member_id) REFERENCES member (id),
     CONSTRAINT fk_source_import_history_source_content FOREIGN KEY (source_content_id) REFERENCES source_content (id),
     CONSTRAINT fk_source_import_history_recipe FOREIGN KEY (recipe_id) REFERENCES recipe (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- --------------------------------------------
+-- content_feedback
+-- --------------------------------------------
+CREATE TABLE content_feedback
+(
+    id            BIGINT      NOT NULL AUTO_INCREMENT,
+    member_id     BIGINT      NOT NULL,
+    target_type   VARCHAR(50) NOT NULL,
+    target_id     BIGINT      NOT NULL,
+    feedback_type VARCHAR(50) NOT NULL,
+    description   VARCHAR(550),
+    resolved      TINYINT(1)  NOT NULL DEFAULT 0,
+    created_at    DATETIME(6)          DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at    DATETIME(6)          DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    CONSTRAINT fk_content_feedback_member FOREIGN KEY (member_id) REFERENCES member (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- --------------------------------------------
+-- member_device
+-- --------------------------------------------
+CREATE TABLE member_device
+(
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id  BIGINT       NOT NULL,
+    fcm_token  VARCHAR(512) NOT NULL,
+    device_id  VARCHAR(100),
+    platform   VARCHAR(20)  NOT NULL,
+    is_active  TINYINT(1)   NOT NULL DEFAULT 1,
+    created_at DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6)           DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    CONSTRAINT fk_member_device_member FOREIGN KEY (member_id) REFERENCES member (id),
+    INDEX idx_member_device_member_id (member_id),
+    INDEX idx_member_device_token (fcm_token)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- --------------------------------------------
+-- notification
+-- --------------------------------------------
+CREATE TABLE notification
+(
+    id                BIGINT      NOT NULL AUTO_INCREMENT,
+    receiver_id       BIGINT      NOT NULL,
+    notification_type VARCHAR(50) NOT NULL,
+    content           TEXT        NOT NULL,
+    target_id         BIGINT,
+    payload           JSON,
+    is_read           TINYINT(1)  NOT NULL DEFAULT 0,
+    created_at        DATETIME(6)          DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at        DATETIME(6)          DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    CONSTRAINT fk_notification_receiver FOREIGN KEY (receiver_id) REFERENCES member (id),
+    INDEX idx_notification_receiver_id (receiver_id),
+    INDEX idx_notification_receiver_is_read (receiver_id, is_read)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
