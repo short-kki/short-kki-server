@@ -28,6 +28,14 @@ public class RecipeCalendarValidationService {
         }
     }
 
+    public void validateDeleteAccess(RecipeCalendar calendar, long memberId) {
+        if (calendar.getGroup() != null) {
+            groupMemberValidationService.validateGroupMember(memberId, calendar.getGroup().getId());
+        } else {
+            validatePersonalCalendarOwner(calendar, memberId);
+        }
+    }
+
     public void validateGroupCalendarAccess(RecipeCalendar calendar, long memberId, long groupId) {
         if (calendar.getGroup() == null) {
             throw new BadRequestException("그룹 캘린더가 아닙니다.");
