@@ -327,6 +327,8 @@ gradle-app.setting
 ### code agent
 .claude
 
+### Firebase
+src/main/resources/firebase/
 # nGrinder Data Volumes
 ngrinder-controller/
 ngrinder-agent/

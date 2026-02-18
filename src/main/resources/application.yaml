@@ -61,3 +61,7 @@ elasticsearch:
 public-data:
   ingredient:
     enabled: false
+
+fcm:
+  enabled: ${FCM_ENABLED:false}
+  credentials-path: ${FCM_CREDENTIALS_PATH:}

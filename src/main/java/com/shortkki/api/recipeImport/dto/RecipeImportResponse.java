@@ -21,6 +21,18 @@ public record RecipeImportResponse(
                 "외부 레시피 파싱을 요청했습니다.");
     }
 
+    public static RecipeImportResponse alreadyExists(
+            Long recipeId, String sourceUrl, RecipeImportPreviewResponse preview
+    ) {
+        return new RecipeImportResponse(
+                null,
+                recipeId,
+                null,
+                sourceUrl,
+                preview,
+                "이미 등록된 레시피입니다.");
+    }
+
     public static RecipeImportResponse success(
             Long recipeId, String title, String sourceUrl
     ) {

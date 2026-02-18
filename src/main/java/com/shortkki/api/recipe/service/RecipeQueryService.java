@@ -8,6 +8,7 @@ import com.shortkki.api.recipe.repository.RecipeIngredientRepository;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.recipe.repository.RecipeStepRepository;
 import com.shortkki.api.recipe.repository.RecipeTagRepository;
+import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import java.util.List;
@@ -23,17 +24,17 @@ public class RecipeQueryService {
     private final RecipeRepository recipeRepository;
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
-
     private final RecipeTagRepository recipeTagRepository;
+    private final RecipeBookService recipeBookService;
 
     public Recipe findById(Long id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RECIPE_NOT_FOUND));
     }
 
-    public RecipeResponse getDetail(Long id) {
+    public RecipeResponse getDetail(Long memberId, Long id) {
         Recipe recipe = findById(id);
-        return toRecipeResponse(recipe);
+        return toRecipeResponse(recipe, memberId);
     }
 
     // TODO: 페이지네이션
@@ -41,17 +42,19 @@ public class RecipeQueryService {
         List<Recipe> recipes = recipeRepository.findAll();
 
         return recipes.stream()
-                .map(this::toRecipeResponse)
+                .map(recipe -> toRecipeResponse(recipe, null))
                 .toList();
     }
 
-    private RecipeResponse toRecipeResponse(Recipe recipe) {
+    private RecipeResponse toRecipeResponse(Recipe recipe, Long memberId) {
         List<RecipeStep> steps = recipeStepRepository.findByRecipeId(recipe.getId());
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByRecipeId(
                 recipe.getId());
-
         List<String> tagNames = findTagNamesByRecipeId(recipe.getId());
-        return RecipeResponse.toDto(recipe, steps, ingredients, tagNames);
+        List<Long> ownedRecipeBookIds = memberId == null
+                ? List.of()
+                : recipeBookService.findOwnedRecipeBookIdsByRecipe(memberId, recipe.getId());
+        return RecipeResponse.toDto(recipe, steps, ingredients, tagNames, ownedRecipeBookIds);
     }
 
     private List<String> findTagNamesByRecipeId(Long recipeId) {

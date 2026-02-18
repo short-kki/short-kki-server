@@ -1,6 +1,7 @@
 package com.shortkki.api.source.service;
 
 import com.shortkki.api.recipeImport.dto.RecipeImportPreviewResponse;
+import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
@@ -23,8 +24,8 @@ public class SourceContentQueryService {
 
     private final SourceDataProvider sourceDataProvider;
     private final ExternalKeyExtractorRegistry extractorRegistry;
-
     private final SourceContentRepository sourceContentRepository;
+    private final RecipeRepository recipeRepository;
 
     public SourceContent findById(long id) {
         return sourceContentRepository.findById(id)
@@ -32,14 +33,24 @@ public class SourceContentQueryService {
     }
 
     public RecipeImportPreviewResponse getSourceContentPreview(String sourceUrl) {
-        SourcePlatform platform =  extractorRegistry.detectPlatform(sourceUrl)
+        SourcePlatform platform = extractorRegistry.detectPlatform(sourceUrl)
                 .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
         String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
+
+        SourceContent existingContent = sourceContentRepository.findByPlatformAndExternalKey(
+                        platform, externalKey)
+                .orElse(null);
+        if (existingContent != null) {
+            Long recipeId = recipeRepository.findIdBySourceContentId(existingContent.getId())
+                    .orElse(null);
+            return RecipeImportPreviewResponse.from(existingContent, recipeId);
+        }
 
         SourceContentInfo contentInfo = sourceDataProvider.getSourceInfo(externalKey);
         SourceCreatorInfo creatorInfo = sourceDataProvider.getSourceCreatorInfo(contentInfo.channelId());
 
         return new RecipeImportPreviewResponse(
+                null,
                 null,
                 platform,
                 SourceContentType.VIDEO,
@@ -51,5 +62,4 @@ public class SourceContentQueryService {
         );
     }
 }
-
 

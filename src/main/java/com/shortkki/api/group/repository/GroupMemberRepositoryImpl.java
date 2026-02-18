@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import com.querydsl.core.Tuple;
 
 @Repository
 @RequiredArgsConstructor
@@ -69,5 +72,30 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
                 .where(groupMember.group.eq(group))
                 .fetchOne();
         return count != null ? count : 0L;
+    }
+
+    @Override
+    public Map<Long, Long> countByGroupIds(List<Long> groupIds) {
+        List<Tuple> results = queryFactory
+                .select(groupMember.group.id, groupMember.count())
+                .from(groupMember)
+                .where(groupMember.group.id.in(groupIds))
+                .groupBy(groupMember.group.id)
+                .fetch();
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(groupMember.group.id),
+                        tuple -> tuple.get(groupMember.count())
+                ));
+    }
+
+    @Override
+    public List<Long> findMemberIdsByGroupId(Long groupId) {
+        return queryFactory
+                .select(groupMember.member.id)
+                .from(groupMember)
+                .where(groupMember.group.id.eq(groupId))
+                .fetch();
     }
 }

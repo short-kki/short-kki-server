@@ -76,6 +76,9 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation "org.testcontainers:mysql"
     testImplementation "org.testcontainers:elasticsearch"
+
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.7.0'
 }
 
 // test

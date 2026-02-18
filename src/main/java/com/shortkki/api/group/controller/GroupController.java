@@ -125,4 +125,13 @@ public class GroupController {
         groupService.kickMember(loginMember.getId(), groupId, memberId);
         return ResponseEntity.ok(BaseResponse.success());
     }
+
+    @DeleteMapping("/{groupId}/leave")
+    public ResponseEntity<BaseResponse<Void>> leaveGroup(
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long groupId
+    ) {
+        groupService.leaveGroup(loginMember.getId(), groupId);
+        return ResponseEntity.ok(BaseResponse.success());
+    }
 }

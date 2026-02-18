@@ -3,6 +3,7 @@ package com.shortkki.api.recipe.repository;
 import com.shortkki.api.recipe.entity.Recipe;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
+
+    boolean existsBySourceContentId(Long sourceContentId);
 
     @Query("""
             SELECT r FROM Recipe r
@@ -46,7 +49,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             """)
     void decrementBookmarkCountBulk(@Param("recipeIds") List<Long> recipeIds);
 
-    boolean existsBySourceContentId(Long sourceContentId);
 
     @Query("""
             SELECT r FROM Recipe r
@@ -55,4 +57,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             ORDER BY r.id ASC
             """)
     Slice<Recipe> findAllFrom(@Param("fromId") Long fromId, @Param("fromCreatedAt") LocalDateTime fromCreatedAt, Pageable pageable);
+
+    @Query("""
+            SELECT r.id FROM Recipe r
+            WHERE r.sourceContent.id = :sourceContentId
+            """)
+    Optional<Long> findIdBySourceContentId(@Param("sourceContentId") Long sourceContentId);
 }

@@ -20,11 +20,9 @@ import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.api.source.domain.ImportStatus;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceImportHistory;
-import com.shortkki.api.source.domain.SourcePlatform;
 import com.shortkki.api.source.repository.SourceContentRepository;
 import com.shortkki.api.source.repository.SourceImportHistoryRepository;
 import com.shortkki.api.source.service.SourceContentService;
-import com.shortkki.api.source.support.ExternalKeyExtractorRegistry;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
@@ -45,7 +43,6 @@ public class RecipeImportService {
     private final RecipeRepository recipeRepository;
     private final SourceContentService sourceContentService;
     private final SourceContentRepository sourceContentRepository;
-    private final ExternalKeyExtractorRegistry extractorRegistry;
     private final MemberRepository memberRepository;
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
 
@@ -60,12 +57,16 @@ public class RecipeImportService {
     public RecipeImportResponse importFromUrl(Long memberId, RecipeImportRequest request) {
         Member member = findMemberById(memberId);
         String sourceUrl = request.sourceUrl();
-
-        validateNotDuplicateSource(sourceUrl);
-
         SourceContent sourceContent = sourceContentService.resolveSourceContent(sourceUrl);
-        SourceImportHistory history = createHistory(member, sourceContent, sourceUrl);
         RecipeImportPreviewResponse preview = loadPreview(sourceContent.getId());
+
+        Long duplicatedRecipeId = recipeRepository.findIdBySourceContentId(sourceContent.getId())
+                .orElse(null);
+        if (duplicatedRecipeId != null) {
+            return RecipeImportResponse.alreadyExists(duplicatedRecipeId, sourceUrl, preview);
+        }
+
+        SourceImportHistory history = createHistory(member, sourceContent, sourceUrl);
 
         Long resolvedMemberId = member.getId();
         Long resolvedSourceContentId = sourceContent.getId();
@@ -75,7 +76,8 @@ public class RecipeImportService {
                     @Override
                     public void afterCommit() {
                         recipeImportAsyncService.processImport(
-                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId, sourceUrl
+                                resolvedMemberId, resolvedSourceContentId, resolvedHistoryId,
+                                sourceUrl
                         );
                     }
                 });
@@ -142,26 +144,14 @@ public class RecipeImportService {
     private RecipeImportPreviewResponse loadPreview(Long sourceContentId) {
         SourceContent previewContent = sourceContentRepository.findByIdWithCreator(sourceContentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
-        return RecipeImportPreviewResponse.from(previewContent);
+        Long recipeId = recipeRepository.findIdBySourceContentId(previewContent.getId())
+                .orElse(null);
+        return RecipeImportPreviewResponse.from(previewContent, recipeId);
     }
 
     // -------------------------
     // Helper methods (validation)
     // -------------------------
-
-    private void validateNotDuplicateSource(String sourceUrl) {
-        SourcePlatform platform = extractorRegistry.detectPlatform(sourceUrl)
-                .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
-        String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
-
-        boolean isDuplicate = sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
-                .map(sc -> recipeRepository.existsBySourceContentId(sc.getId()))
-                .orElse(false);
-
-        if (isDuplicate) {
-            throw new BusinessException(ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS);
-        }
-    }
 
     private void validateHistoryOwnership(SourceImportHistory history, Long memberId) {
         if (history.getMemberId() == null || !history.getMemberId().equals(memberId)) {

@@ -1,6 +1,6 @@
 package com.shortkki.api.auth.dto;
 
-import com.shortkki.api.auth.entity.Platform;
+import com.shortkki.global.entity.Platform;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

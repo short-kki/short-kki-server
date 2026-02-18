@@ -4,6 +4,7 @@ import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.entity.GroupMember;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface GroupMemberRepositoryCustom {
@@ -17,4 +18,8 @@ public interface GroupMemberRepositoryCustom {
     List<GroupMember> findAllByGroupWithMember(Group group);
 
     long countByGroup(Group group);
+
+    Map<Long, Long> countByGroupIds(List<Long> groupIds);
+
+    List<Long> findMemberIdsByGroupId(Long groupId);
 }

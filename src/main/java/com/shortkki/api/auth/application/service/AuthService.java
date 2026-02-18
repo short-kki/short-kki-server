@@ -2,7 +2,7 @@ package com.shortkki.api.auth.application.service;
 
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
-import com.shortkki.api.auth.entity.Platform;
+import com.shortkki.global.entity.Platform;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.entity.OAuthProvider;
 import com.shortkki.api.member.repository.MemberRepository;
