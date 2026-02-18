@@ -83,10 +83,7 @@ public record NotificationEvent(
                 NotificationType.RECIPE_IMPORT_COMPLETED,
                 "외부 레시피 파싱이 완료되어 저장되었어요.",
                 recipeId,
-                toJson(Map.of(
-                        "recipeId", String.valueOf(recipeId),
-                        "route", "/recipe/" + recipeId
-                ))
+                toJson(Map.of("recipeId", String.valueOf(recipeId)))
         );
     }
 

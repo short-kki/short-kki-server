@@ -17,23 +17,18 @@ import com.shortkki.api.recipeImport.dto.RecipeParseResult;
 import com.shortkki.api.recipeImport.dto.RecipeParseResultResponse;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
-import com.shortkki.api.source.domain.exception.DuplicateSourceContentException;
 import com.shortkki.api.source.domain.ImportStatus;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceImportHistory;
-import com.shortkki.api.source.domain.SourcePlatform;
 import com.shortkki.api.source.repository.SourceContentRepository;
 import com.shortkki.api.source.repository.SourceImportHistoryRepository;
 import com.shortkki.api.source.service.SourceContentService;
-import com.shortkki.api.source.support.ExternalKeyExtractorRegistry;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
-import java.util.Map;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +43,6 @@ public class RecipeImportService {
     private final RecipeRepository recipeRepository;
     private final SourceContentService sourceContentService;
     private final SourceContentRepository sourceContentRepository;
-    private final ExternalKeyExtractorRegistry extractorRegistry;
     private final MemberRepository memberRepository;
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
 
@@ -63,18 +57,16 @@ public class RecipeImportService {
     public RecipeImportResponse importFromUrl(Long memberId, RecipeImportRequest request) {
         Member member = findMemberById(memberId);
         String sourceUrl = request.sourceUrl();
+        SourceContent sourceContent = sourceContentService.resolveSourceContent(sourceUrl);
+        RecipeImportPreviewResponse preview = loadPreview(sourceContent.getId());
 
-        Optional<Long> duplicatedRecipeId = findDuplicatedRecipeId(sourceUrl);
-        if (duplicatedRecipeId.isPresent()) {
-            throw new DuplicateSourceContentException(
-                    ErrorCode.SOURCE_CONTENT_ALREADY_EXISTS,
-                    Map.of("recipeId", duplicatedRecipeId.get())
-            );
+        Long duplicatedRecipeId = recipeRepository.findIdBySourceContentId(sourceContent.getId())
+                .orElse(null);
+        if (duplicatedRecipeId != null) {
+            return RecipeImportResponse.alreadyExists(duplicatedRecipeId, sourceUrl, preview);
         }
 
-        SourceContent sourceContent = sourceContentService.resolveSourceContent(sourceUrl);
         SourceImportHistory history = createHistory(member, sourceContent, sourceUrl);
-        RecipeImportPreviewResponse preview = loadPreview(sourceContent.getId());
 
         Long resolvedMemberId = member.getId();
         Long resolvedSourceContentId = sourceContent.getId();
@@ -152,21 +144,14 @@ public class RecipeImportService {
     private RecipeImportPreviewResponse loadPreview(Long sourceContentId) {
         SourceContent previewContent = sourceContentRepository.findByIdWithCreator(sourceContentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
-        return RecipeImportPreviewResponse.from(previewContent);
+        Long recipeId = recipeRepository.findIdBySourceContentId(previewContent.getId())
+                .orElse(null);
+        return RecipeImportPreviewResponse.from(previewContent, recipeId);
     }
 
     // -------------------------
     // Helper methods (validation)
     // -------------------------
-
-    private Optional<Long> findDuplicatedRecipeId(String sourceUrl) {
-        SourcePlatform platform = extractorRegistry.detectPlatform(sourceUrl)
-                .orElseThrow(() -> new BadRequestException(ErrorCode.UNSUPPORTED_SOURCE_PLATFORM));
-        String externalKey = extractorRegistry.extractKey(platform, sourceUrl);
-
-        return sourceContentRepository.findByPlatformAndExternalKey(platform, externalKey)
-                .flatMap(sc -> recipeRepository.findIdBySourceContentId(sc.getId()));
-    }
 
     private void validateHistoryOwnership(SourceImportHistory history, Long memberId) {
         if (history.getMemberId() == null || !history.getMemberId().equals(memberId)) {
