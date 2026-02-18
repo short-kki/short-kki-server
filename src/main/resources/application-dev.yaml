@@ -57,3 +57,7 @@ google:
 public-data:
   ingredient:
     enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false

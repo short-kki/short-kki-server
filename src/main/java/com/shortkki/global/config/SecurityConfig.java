@@ -38,8 +38,6 @@ public class SecurityConfig {
             "/api/v1/groups/invite/**",
             // health
             "/api/v1/health",
-            // admin
-            "/api/admin/**",
             // swagger
             "/swagger-ui/**",
             "/swagger-ui.html",

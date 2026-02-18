@@ -69,3 +69,10 @@ public-data:
     start-index: 1
     end-index: 1000
     api-key: ${INGREDIENT_API_KEY}
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    try-it-out-enabled: true
+    filter: true

@@ -73,39 +73,72 @@ jobs:
     environment: dev
 
     steps:
-      - name: Create .env file
-        run: echo "${{ secrets.APP_ENV }}" > .env
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
 
-      - name: Transfer .env to EC2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get runner IP
+        id: ip
+        run: echo "runner_ip=$(curl -s https://checkip.amazonaws.com)" >> "$GITHUB_OUTPUT"
+
+      - name: Open SSH port for runner IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id "$SG_ID" \
+            --protocol tcp \
+            --port 22 \
+            --cidr "$RUNNER_IP/32" \
+            --tag-specifications "ResourceType=security-group-rule,Tags=[{Key=Name,Value=github-actions-temp}]"
+        env:
+          SG_ID: ${{ secrets.EC2_SECURITY_GROUP_ID }}
+          RUNNER_IP: ${{ steps.ip.outputs.runner_ip }}
+
+      - name: Create .env file
+        run: printenv APP_ENV > .env
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+
+      - name: Transfer files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: .env
+          source: ".env,scripts/deploy.sh"
           target: ~/shortkki
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # TODO: ELB 붙이고 매칭 포트 변경 (80 -> 8080)
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_NAME
           script: |
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            chmod +x ~/shortkki/scripts/deploy.sh
+            ~/shortkki/scripts/deploy.sh
 
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-            docker stop shortkki-server || true
-            docker rm shortkki-server || true
-
-            docker run -d \
-              --name shortkki-server \
-              --restart unless-stopped \
-              -p 80:8080 \
-              --env-file ~/shortkki/.env \
-              -e SPRING_PROFILES_ACTIVE=dev \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-            docker image prune -f
+      - name: Revoke SSH port for runner IP
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id "$SG_ID" \
+            --protocol tcp \
+            --port 22 \
+            --cidr "$RUNNER_IP/32"
+        env:
+          SG_ID: ${{ secrets.EC2_SECURITY_GROUP_ID }}
+          RUNNER_IP: ${{ steps.ip.outputs.runner_ip }}
