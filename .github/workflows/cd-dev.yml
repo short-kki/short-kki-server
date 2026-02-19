@@ -2,7 +2,7 @@ name: CD Dev
 
 on:
   push:
-    branches: [ "develop", "env/#62-deploy-prod" ]   # 현재 브랜치. 테스트 후 제거 예정.
+    branches: [ "develop" ]
   workflow_dispatch:
 
 concurrency:

@@ -118,21 +118,13 @@ jobs:
             --auto-scaling-group-name "$ASG_NAME" \
             --preferences '{
               "MinHealthyPercentage": 50,
-              "InstanceWarmup": 120,
-              "AutoRollback": true
-            }' \
-            --desired-configuration '{
-              "LaunchTemplate": {
-                "LaunchTemplateName": "'"$LAUNCH_TEMPLATE_NAME"'",
-                "Version": "$Default"
-              }
+              "InstanceWarmup": 120
             }' \
             --query 'InstanceRefreshId' --output text)
           echo "refresh_id=$REFRESH_ID" >> "$GITHUB_OUTPUT"
           echo "Instance Refresh started: $REFRESH_ID"
         env:
           ASG_NAME: ${{ secrets.ASG_NAME }}
-          LAUNCH_TEMPLATE_NAME: ${{ secrets.LAUNCH_TEMPLATE_NAME }}
 
       - name: Wait for Instance Refresh to complete
         run: |
@@ -174,3 +166,18 @@ jobs:
             --overwrite
         env:
           PREV_TAG: ${{ steps.prev.outputs.prev_tag }}
+
+      - name: Rollback Instance Refresh on failure
+        if: failure() && steps.prev.outputs.prev_tag != ''
+        run: |
+          echo "Starting rollback Instance Refresh..."
+          ROLLBACK_ID=$(aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name "$ASG_NAME" \
+            --preferences '{
+              "MinHealthyPercentage": 50,
+              "InstanceWarmup": 120
+            }' \
+            --query 'InstanceRefreshId' --output text)
+          echo "Rollback Instance Refresh started: $ROLLBACK_ID"
+        env:
+          ASG_NAME: ${{ secrets.ASG_NAME }}
