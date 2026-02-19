@@ -22,8 +22,9 @@ docker rm shortkki-server || true
 docker run -d \
   --name shortkki-server \
   --restart unless-stopped \
-  -p 8080:8080 \
+  -p 80:8080 \
   -v ~/shortkki/env:/app/env \
+  -v ~/shortkki/secrets:/app/secrets \
   -e SPRING_PROFILES_ACTIVE=dev \
   "${IMAGE}:${TAG}"
 
@@ -63,6 +64,7 @@ docker run -d \
   --restart unless-stopped \
   -p 80:8080 \
   -v ~/shortkki/env:/app/env \
+  -v ~/shortkki/secrets:/app/secrets \
   -e SPRING_PROFILES_ACTIVE=dev \
   "${PREV_IMAGE}"
 

@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:file:secrets/.env.dev[.properties]
+    import: optional:file:env/.env.dev[.properties]
 
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:shortkki_dev}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -28,11 +28,6 @@ jwt:
 
 server:
   shutdown: graceful
-
-logging:
-  level:
-    root: INFO
-    com.shortkki: INFO
 
 oauth2:
   provider:
