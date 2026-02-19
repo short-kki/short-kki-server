@@ -1,0 +1,58 @@
+spring:
+  config:
+    import: optional:file:env/.env.prod[.properties]
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:shortkki}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS}
+
+  flyway:
+    enabled: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-validity: ${JWT_ACCESS_VALIDITY:3600000}
+  refresh-token-validity: ${JWT_REFRESH_VALIDITY:604800000}
+
+server:
+  shutdown: graceful
+
+oauth2:
+  provider:
+    google-ios:
+      client-id: ${GOOGLE_IOS_CLIENT_ID}
+      redirect-uri: ${GOOGLE_IOS_REDIRECT_URI}
+    google-android:
+      client-id: ${GOOGLE_ANDROID_CLIENT_ID}
+      redirect-uri: ${GOOGLE_ANDROID_REDIRECT_URI}
+    naver:
+      client-id: ${NAVER_CLIENT_ID}
+      client-secret: ${NAVER_CLIENT_SECRET}
+      redirect-uri: ${NAVER_REDIRECT_URI}
+
+google:
+  credential:
+    api-key: ${GOOGLE_GENAI_API_KEY}
+  services:
+    gemini:
+      model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
+
+public-data:
+  ingredient:
+    enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false
