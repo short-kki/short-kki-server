@@ -18,4 +18,9 @@ public class MemberQueryService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버 입니다."));
     }
+
+    public Member findMemberWithProfile(Long id) {
+        return memberRepository.findByIdWithProfileImg(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버 입니다."));
+    }
 }

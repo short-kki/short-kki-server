@@ -60,6 +60,7 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
         return queryFactory
                 .selectFrom(groupMember)
                 .join(groupMember.member).fetchJoin()
+                .leftJoin(groupMember.member.profileImgFile).fetchJoin()
                 .where(groupMember.group.eq(group))
                 .fetch();
     }

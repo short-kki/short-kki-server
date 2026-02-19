@@ -11,5 +11,7 @@ public interface FeedRepositoryCustom {
 
     List<Feed> findAllByGroupWithMember(Group group);
 
+    java.util.Optional<Feed> findByIdWithMember(Long feedId);
+
     Map<Long, LocalDateTime> findLatestCreatedAtByGroupIds(List<Long> groupIds);
 }

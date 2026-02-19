@@ -25,10 +25,23 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
         return queryFactory
                 .selectFrom(feed)
                 .join(feed.member).fetchJoin()
+                .leftJoin(feed.member.profileImgFile).fetchJoin()
                 .leftJoin(feed.recipe).fetchJoin()
                 .where(feed.group.eq(group))
                 .orderBy(feed.createdAt.desc())
                 .fetch();
+    }
+
+    @Override
+    public java.util.Optional<Feed> findByIdWithMember(Long feedId) {
+        Feed result = queryFactory
+                .selectFrom(feed)
+                .join(feed.member).fetchJoin()
+                .leftJoin(feed.member.profileImgFile).fetchJoin()
+                .leftJoin(feed.recipe).fetchJoin()
+                .where(feed.id.eq(feedId))
+                .fetchOne();
+        return java.util.Optional.ofNullable(result);
     }
 
     @Override
