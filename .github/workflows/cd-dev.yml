@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      image_tag: ${{ steps.meta.outputs.version }}
+      image_tag: ${{ steps.sha.outputs.short_sha }}
 
     steps:
       - name: Checkout source code
@@ -45,6 +45,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get short SHA
+        id: sha
+        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -52,7 +56,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha,prefix=
-            type=raw,value=latest
+            type=raw,value=latest-dev
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -110,7 +114,7 @@ jobs:
           RUNNER_IP: ${{ steps.ip.outputs.runner_ip }}
 
       - name: Create secrets directory
-        run: mkdir -p secrets && printenv APP_ENV > secrets/.env.dev
+        run: mkdir -p env && printenv APP_ENV > env/.env.dev
         env:
           APP_ENV: ${{ secrets.APP_ENV }}
 
@@ -120,7 +124,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "secrets/.env.dev,scripts/deploy-dev.sh"
+          source: "env/.env.dev,scripts/deploy-dev.sh"
           target: ~/shortkki
 
       - name: Deploy to EC2 via SSH
@@ -130,11 +134,12 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           REGISTRY: ${{ env.REGISTRY }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_NAME
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_NAME,IMAGE_TAG
           script: |
             chmod +x ~/shortkki/scripts/deploy-dev.sh
             ~/shortkki/scripts/deploy-dev.sh
