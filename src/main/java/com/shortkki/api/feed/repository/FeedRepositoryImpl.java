@@ -5,6 +5,7 @@ import com.shortkki.api.feed.entity.QFeed;
 import com.shortkki.api.group.entity.Group;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -25,10 +26,23 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
         return queryFactory
                 .selectFrom(feed)
                 .join(feed.member).fetchJoin()
+                .leftJoin(feed.member.profileImgFile).fetchJoin()
                 .leftJoin(feed.recipe).fetchJoin()
                 .where(feed.group.eq(group))
                 .orderBy(feed.createdAt.desc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<Feed> findByIdWithMember(Long feedId) {
+        Feed result = queryFactory
+                .selectFrom(feed)
+                .join(feed.member).fetchJoin()
+                .leftJoin(feed.member.profileImgFile).fetchJoin()
+                .leftJoin(feed.recipe).fetchJoin()
+                .where(feed.id.eq(feedId))
+                .fetchOne();
+        return java.util.Optional.ofNullable(result);
     }
 
     @Override

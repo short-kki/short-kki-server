@@ -34,7 +34,7 @@ public class MemberController {
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getMyProfile(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
-        Member member = memberQueryService.findMember(loginMember.getId());
+        Member member = memberQueryService.findMemberWithProfile(loginMember.getId());
         return ResponseEntity.ok(BaseResponse.success(MemberProfileResponse.from(member)));
     }
 

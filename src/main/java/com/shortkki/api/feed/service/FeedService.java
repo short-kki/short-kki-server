@@ -58,7 +58,7 @@ public class FeedService {
     public FeedResponse getFeed(Long memberId, Long groupId, Long feedId) {
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
-        Feed feed = findFeedById(feedId);
+        Feed feed = findFeedByIdWithMember(feedId);
         validateFeedBelongsToGroup(feed, group);
         boolean isLiked = feedLikeRepository.existsByFeedAndMemberId(feed, memberId);
         return FeedResponse.from(feed, isLiked);
@@ -172,6 +172,11 @@ public class FeedService {
 
     private Feed findFeedById(Long feedId) {
         return feedRepository.findById(feedId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
+    }
+
+    private Feed findFeedByIdWithMember(Long feedId) {
+        return feedRepository.findByIdWithMember(feedId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ERROR));
     }
 
