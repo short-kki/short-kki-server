@@ -61,7 +61,7 @@ docker rm shortkki-server || true
 docker run -d \
   --name shortkki-server \
   --restart unless-stopped \
-  -p 8080:8080 \
+  -p 80:8080 \
   -v ~/shortkki/env:/app/env \
   -e SPRING_PROFILES_ACTIVE=dev \
   "${PREV_IMAGE}"
