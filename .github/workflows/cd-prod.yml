@@ -121,11 +121,18 @@ jobs:
               "InstanceWarmup": 120,
               "AutoRollback": true
             }' \
+            --desired-configuration '{
+              "LaunchTemplate": {
+                "LaunchTemplateName": "'"$LAUNCH_TEMPLATE_NAME"'",
+                "Version": "$Default"
+              }
+            }' \
             --query 'InstanceRefreshId' --output text)
           echo "refresh_id=$REFRESH_ID" >> "$GITHUB_OUTPUT"
           echo "Instance Refresh started: $REFRESH_ID"
         env:
           ASG_NAME: ${{ secrets.ASG_NAME }}
+          LAUNCH_TEMPLATE_NAME: ${{ secrets.LAUNCH_TEMPLATE_NAME }}
 
       - name: Wait for Instance Refresh to complete
         run: |
