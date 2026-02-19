@@ -13,7 +13,7 @@ docker run -d \
   --name shortkki-server \
   --restart unless-stopped \
   -p 80:8080 \
-  --env-file ~/shortkki/.env \
+  -v ~/shortkki/secrets:/app/secrets \
   -e SPRING_PROFILES_ACTIVE=dev \
   "$REGISTRY/$IMAGE_NAME:latest"
 

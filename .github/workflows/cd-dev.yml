@@ -1,8 +1,8 @@
-name: CD
+name: CD Dev
 
 on:
   push:
-    branches: [ "develop" ]   # 현재 브랜치. 테스트 후 제거 예정.
+    branches: [ "develop", "env/#62-deploy-prod" ]   # 현재 브랜치. 테스트 후 제거 예정.
   workflow_dispatch:
 
 concurrency:
@@ -109,8 +109,8 @@ jobs:
           SG_ID: ${{ secrets.EC2_SECURITY_GROUP_ID }}
           RUNNER_IP: ${{ steps.ip.outputs.runner_ip }}
 
-      - name: Create .env file
-        run: printenv APP_ENV > .env
+      - name: Create secrets directory
+        run: mkdir -p secrets && printenv APP_ENV > secrets/.env.dev
         env:
           APP_ENV: ${{ secrets.APP_ENV }}
 
@@ -120,7 +120,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: ".env,scripts/deploy.sh"
+          source: "secrets/.env.dev,scripts/deploy-dev.sh"
           target: ~/shortkki
 
       - name: Deploy to EC2 via SSH
@@ -136,8 +136,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_NAME
           script: |
-            chmod +x ~/shortkki/scripts/deploy.sh
-            ~/shortkki/scripts/deploy.sh
+            chmod +x ~/shortkki/scripts/deploy-dev.sh
+            ~/shortkki/scripts/deploy-dev.sh
 
       - name: Revoke SSH port for runner IP
         if: always()
