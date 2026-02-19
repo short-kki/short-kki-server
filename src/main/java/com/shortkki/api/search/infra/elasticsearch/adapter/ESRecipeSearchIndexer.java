@@ -15,13 +15,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "spring.elasticsearch.uris")
+@Transactional(readOnly = true)
 public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
 
     private final RecipeQueryService recipeQueryService;
@@ -31,7 +30,6 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
     private final RecipeDocumentRepository recipeDocumentRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public void upsert(long recipeId) {
         Recipe recipe = recipeQueryService.findById(recipeId);
         RecipeDocument doc = toDocument(recipe);
@@ -39,12 +37,17 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
         recipeDocumentRepository.save(doc);
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public void upsertAll(List<Recipe> recipes) {
         List<RecipeDocument> docs = recipes.stream()
                 .map(this::toDocument)
                 .toList();
         recipeDocumentRepository.saveAll(docs);
+    }
+
+    @Override
+    public void delete(long recipeId) {
+        recipeDocumentRepository.deleteById(recipeId);
     }
 
     private RecipeDocument toDocument(Recipe recipe) {
@@ -66,18 +69,11 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
                 basicInfo.getDescription(),
                 recipe.getSourceType().name(),
                 recipe.getBookmarkCount(),
-                recipe.getMainImgUrl(),
                 categoryInfo.getCuisineType().name(),
                 categoryInfo.getMealType().name(),
                 categoryInfo.getDifficulty().name(),
                 ingredients,
                 tags,
-                recipe.getAuthorName(),
-                recipe.getAuthorProfileImgUrl(),
-                recipe.getCreatorName(),
-                recipe.getCreatorProfileImgUrl(),
-                recipe.isImported() ? recipe.getSourcePlatform().name() : null,
-                recipe.getSourceUrl(),
                 recipe.getIsActive(),
                 recipe.getCreatedAt().toLocalDate()
         );

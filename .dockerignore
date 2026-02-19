@@ -1,0 +1,21 @@
+.git
+.github
+.idea
+.gradle
+build/
+!build/libs/
+out/
+src/main/generated/
+*.md
+*.iml
+*.ipr
+*.iws
+
+# infra
+docker-compose.yml
+elasticsearch/
+
+# secret
+.env
+.env.*
+**/*-secret.properties

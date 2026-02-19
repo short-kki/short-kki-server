@@ -23,10 +23,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "source_content",
-        uniqueConstraints = @UniqueConstraint(
-                name = "UK_SOURCE_CONTENT_PLATFORM_KEY",
-                columnNames = {"platform", "external_key"}
-        ))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"platform", "external_key"}))
 @NamedEntityGraph(
         name = "SourceContent.withCreator",
         attributeNodes = @NamedAttributeNode("sourceCreator")
@@ -66,6 +63,7 @@ public class SourceContent extends BaseEntity {
     private SourceContentType contentType;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean isActive = true;
 
     public static SourceContent create(

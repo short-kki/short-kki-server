@@ -1,8 +1,6 @@
 spring:
   config:
-    activate:
-      on-profile: local
-    import: classpath:application-secret.properties
+    import: optional:file:.env.local[.properties]
 
   datasource:
     url: jdbc:mysql://localhost:3306/short_kki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -12,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
@@ -20,30 +18,14 @@ spring:
         globally_quoted_identifiers_skip_column_definitions: true
 #        show_sql: true
 #        format_sql: true
-    defer-datasource-initialization: true
 
   elasticsearch:
     uris: http://localhost:9200
-
-  sql:
-    init:
-      mode: always
-#      mode: never
-
-  flyway:
-    enabled: false
 
 jwt:
   secret: local__dev_only__short-kki__jwt-secret__32chars_min
   access-token-validity: 86400000
   refresh-token-validity: 604800000
-
-springdoc:
-  swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: method
-    try-it-out-enabled: true
-    filter: true
 
 logging:
   level:
@@ -80,7 +62,7 @@ google:
 
 public-data:
   ingredient:
-    enabled: true
+    enabled: false
     type: xml
     api-url: Grid_20150827000000000227_1
     url-template: "http://211.237.50.150:7080/openapi/%s/%s/%s/%d/%d"
@@ -91,3 +73,10 @@ public-data:
 fcm:
   enabled: false
   credentials-path: classpath:firebase/service-account-key.json
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    try-it-out-enabled: true
+    filter: true

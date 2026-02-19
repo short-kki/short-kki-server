@@ -15,4 +15,11 @@ public interface RecipeSearchPort {
             Pageable pageable, String searchWord, Set<String> tags, Set<String> ingredients, RecipeSource recipeSource,
             Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     );
+
+    default Slice<RecipeSearchItem> searchForCuration(
+            Pageable pageable, String searchWord, Set<String> tags, Set<String> ingredients, RecipeSource recipeSource,
+            Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
+    ) {
+        return search(pageable, searchWord, tags, ingredients, recipeSource, cuisineTypes, mealTypes, difficulties);
+    }
 }

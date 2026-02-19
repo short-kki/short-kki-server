@@ -3,24 +3,9 @@ spring:
     activate:
       on-profile: test
 
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
-      ddl-auto: create
-    open-in-view: false
-
-  flyway:
-    enabled: false
-
-  test:
-    database:
-      replace: none
+      ddl-auto: none
 
 jwt:
   secret: test__only__short-kki__jwt-secret__32chars_min
@@ -48,13 +33,3 @@ google:
   services:
     gemini:
       model-name: gemini-3-flash-preview
-
-public-data:
-  ingredient:
-    enabled: true
-    type: xml
-    api-url: Grid_20150827000000000227_1
-    url-template: "http://211.237.50.150:7080/openapi/%s/%s/%s/%d/%d"
-    start-index: 1
-    end-index: 1000
-    api-key: public-data-ingredient-api-test-key

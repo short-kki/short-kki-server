@@ -75,6 +75,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation "org.testcontainers:mysql"
+    testImplementation "org.testcontainers:elasticsearch"
 
     // firebase
     implementation 'com.google.firebase:firebase-admin:9.7.0'
@@ -91,6 +92,10 @@ tasks.named('jacocoTestReport') {
         xml.required = true
         csv.required = false
     }
+}
+
+jar {
+    enabled = false
 }
 
 // QueryDSL path

@@ -319,6 +319,13 @@ gradle-app.setting
 
 ### secret
 **-secret.properties
+.env
+.env.*
+!.env.example
+
+
+### code agent
+.claude
 
 ### Firebase
 src/main/resources/firebase/

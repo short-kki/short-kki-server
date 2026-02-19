@@ -12,7 +12,9 @@
         "korean": {
           "type": "custom",
           "tokenizer": "nori_user_dict",
-          "filter": ["lowercase"]
+          "filter": [
+            "lowercase"
+          ]
         }
       }
     },
@@ -41,13 +43,28 @@
         "analyzer": "korean",
         "search_analyzer": "korean"
       },
-      "cuisineType": { "type": "keyword" },
-      "mealType": { "type": "keyword" },
-      "difficulty": { "type": "keyword" },
-      "sourceType": { "type": "keyword" },
-      "bookmarkCount": { "type": "integer" },
-      "isActive": { "type": "boolean" },
-      "createdAt": { "type": "date", "format": "yyyy-MM-dd" }
+      "cuisineType": {
+        "type": "keyword"
+      },
+      "mealType": {
+        "type": "keyword"
+      },
+      "difficulty": {
+        "type": "keyword"
+      },
+      "sourceType": {
+        "type": "keyword"
+      },
+      "bookmarkCount": {
+        "type": "integer"
+      },
+      "isActive": {
+        "type": "boolean"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "yyyy-MM-dd"
+      }
     }
   }
 }

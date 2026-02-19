@@ -1,19 +1,38 @@
 spring:
   config:
-    activate:
-      on-profile: dev
-    import: classpath:application-secret.properties   # TODO: 파일 복사로 바꾸기
+    import: optional:file:.env.dev[.properties]
 
   datasource:
-    url: jdbc:mysql://localhost:3306/short_kki_dev?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:shortkki_dev}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS}
+
+  flyway:
+    enabled: true
 
 jwt:
   secret: ${JWT_SECRET}
-  access-token-validity: 3600000
-  refresh-token-validity: 604800000
+  access-token-validity: ${JWT_ACCESS_VALIDITY:3600000}
+  refresh-token-validity: ${JWT_REFRESH_VALIDITY:604800000}
+
+server:
+  shutdown: graceful
+
+logging:
+  level:
+    root: INFO
+    com.shortkki: INFO
 
 oauth2:
   provider:
@@ -34,3 +53,11 @@ google:
   services:
     gemini:
       model-name: ${GEMINI_MODEL_NAME:gemini-3-flash-preview}
+
+public-data:
+  ingredient:
+    enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false
