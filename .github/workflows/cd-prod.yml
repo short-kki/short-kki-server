@@ -2,7 +2,7 @@ name: CD Prod
 
 on:
   push:
-    branches: [ "env/#62-deploy-prod" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 concurrency:
