@@ -15,9 +15,12 @@ import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +30,9 @@ public class SourceContentQueryService {
     private final ExternalKeyExtractorRegistry extractorRegistry;
     private final SourceContentRepository sourceContentRepository;
     private final RecipeRepository recipeRepository;
+
+    @Value("${shortkki.source.max-duration-seconds}")
+    private int maxDurationSeconds;
 
     public SourceContent findById(long id) {
         return sourceContentRepository.findById(id)
@@ -48,6 +54,7 @@ public class SourceContentQueryService {
         }
 
         SourceContentInfo contentInfo = sourceDataProvider.getSourceInfo(externalKey);
+        validateDuration(contentInfo);
         SourceCreatorInfo creatorInfo = sourceDataProvider.getSourceCreatorInfo(contentInfo.channelId());
 
         return new RecipeImportPreviewResponse(
@@ -63,6 +70,18 @@ public class SourceContentQueryService {
                 ContentStatus.AVAILABLE,
                 contentInfo.embeddable()
         );
+    }
+
+    private void validateDuration(SourceContentInfo contentInfo) {
+        Integer duration = contentInfo.durationSeconds();
+        if (duration == null) {
+            log.warn("영상 길이를 확인할 수 없습니다. externalKey={}", contentInfo.externalKey());
+            throw new BadRequestException(ErrorCode.SOURCE_DURATION_UNKNOWN);
+        }
+        if (duration > maxDurationSeconds) {
+            log.warn("영상 길이 초과: {}초 (제한: {}초), externalKey={}", duration, maxDurationSeconds, contentInfo.externalKey());
+            throw new BadRequestException(ErrorCode.SOURCE_DURATION_EXCEEDED);
+        }
     }
 }
 
