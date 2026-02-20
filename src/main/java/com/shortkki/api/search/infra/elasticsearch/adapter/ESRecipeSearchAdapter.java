@@ -21,6 +21,8 @@ import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.api.search.application.port.RecipeSearchPort;
 import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import com.shortkki.api.search.infra.elasticsearch.document.RecipeDocument;
+import com.shortkki.api.source.domain.ContentStatus;
+import com.shortkki.api.source.domain.SourceContentType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +81,11 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
             Set<CuisineType> cuisineTypes, Set<MealType> mealTypes, Set<Difficulty> difficulties
     ) {
         BoolQuery.Builder bool = buildBaseBoolQuery(
-                searchWord, tags, ingredients, recipeSource, cuisineTypes, mealTypes, difficulties);
+                searchWord, tags, ingredients, recipeSource, cuisineTypes, mealTypes, difficulties
+        );
+        bool.filter(f -> f.term(t -> t.field("contentType").value(SourceContentType.VIDEO.name())));
+        bool.filter(f -> f.term(t -> t.field("contentStatus").value(ContentStatus.AVAILABLE.name())));
+        bool.filter(f -> f.term(t -> t.field("playable").value(true)));
 
         NativeQuery query = NativeQuery.builder()
                 .withQuery(applyCurationFunctionScore(bool.build()._toQuery()))
@@ -221,7 +227,7 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
                                         .placement(p -> p
                                                 .origin("now")
                                                 .scale(Time.of(t -> t.time("14d")))
-                                                .offset(Time.of(t -> t.time("3d")))
+                                                .offset(Time.of(t -> t.time("7d")))
                                                 .decay(0.5)
                                         )
                                 )
