@@ -46,6 +46,10 @@ file:
     expire-seconds: ${FILE_UPLOAD_EXPIRE_SECONDS:300}
     max-bytes: ${FILE_UPLOAD_MAX_BYTES:10485760} # 10MB
 
+shortkki:
+  source:
+    max-duration-seconds: ${SOURCE_MAX_DURATION_SECONDS:180}
+
 google:
   services:
     youtube:

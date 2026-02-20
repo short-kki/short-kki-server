@@ -5,7 +5,7 @@ import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.util.List;
 
 public record RecipeCurationSearchResponse(
-        long curationId,
+        Long curationId,
         List<RecipeSummaryResponse> recipes,
         SlicePageInfoResponse pageInfo
 ) {

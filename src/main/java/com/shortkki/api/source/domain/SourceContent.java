@@ -58,17 +58,23 @@ public class SourceContent extends BaseEntity {
     @Column(length = 500, unique = true)
     private String thumbnailUrl;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean playable = true;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SourceContentType contentType;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     @Builder.Default
-    private boolean isActive = true;
+    private ContentStatus contentStatus = ContentStatus.AVAILABLE;
 
     public static SourceContent create(
             String title, String canonicalUrl, String externalKey, SourcePlatform platform,
-            String thumbnailUrl, SourceContentType contentType, SourceContentCreator sourceCreator
+            String thumbnailUrl, SourceContentType contentType, SourceContentCreator sourceCreator,
+            boolean playable
     ) {
         return SourceContent.builder()
                 .sourceCreator(sourceCreator)
@@ -78,6 +84,7 @@ public class SourceContent extends BaseEntity {
                 .canonicalUrl(canonicalUrl)
                 .thumbnailUrl(thumbnailUrl)
                 .contentType(contentType)
+                .playable(playable)
                 .build();
     }
 
@@ -89,11 +96,4 @@ public class SourceContent extends BaseEntity {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public void deactivate() {
-        this.isActive = false;
-    }
-
-    public void activate() {
-        this.isActive = true;
-    }
 }

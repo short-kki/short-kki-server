@@ -13,11 +13,14 @@ import com.shortkki.api.source.support.ExternalKeyExtractorRegistry;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.BadRequestException;
-import org.springframework.dao.DataIntegrityViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,6 +30,9 @@ public class SourceContentService {
     private final ExternalKeyExtractorRegistry extractorRegistry;
     private final SourceContentRepository sourceContentRepository;
     private final SourceContentCreatorRepository sourceContentCreatorRepository;
+
+    @Value("${shortkki.source.max-duration-seconds}")
+    private int maxDurationSeconds;
 
     public SourceContent resolveSourceContent(String sourceUrl) {
         if (sourceUrl == null || sourceUrl.isBlank()) {
@@ -61,6 +67,7 @@ public class SourceContentService {
 
     private SourceContent createSourceContent(SourcePlatform platform, String externalKey) {
         SourceContentInfo sourceContentInfo = sourceDataProvider.getSourceInfo(externalKey);
+        validateDuration(sourceContentInfo);
 
         SourceCreatorInfo creatorInfo = sourceDataProvider.getSourceCreatorInfo(sourceContentInfo.channelId());
         SourceContentCreator creator = getOrCreateCreator(platform, creatorInfo);
@@ -73,7 +80,21 @@ public class SourceContentService {
                 sourceContentInfo.thumbnailUrl(),
                 // TODO: 컨텐츠 타입 결정하는 방법 정하기 (url / ai 변환)
                 SourceContentType.VIDEO,
-                creator);
+                creator,
+                sourceContentInfo.embeddable()
+        );
+    }
+
+    private void validateDuration(SourceContentInfo contentInfo) {
+        Integer duration = contentInfo.durationSeconds();
+        if (duration == null) {
+            log.warn("영상 길이를 확인할 수 없습니다. externalKey={}", contentInfo.externalKey());
+            throw new BadRequestException(ErrorCode.SOURCE_DURATION_UNKNOWN);
+        }
+        if (duration > maxDurationSeconds) {
+            log.warn("영상 길이 초과: {}초 (제한: {}초), externalKey={}", duration, maxDurationSeconds, contentInfo.externalKey());
+            throw new BadRequestException(ErrorCode.SOURCE_DURATION_EXCEEDED);
+        }
     }
 
     private SourceContentCreator getOrCreateCreator(SourcePlatform platform, SourceCreatorInfo creatorInfo) {

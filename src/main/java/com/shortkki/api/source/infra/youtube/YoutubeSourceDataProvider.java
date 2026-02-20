@@ -7,8 +7,9 @@ import com.shortkki.api.source.service.dto.SourceCreatorInfo;
 import com.shortkki.api.source.service.port.SourceDataProvider;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -43,7 +44,7 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
         try {
             String response = restClient.get()
-                    .uri(apiBaseUrl + "/videos?part=snippet&id={id}&key={key}", videoId, apiKey)
+                    .uri(apiBaseUrl + "/videos?part=snippet,status,contentDetails&id={id}&key={key}", videoId, apiKey)
                     .retrieve()
                     .body(String.class);
 
@@ -59,17 +60,23 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
                 return createDefaultContentInfo(videoId);
             }
 
-            JsonNode snippet = items.get(0).path("snippet");
+            JsonNode item = items.get(0);
+            JsonNode snippet = item.path("snippet");
             String title = snippet.path("title").asText("제목 없음");
             String channelId = snippet.path("channelId").asText("");
             String thumbnailUrl = snippet.path("thumbnails").path("high").path("url").asText("");
+            boolean embeddable = item.path("status").path("embeddable").asBoolean(true);
+            Integer durationSeconds = parseDuration(item.path("contentDetails").path("duration").asText(null));
 
             return new SourceContentInfo(
                     videoId,
                     title,
-                    "https://www.youtube.com/shorts/" + videoId,
+                    "https://www.youtube.com/watch?v=" + videoId,
                     thumbnailUrl,
-                    channelId);
+                    channelId,
+                    embeddable,
+                    durationSeconds
+            );
 
         } catch (Exception e) {
             log.error("YouTube API 호출 실패: {}", e.getMessage(), e);
@@ -122,8 +129,23 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
         return new SourceContentInfo(
                 videoId,
                 "YouTube Video",
-                "https://www.youtube.com/shorts/" + videoId,
+                "https://www.youtube.com/watch?v=" + videoId,
                 null,
-                "");
+                "",
+                true,
+                null
+        );
+    }
+
+    private Integer parseDuration(String isoDuration) {
+        if (isoDuration == null || isoDuration.isBlank()) {
+            return null;
+        }
+        try {
+            return (int) Duration.parse(isoDuration).getSeconds();
+        } catch (Exception e) {
+            log.warn("YouTube duration 파싱 실패: {}", isoDuration, e);
+            return null;
+        }
     }
 }

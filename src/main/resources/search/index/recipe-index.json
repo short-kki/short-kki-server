@@ -55,6 +55,15 @@
       "sourceType": {
         "type": "keyword"
       },
+      "contentType": {
+        "type": "keyword"
+      },
+      "contentStatus": {
+        "type": "keyword"
+      },
+      "playable": {
+        "type": "boolean"
+      },
       "bookmarkCount": {
         "type": "integer"
       },

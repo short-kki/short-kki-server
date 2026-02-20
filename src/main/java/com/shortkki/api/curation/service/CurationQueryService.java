@@ -74,6 +74,11 @@ public class CurationQueryService {
         return toRecipeCurationSearchResponse(curation, result);
     }
 
+    public RecipeCurationSearchResponse searchTopCuration(Pageable pageable) {
+        Slice<RecipeSearchItem> result = searchTop(pageable);
+        return toTopRecipeCurationSearchResponse(result);
+    }
+
     public RecipeCurationSearchResponse searchRecipesByCurationV2(long id, Pageable pageable) {
         Curation curation = findById(id);
         Slice<RecipeSearchItem> result = searchV2(curation, pageable);
@@ -96,6 +101,13 @@ public class CurationQueryService {
         return esSearchPort.searchForCuration(
                 pageable, curation.getSearchWord(), curation.getTags(), curation.getIngredients(),
                 RecipeSource.IMPORT, curation.getCuisineTypes(), curation.getMealTypes(), curation.getDifficulties()
+        );
+    }
+
+    private Slice<RecipeSearchItem> searchTop(Pageable pageable) {
+        return esSearchPort.searchForCuration(
+                pageable, null, null, null,
+                RecipeSource.IMPORT, null, null, null
         );
     }
 
@@ -141,5 +153,15 @@ public class CurationQueryService {
                 .toList();
 
         return new RecipeCurationSearchResponse(curation.getId(), recipes, SlicePageInfoResponse.from(searchResult));
+    }
+
+    private RecipeCurationSearchResponse toTopRecipeCurationSearchResponse(
+            Slice<RecipeSearchItem> searchResult
+    ) {
+        List<RecipeSummaryResponse> recipes = searchResult.stream()
+                .map(RecipeSummaryResponse::from)
+                .toList();
+
+        return new RecipeCurationSearchResponse(null, recipes, SlicePageInfoResponse.from(searchResult));
     }
 }
