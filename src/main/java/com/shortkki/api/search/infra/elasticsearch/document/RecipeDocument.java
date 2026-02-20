@@ -29,11 +29,20 @@ public class RecipeDocument {
     @Field(type = FieldType.Text)
     private String description;
 
+    @Field(type = FieldType.Integer)
+    private int bookmarkCount;
+
     @Field(type = FieldType.Keyword)
     private String sourceType;
 
-    @Field(type = FieldType.Integer)
-    private int bookmarkCount;
+    @Field(type = FieldType.Keyword)
+    private String contentType;
+
+    @Field(type = FieldType.Keyword)
+    private String contentStatus;
+
+    @Field(type = FieldType.Boolean)
+    private Boolean playable;
 
     /**
      * 카테고리

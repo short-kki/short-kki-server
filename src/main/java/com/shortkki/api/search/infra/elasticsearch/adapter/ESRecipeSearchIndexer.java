@@ -11,6 +11,7 @@ import com.shortkki.api.recipe.service.RecipeTagQueryService;
 import com.shortkki.api.search.application.port.RecipeSearchIndexer;
 import com.shortkki.api.search.infra.elasticsearch.document.RecipeDocument;
 import com.shortkki.api.search.infra.elasticsearch.repository.RecipeDocumentRepository;
+import com.shortkki.api.source.domain.SourceContent;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,13 +63,17 @@ public class ESRecipeSearchIndexer implements RecipeSearchIndexer {
 
         RecipeBasicInfo basicInfo = recipe.getBasicInfo();
         RecipeCategoryInfo categoryInfo = recipe.getCategoryInfo();
+        SourceContent sourceContent = recipe.getSourceContent();
 
         return new RecipeDocument(
                 recipe.getId(),
                 basicInfo.getTitle(),
                 basicInfo.getDescription(),
-                recipe.getSourceType().name(),
                 recipe.getBookmarkCount(),
+                recipe.getSourceType().name(),
+                sourceContent != null ? sourceContent.getContentType().name() : null,
+                sourceContent != null ? sourceContent.getContentStatus().name() : null,
+                sourceContent != null ? sourceContent.isPlayable() : true,
                 categoryInfo.getCuisineType().name(),
                 categoryInfo.getMealType().name(),
                 categoryInfo.getDifficulty().name(),
