@@ -5,6 +5,7 @@ public record SourceContentInfo(
         String title,
         String canonicalUrl,
         String thumbnailUrl,
-        String channelId
+        String channelId,
+        boolean embeddable
 ) {
 }

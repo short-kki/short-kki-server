@@ -43,7 +43,7 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
 
         try {
             String response = restClient.get()
-                    .uri(apiBaseUrl + "/videos?part=snippet&id={id}&key={key}", videoId, apiKey)
+                    .uri(apiBaseUrl + "/videos?part=snippet,status&id={id}&key={key}", videoId, apiKey)
                     .retrieve()
                     .body(String.class);
 
@@ -59,17 +59,21 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
                 return createDefaultContentInfo(videoId);
             }
 
-            JsonNode snippet = items.get(0).path("snippet");
+            JsonNode item = items.get(0);
+            JsonNode snippet = item.path("snippet");
             String title = snippet.path("title").asText("제목 없음");
             String channelId = snippet.path("channelId").asText("");
             String thumbnailUrl = snippet.path("thumbnails").path("high").path("url").asText("");
+            boolean embeddable = item.path("status").path("embeddable").asBoolean(true);
 
             return new SourceContentInfo(
                     videoId,
                     title,
                     "https://www.youtube.com/shorts/" + videoId,
                     thumbnailUrl,
-                    channelId);
+                    channelId,
+                    embeddable
+            );
 
         } catch (Exception e) {
             log.error("YouTube API 호출 실패: {}", e.getMessage(), e);
@@ -124,6 +128,8 @@ public class YoutubeSourceDataProvider implements SourceDataProvider {
                 "YouTube Video",
                 "https://www.youtube.com/shorts/" + videoId,
                 null,
-                "");
+                "",
+                true
+        );
     }
 }

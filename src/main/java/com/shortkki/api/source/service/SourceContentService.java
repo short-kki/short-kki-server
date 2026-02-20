@@ -73,7 +73,9 @@ public class SourceContentService {
                 sourceContentInfo.thumbnailUrl(),
                 // TODO: 컨텐츠 타입 결정하는 방법 정하기 (url / ai 변환)
                 SourceContentType.VIDEO,
-                creator);
+                creator,
+                sourceContentInfo.embeddable()
+        );
     }
 
     private SourceContentCreator getOrCreateCreator(SourcePlatform platform, SourceCreatorInfo creatorInfo) {

@@ -1,5 +1,6 @@
 package com.shortkki.api.recipeImport.dto;
 
+import com.shortkki.api.source.domain.ContentStatus;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceContentCreator;
 import com.shortkki.api.source.domain.SourceContentType;
@@ -14,7 +15,9 @@ public record RecipeImportPreviewResponse(
         String title,
         String thumbnailUrl,
         String creatorName,
-        String creatorThumbnailUrl
+        String creatorThumbnailUrl,
+        ContentStatus contentStatus,
+        boolean playable
 ) {
 
     public static RecipeImportPreviewResponse from(SourceContent content, Long recipeId) {
@@ -28,7 +31,9 @@ public record RecipeImportPreviewResponse(
                 content.getTitle(),
                 content.getThumbnailUrl(),
                 creator.getDisplayName(),
-                creator.getProfileImgUrl()
+                creator.getProfileImgUrl(),
+                content.getContentStatus(),
+                content.isPlayable()
         );
     }
 }

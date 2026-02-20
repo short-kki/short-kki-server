@@ -2,6 +2,7 @@ package com.shortkki.api.source.service;
 
 import com.shortkki.api.recipeImport.dto.RecipeImportPreviewResponse;
 import com.shortkki.api.recipe.repository.RecipeRepository;
+import com.shortkki.api.source.domain.ContentStatus;
 import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.api.source.domain.SourceContentType;
 import com.shortkki.api.source.domain.SourcePlatform;
@@ -58,7 +59,9 @@ public class SourceContentQueryService {
                 contentInfo.title(),
                 contentInfo.thumbnailUrl(),
                 creatorInfo.displayName(),
-                creatorInfo.thumbnailUrl()
+                creatorInfo.thumbnailUrl(),
+                ContentStatus.AVAILABLE,
+                contentInfo.embeddable()
         );
     }
 }
