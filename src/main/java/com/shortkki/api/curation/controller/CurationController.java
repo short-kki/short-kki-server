@@ -23,18 +23,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @Validated
+@RequestMapping("/api/v1/recipes/curations")
 public class CurationController {
 
     private final CurationService curationService;
     private final CurationQueryService curationQueryService;
 
-    @PostMapping("/api/v1/recipes/curations")
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<CurationResponse>> create(
             @Valid @RequestBody CreateCurationRequest request
@@ -44,7 +46,7 @@ public class CurationController {
                 .body(BaseResponse.success("큐레이션이 생성되었습니다.", response));
     }
 
-    @GetMapping("/api/v1/recipes/curations/recommended")
+    @GetMapping("/recommended")
     public ResponseEntity<BaseResponse<CurationRecommendsResponse>> getRecommendedCurations(
             @AuthenticationPrincipal LoginMember member,
             Pageable pageable
@@ -54,7 +56,7 @@ public class CurationController {
         return ResponseEntity.ok(BaseResponse.success("추천 큐레이션이 조회되었습니다.", response));
     }
 
-    @GetMapping("/api/v1/recipes/curations/{id}/search")
+    @GetMapping("/{id}/search")
     public ResponseEntity<BaseResponse<RecipeCurationSearchResponse>> getCurationSearchResult(
             @AuthenticationPrincipal LoginMember member,
             @PathVariable long id,
@@ -62,5 +64,14 @@ public class CurationController {
     ) {
         RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCuration(id, pageable);
         return ResponseEntity.ok(BaseResponse.success("큐레이션 레시피 검색 결과가 조회되었습니다.", response));
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity<BaseResponse<RecipeCurationSearchResponse>> getTopCurationSearchResult(
+            @AuthenticationPrincipal LoginMember member,
+            Pageable pageable
+    ) {
+        RecipeCurationSearchResponse response = curationQueryService.searchTopCuration(pageable);
+        return ResponseEntity.ok(BaseResponse.success("Top 큐레이션 검색 결과가 조회되었습니다.", response));
     }
 }
