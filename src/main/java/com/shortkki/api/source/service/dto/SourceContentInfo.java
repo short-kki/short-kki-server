@@ -6,6 +6,7 @@ public record SourceContentInfo(
         String canonicalUrl,
         String thumbnailUrl,
         String channelId,
-        boolean embeddable
+        boolean embeddable,
+        Integer durationSeconds
 ) {
 }
