@@ -11,7 +11,7 @@ public class YouTubeExtractor implements ExternalKeyExtractor {
     private static final Pattern YOUTUBE_URL_PATTERN = Pattern.compile(
             "(?:https?://)?(?:www\\.|m\\.)?(?:"
                     + "youtube\\.com/shorts/([a-zA-Z0-9_-]{11})"
-                    + "|youtube\\.com/watch\\?.*v=([a-zA-Z0-9_-]{11})"
+                    + "|youtube\\.com/watch\\?.*?v=([a-zA-Z0-9_-]{11})"
                     + "|youtu\\.be/([a-zA-Z0-9_-]{11})"
                     + ")"
     );
