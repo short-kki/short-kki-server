@@ -36,12 +36,8 @@ logging:
 
 oauth2:
   provider:
-    google-ios:
-      client-id: ${GOOGLE_IOS_CLIENT_ID}
-      redirect-uri: ${GOOGLE_IOS_REDIRECT_URI}
-    google-android:
-      client-id: ${GOOGLE_ANDROID_CLIENT_ID}
-      redirect-uri: ${GOOGLE_ANDROID_REDIRECT_URI}
+    google-web:
+      client-id: ${GOOGLE_WEB_CLIENT_ID}
     naver:
       client-id: ${NAVER_CLIENT_ID}
       client-secret: ${NAVER_CLIENT_SECRET}

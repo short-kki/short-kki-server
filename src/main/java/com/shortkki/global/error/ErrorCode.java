@@ -24,6 +24,8 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_003", "만료된 토큰입니다."),
     OAUTH_AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_004", "소셜 로그인 인증에 실패했습니다."),
     PLATFORM_REQUIRED_FOR_GOOGLE(HttpStatus.BAD_REQUEST, "AUTH_005", "Google 로그인 시 platform은 필수입니다."),
+    INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_006", "유효하지 않은 idToken입니다."),
+    ID_TOKEN_OR_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "AUTH_007", "idToken 또는 code 중 하나는 필수입니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_001", "회원을 찾을 수 없습니다."),

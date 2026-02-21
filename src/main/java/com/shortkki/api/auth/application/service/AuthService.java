@@ -32,13 +32,103 @@ public class AuthService {
     private final OAuth2Properties oAuth2Properties;
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final GoogleIdTokenVerifierService googleIdTokenVerifierService;
 
     @Transactional
     public LoginResponse login(OAuthProvider provider, LoginRequest request) {
+        // Google idToken 플로우
+        if (provider == OAuthProvider.GOOGLE && request.hasIdToken()) {
+            return loginWithGoogleIdToken(request);
+        }
+
+        // Naver/Kakao accessToken 플로우
+        if ((provider == OAuthProvider.NAVER || provider == OAuthProvider.KAKAO)
+                && request.hasAccessToken()) {
+            return loginWithAccessToken(provider, request);
+        }
+
+        // 기존 Authorization Code 플로우
+        return loginWithCode(provider, request);
+    }
+
+    private LoginResponse loginWithGoogleIdToken(LoginRequest request) {
+        if (request.getPlatform() == null) {
+            throw new BusinessException(ErrorCode.PLATFORM_REQUIRED_FOR_GOOGLE);
+        }
+
+        log.info("Google idToken login request - platform: {}", request.getPlatform());
+
+        GoogleIdTokenVerifierService.GoogleUserInfo userInfo =
+                googleIdTokenVerifierService.verify(request.getIdToken(), request.getPlatform());
+
+        String oauthId = userInfo.oauthId();
+        String email = userInfo.email();
+        String name = userInfo.name();
+
+        boolean isNewMember = !memberRepository.existsByEmail(email);
+        Member member = getOrCreateMember(email, name, oauthId, OAuthProvider.GOOGLE);
+
+        String accessToken = jwtTokenProvider.createAccessToken(
+                member.getId(),
+                member.getEmail(),
+                member.getRole());
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+
+        log.info("Google idToken login success - email: {}, isNewMember: {}", email, isNewMember);
+
+        return LoginResponse.builder()
+                .memberId(member.getId())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .email(member.getEmail())
+                .name(member.getName())
+                .isNewMember(isNewMember)
+                .build();
+    }
+
+    private LoginResponse loginWithAccessToken(OAuthProvider provider, LoginRequest request) {
+        log.info("{} accessToken login request - platform: {}", provider, request.getPlatform());
+
+        String configKey = provider.name().toLowerCase();
+        OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(configKey);
+
+        // accessToken으로 바로 사용자 정보 조회
+        Map<String, Object> userInfo = getUserInfo(request.getAccessToken(), providerConfig, provider);
+
+        String oauthId = extractOAuthId(userInfo, provider);
+        String email = extractEmail(userInfo, provider);
+        String name = extractName(userInfo, provider);
+
+        boolean isNewMember = !memberRepository.existsByEmail(email);
+        Member member = getOrCreateMember(email, name, oauthId, provider);
+
+        String accessToken = jwtTokenProvider.createAccessToken(
+                member.getId(),
+                member.getEmail(),
+                member.getRole());
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+
+        log.info("{} accessToken login success - email: {}, isNewMember: {}", provider, email, isNewMember);
+
+        return LoginResponse.builder()
+                .memberId(member.getId())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .email(member.getEmail())
+                .name(member.getName())
+                .isNewMember(isNewMember)
+                .build();
+    }
+
+    private LoginResponse loginWithCode(OAuthProvider provider, LoginRequest request) {
+        if (!request.hasCode()) {
+            throw new BusinessException(ErrorCode.ID_TOKEN_OR_CODE_REQUIRED);
+        }
+
         log.info("OAuth login request - provider: {}, platform: {}, hasCode: {}, hasCodeVerifier: {}",
                 provider,
                 request.getPlatform(),
-                request.getCode() != null && !request.getCode().isBlank(),
+                request.hasCode(),
                 request.getCodeVerifier() != null && !request.getCodeVerifier().isBlank());
 
         String configKey = resolveProviderConfigKey(provider, request.getPlatform());

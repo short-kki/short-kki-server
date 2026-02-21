@@ -35,16 +35,8 @@ logging:
 
 oauth2:
   provider:
-    google-ios:
-      client-id: local-google-ios-client-id
-      redirect-uri: com.googleusercontent.apps.local://
-    google-android:
-      client-id: local-google-android-client-id
-      redirect-uri: shortkki://oauth/google
-    naver:
-      client-id: local-naver-client-id
-      client-secret: local-naver-client-secret
-      redirect-uri: http://localhost:3000/oauth/callback/naver
+    google-web:
+      client-id: local-google-client-id
 
 aws:
   service:
