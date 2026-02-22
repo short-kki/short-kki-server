@@ -74,8 +74,6 @@ public class AuthService {
                 member.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
-        log.info("Google idToken login success - email: {}, isNewMember: {}", email, isNewMember);
-
         return LoginResponse.builder()
                 .memberId(member.getId())
                 .accessToken(accessToken)
@@ -107,8 +105,6 @@ public class AuthService {
                 member.getEmail(),
                 member.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
-
-        log.info("{} accessToken login success - email: {}, isNewMember: {}", provider, email, isNewMember);
 
         return LoginResponse.builder()
                 .memberId(member.getId())
@@ -150,9 +146,6 @@ public class AuthService {
                 member.getEmail(),
                 member.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
-
-        log.info("Login success - provider: {}, email: {}, isNewMember: {}", provider, email,
-                isNewMember);
 
         return LoginResponse.builder()
                 .memberId(member.getId())
@@ -316,18 +309,13 @@ public class AuthService {
             needsUpdate = true;
         }
 
-        if (needsUpdate) {
-            log.info("Updated existing member: {}", member.getEmail());
-        }
-
         return member;
     }
 
     private Member createNewMember(String email, String name, String oauthId,
             OAuthProvider provider) {
         Member newMember = Member.create(email, name, oauthId, provider, null);
-        Member savedMember = memberRepository.save(newMember);
-        log.info("Created new member: {}", savedMember.getEmail());
-        return savedMember;
+        return memberRepository.save(newMember);
     }
+
 }

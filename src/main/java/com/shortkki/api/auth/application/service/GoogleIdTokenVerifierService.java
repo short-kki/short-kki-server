@@ -39,7 +39,13 @@ public class GoogleIdTokenVerifierService {
 
         // 허용된 클라이언트 ID 목록 수집
         this.allowedClientIds = getGoogleClientIds();
-        log.info("GoogleIdTokenVerifier initialized. Allowed client IDs: {}", allowedClientIds);
+
+        if (allowedClientIds.isEmpty()) {
+            throw new IllegalStateException(
+                    "No Google client IDs configured. Set oauth2.provider.google-web.client-id (or google-ios/android)");
+        }
+
+        log.info("GoogleIdTokenVerifier initialized with {} client IDs", allowedClientIds.size());
     }
 
     private Set<String> getGoogleClientIds() {
@@ -52,7 +58,7 @@ public class GoogleIdTokenVerifierService {
                 String clientId = oAuth2Properties.getProvider(key).getClientId();
                 if (clientId != null && !clientId.isBlank() && !clientId.startsWith("${")) {
                     clientIds.add(clientId);
-                    log.info("Added {} client ID: {}", key, clientId);
+                    log.debug("Added {} client ID", key);
                 }
             } catch (Exception e) {
                 log.debug("{} not configured", key);
@@ -63,19 +69,13 @@ public class GoogleIdTokenVerifierService {
     }
 
     public GoogleUserInfo verify(String idTokenString, Platform platform) {
-        log.info("Verifying Google idToken for platform: {}", platform);
-
-        // 먼저 토큰 payload를 파싱하여 audience 확인
-        String tokenAudience = extractAudienceFromToken(idTokenString);
-        log.info("Token audience: {}", tokenAudience);
+        log.debug("Verifying Google idToken for platform: {}", platform);
 
         try {
             GoogleIdToken idToken = verifier.verify(idTokenString);
 
             if (idToken == null) {
                 log.error("Google idToken signature verification failed");
-                log.error("Token (first 100 chars): {}...",
-                        idTokenString.substring(0, Math.min(100, idTokenString.length())));
                 throw new BusinessException(ErrorCode.INVALID_ID_TOKEN,
                         "토큰 서명 검증에 실패했습니다.");
             }
@@ -83,20 +83,16 @@ public class GoogleIdTokenVerifierService {
             GoogleIdToken.Payload payload = idToken.getPayload();
             String aud = (String) payload.getAudience();
 
-            // audience 검증 (설정된 클라이언트 ID가 있는 경우에만)
-            if (!allowedClientIds.isEmpty() && !allowedClientIds.contains(aud)) {
-                log.error("Token audience '{}' not in allowed list: {}", aud, allowedClientIds);
-                log.error("Add this client ID to oauth2.provider.google-ios/android/web.client-id in application.yaml");
+            // audience 검증
+            if (!allowedClientIds.contains(aud)) {
+                log.error("Token audience not in allowed list. Add client ID to oauth2.provider config.");
                 throw new BusinessException(ErrorCode.INVALID_ID_TOKEN,
-                        "허용되지 않은 클라이언트입니다. audience: " + aud);
+                        "허용되지 않은 클라이언트입니다.");
             }
 
             String email = payload.getEmail();
             String name = (String) payload.get("name");
             String sub = payload.getSubject();
-
-            log.info("Google idToken verified successfully - email: {}, sub: {}, aud: {}",
-                    email, sub, aud);
 
             return new GoogleUserInfo(sub, email, name);
 
@@ -107,30 +103,6 @@ public class GoogleIdTokenVerifierService {
             throw new BusinessException(ErrorCode.INVALID_ID_TOKEN,
                     "idToken 검증 중 오류가 발생했습니다: " + e.getMessage());
         }
-    }
-
-    private String extractAudienceFromToken(String idTokenString) {
-        try {
-            String[] parts = idTokenString.split("\\.");
-            if (parts.length >= 2) {
-                String payloadJson = new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
-                log.info("Token payload: {}", payloadJson);
-
-                // 간단히 aud 추출
-                int audIndex = payloadJson.indexOf("\"aud\"");
-                if (audIndex != -1) {
-                    int colonIndex = payloadJson.indexOf(":", audIndex);
-                    int quoteStart = payloadJson.indexOf("\"", colonIndex);
-                    int quoteEnd = payloadJson.indexOf("\"", quoteStart + 1);
-                    if (quoteStart != -1 && quoteEnd != -1) {
-                        return payloadJson.substring(quoteStart + 1, quoteEnd);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Failed to extract audience from token: {}", e.getMessage());
-        }
-        return "unknown";
     }
 
     public record GoogleUserInfo(String oauthId, String email, String name) {
