@@ -89,9 +89,11 @@ jobs:
         run: |
           aws ssm put-parameter \
             --name /shortkki/prod/env-file \
-            --value "${{ secrets.APP_ENV }}" \
+            --value "$APP_ENV" \
             --type SecureString \
             --overwrite
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
 
       - name: Save previous image tag from SSM
         id: prev
