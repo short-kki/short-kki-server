@@ -180,6 +180,12 @@ jobs:
         id: rollback
         if: failure() && steps.prev.outputs.prev_tag != ''
         run: |
+          echo "Cancelling any active Instance Refresh..."
+          aws autoscaling cancel-instance-refresh \
+            --auto-scaling-group-name "$ASG_NAME" 2>/dev/null || true
+          echo "Waiting for cancellation to take effect..."
+          sleep 10
+
           echo "Starting rollback Instance Refresh..."
           ROLLBACK_ID=$(aws autoscaling start-instance-refresh \
             --auto-scaling-group-name "$ASG_NAME" \
