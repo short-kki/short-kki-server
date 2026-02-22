@@ -50,6 +50,15 @@ shortkki:
   source:
     max-duration-seconds: ${SOURCE_MAX_DURATION_SECONDS:180}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 google:
   services:
     youtube:
