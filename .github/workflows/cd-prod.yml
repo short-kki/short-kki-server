@@ -177,6 +177,7 @@ jobs:
           PREV_TAG: ${{ steps.prev.outputs.prev_tag }}
 
       - name: Rollback Instance Refresh on failure
+        id: rollback
         if: failure() && steps.prev.outputs.prev_tag != ''
         run: |
           echo "Starting rollback Instance Refresh..."
@@ -187,6 +188,37 @@ jobs:
               "InstanceWarmup": 120
             }' \
             --query 'InstanceRefreshId' --output text)
+          echo "rollback_id=$ROLLBACK_ID" >> "$GITHUB_OUTPUT"
           echo "Rollback Instance Refresh started: $ROLLBACK_ID"
         env:
           ASG_NAME: ${{ secrets.ASG_NAME }}
+
+      - name: Wait for rollback Instance Refresh to complete
+        if: failure() && steps.rollback.outputs.rollback_id != ''
+        run: |
+          echo "Waiting for rollback instance refresh: $ROLLBACK_ID"
+          for i in $(seq 1 60); do
+            STATUS=$(aws autoscaling describe-instance-refreshes \
+              --auto-scaling-group-name "$ASG_NAME" \
+              --instance-refresh-ids "$ROLLBACK_ID" \
+              --query 'InstanceRefreshes[0].Status' --output text)
+            echo "[$i/60] Status: $STATUS"
+            case $STATUS in
+              Successful)
+                echo "Rollback instance refresh completed successfully"
+                exit 0 ;;
+              Failed|Cancelled|RollbackSuccessful|RollbackFailed)
+                echo "Rollback instance refresh failed with status: $STATUS"
+                aws autoscaling describe-instance-refreshes \
+                  --auto-scaling-group-name "$ASG_NAME" \
+                  --instance-refresh-ids "$ROLLBACK_ID" \
+                  --query 'InstanceRefreshes[0].StatusReason' --output text
+                exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for rollback instance refresh (15 min)"
+          exit 1
+        env:
+          ASG_NAME: ${{ secrets.ASG_NAME }}
+          ROLLBACK_ID: ${{ steps.rollback.outputs.rollback_id }}
