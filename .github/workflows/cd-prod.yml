@@ -98,9 +98,16 @@ jobs:
       - name: Save previous image tag from SSM
         id: prev
         run: |
-          PREV_TAG=$(aws ssm get-parameter \
+          if OUTPUT=$(aws ssm get-parameter \
             --name /shortkki/prod/image-tag \
-            --query 'Parameter.Value' --output text 2>/dev/null || echo "")
+            --query 'Parameter.Value' --output text 2>&1); then
+            PREV_TAG="$OUTPUT"
+          elif echo "$OUTPUT" | grep -q 'ParameterNotFound'; then
+            PREV_TAG=""
+          else
+            echo "::error::Failed to get previous image tag: $OUTPUT"
+            exit 1
+          fi
           echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
           echo "Previous image tag: ${PREV_TAG:-none}"
 
