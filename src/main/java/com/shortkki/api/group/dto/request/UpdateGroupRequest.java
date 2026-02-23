@@ -13,7 +13,7 @@ public record UpdateGroupRequest(
         @Size(max = 500, message = "그룹 설명은 500자 이내여야 합니다.")
         String description,
 
-        String thumbnailImgUrl,
+        Long thumbnailImgFileId,
 
         @NotNull(message = "그룹 타입은 필수입니다.")
         GroupType groupType

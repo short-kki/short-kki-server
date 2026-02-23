@@ -3,6 +3,8 @@ package com.shortkki.api.group.application.service;
 
 import com.shortkki.api.calendar.repository.RecipeCalendarRepository;
 import com.shortkki.api.feed.repository.FeedRepository;
+import com.shortkki.api.file.application.service.FileMetadataQueryService;
+import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.group.dto.request.CreateGroupRequest;
 import com.shortkki.api.group.dto.request.UpdateGroupRequest;
 import com.shortkki.api.group.dto.response.GroupListResponse;
@@ -27,6 +29,7 @@ import com.shortkki.global.error.exception.InternalServerException;
 import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.event.DomainEventPublisher;
 import com.shortkki.global.utils.CodeGenerator;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +44,7 @@ import java.util.Map;
 public class GroupService {
 
     private final GroupMemberValidationService groupMemberValidationService;
+    private final FileMetadataQueryService fileMetadataQueryService;
 
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
@@ -54,10 +58,11 @@ public class GroupService {
     @Transactional
     public GroupResponse createGroup(Long memberId, CreateGroupRequest request) {
         Member member = findMemberById(memberId);
+        FileMetadata thumbnailImgFile = resolveFileMetadata(request.thumbnailImgFileId(), memberId);
         Group group = Group.create(
                 request.name(),
                 request.description(),
-                request.thumbnailImgUrl(),
+                thumbnailImgFile,
                 request.groupType()
         );
         Group savedGroup = groupRepository.save(group);
@@ -74,8 +79,8 @@ public class GroupService {
         group.updateGroupInfo(
                 request.name(),
                 request.description(),
-                request.thumbnailImgUrl(),
                 request.groupType());
+        updateThumbnailImage(group, request.thumbnailImgFileId(), memberId);
     }
 
     @Transactional
@@ -263,6 +268,30 @@ public class GroupService {
     private void validateGroupMemberAdmin(GroupMember groupMember) {
         if (!groupMember.checkIsAdmin()) {
             throw new AccessDeniedException(ErrorCode.GROUP_ADMIN_REQUIRED);
+        }
+    }
+
+    private FileMetadata resolveFileMetadata(Long fileId, Long memberId) {
+        if (fileId == null) {
+            return null;
+        }
+        return fileMetadataQueryService.findByIdWithOwnerValidation(fileId, memberId);
+    }
+
+    private void updateThumbnailImage(Group group, Long requestImageId, Long memberId) {
+        Long currentImageId = group.getThumbnailImgFile() != null
+                ? group.getThumbnailImgFile().getId()
+                : null;
+        if (Objects.equals(currentImageId, requestImageId)) {
+            return;
+        }
+        if (group.getThumbnailImgFile() != null) {
+            group.getThumbnailImgFile().markDeleted();
+            group.removeThumbnailImgFile();
+        }
+        if (requestImageId != null) {
+            FileMetadata newImage = fileMetadataQueryService.findByIdWithOwnerValidation(requestImageId, memberId);
+            group.updateThumbnailImgFile(newImage);
         }
     }
 
