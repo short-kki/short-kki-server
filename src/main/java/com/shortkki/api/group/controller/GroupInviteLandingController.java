@@ -144,19 +144,19 @@ public class GroupInviteLandingController {
                             var downloadBtn = document.getElementById('downloadBtn');
                             var appStoreUrl = '%s';
                             var playStoreUrl = '%s';
+                            var customSchemeUrl = 'shortkki://group/invite/%s';
+
+                            storeBtn.href = customSchemeUrl;
 
                             if (isIOS) {
-                                storeBtn.href = appStoreUrl;
                                 downloadBtn.href = appStoreUrl;
                                 downloadBtn.textContent = 'App Store에서 다운로드';
                             } else if (isAndroid) {
-                                storeBtn.href = playStoreUrl;
                                 downloadBtn.href = playStoreUrl;
                                 downloadBtn.textContent = 'Google Play에서 다운로드';
                             } else {
-                                storeBtn.href = appStoreUrl;
-                                downloadBtn.href = playStoreUrl;
-                                downloadBtn.textContent = 'Google Play에서 다운로드';
+                                downloadBtn.href = appStoreUrl;
+                                downloadBtn.textContent = 'App Store에서 다운로드';
                             }
                         })();
                     </script>
@@ -175,7 +175,8 @@ public class GroupInviteLandingController {
                 description,
                 preview.memberCount(),
                 appStoreUrl,
-                playStoreUrl
+                playStoreUrl,
+                escapeHtml(code)
         );
     }
 
