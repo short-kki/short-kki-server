@@ -20,8 +20,11 @@ scrape_configs:
       - source_labels: [__meta_ec2_private_ip]
         target_label: __address__
         replacement: '${1}:8080'
+      - source_labels: [__meta_ec2_instance_state]
+        regex: running
+        action: keep
 
   - job_name: 'spring-boot-dev'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['172.31.50.157:8080']
+      - targets: ['172.31.50.157:80']
