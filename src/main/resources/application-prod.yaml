@@ -1,9 +1,9 @@
 spring:
   config:
-    import: optional:file:env/.env.dev[.properties]
+    import: optional:file:env/.env.prod[.properties]
 
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:shortkki_dev}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME:shortkki}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver

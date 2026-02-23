@@ -15,6 +15,12 @@ INSERT INTO `member` (id, email, name, role, profile_img_file_id, created_at, up
 VALUES (1, 'shortkki_official@shortkki.kr', '숏끼', 'USER', 1, NOW(6), NOW(6));
 
 -- =============================================
+-- recipe_book
+-- =============================================
+INSERT INTO `recipe_book` (id, member_id, group_id, title, is_default, sort_order, created_at, updated_at)
+VALUES (1, 1, NULL, '기본 레시피북', true, 0, NOW(6), NOW(6));
+
+-- =============================================
 -- curation
 -- =============================================
 INSERT INTO `curation` (`title`, `description`,

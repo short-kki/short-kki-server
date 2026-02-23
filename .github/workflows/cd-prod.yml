@@ -1,0 +1,230 @@
+name: CD Prod
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-prod
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ steps.sha.outputs.short_sha }}
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build JAR
+        run: ./gradlew clean bootJar -x test
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get short SHA
+        id: sha
+        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest-prod
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image (ARM64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: prod
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upsert env file in SSM
+        run: |
+          aws ssm put-parameter \
+            --name /shortkki/prod/env-file \
+            --value "$APP_ENV" \
+            --type SecureString \
+            --overwrite
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+
+      - name: Save previous image tag from SSM
+        id: prev
+        run: |
+          if OUTPUT=$(aws ssm get-parameter \
+            --name /shortkki/prod/image-tag \
+            --query 'Parameter.Value' --output text 2>&1); then
+            PREV_TAG="$OUTPUT"
+          elif echo "$OUTPUT" | grep -q 'ParameterNotFound'; then
+            PREV_TAG=""
+          else
+            echo "::error::Failed to get previous image tag: $OUTPUT"
+            exit 1
+          fi
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+          echo "Previous image tag: ${PREV_TAG:-none}"
+
+      - name: Update image tag in SSM
+        run: |
+          aws ssm put-parameter \
+            --name /shortkki/prod/image-tag \
+            --value "${{ needs.build-and-push.outputs.image_tag }}" \
+            --type String \
+            --overwrite
+          echo "Updated image tag to: ${{ needs.build-and-push.outputs.image_tag }}"
+
+      - name: Start ASG Instance Refresh
+        id: refresh
+        run: |
+          REFRESH_ID=$(aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name "$ASG_NAME" \
+            --preferences '{
+              "MinHealthyPercentage": 50,
+              "InstanceWarmup": 120
+            }' \
+            --query 'InstanceRefreshId' --output text)
+          echo "refresh_id=$REFRESH_ID" >> "$GITHUB_OUTPUT"
+          echo "Instance Refresh started: $REFRESH_ID"
+        env:
+          ASG_NAME: ${{ secrets.ASG_NAME }}
+
+      - name: Wait for Instance Refresh to complete
+        run: |
+          echo "Waiting for instance refresh: $REFRESH_ID"
+          for i in $(seq 1 60); do
+            STATUS=$(aws autoscaling describe-instance-refreshes \
+              --auto-scaling-group-name "$ASG_NAME" \
+              --instance-refresh-ids "$REFRESH_ID" \
+              --query 'InstanceRefreshes[0].Status' --output text)
+            echo "[$i/60] Status: $STATUS"
+            case $STATUS in
+              Successful)
+                echo "Instance refresh completed successfully"
+                exit 0 ;;
+              Failed|Cancelled|RollbackSuccessful|RollbackFailed)
+                echo "Instance refresh failed with status: $STATUS"
+                aws autoscaling describe-instance-refreshes \
+                  --auto-scaling-group-name "$ASG_NAME" \
+                  --instance-refresh-ids "$REFRESH_ID" \
+                  --query 'InstanceRefreshes[0].StatusReason' --output text
+                exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for instance refresh (15 min)"
+          exit 1
+        env:
+          ASG_NAME: ${{ secrets.ASG_NAME }}
+          REFRESH_ID: ${{ steps.refresh.outputs.refresh_id }}
+
+      - name: Restore SSM parameter on failure
+        if: failure() && steps.prev.outputs.prev_tag != ''
+        run: |
+          echo "Restoring SSM to previous tag: $PREV_TAG"
+          aws ssm put-parameter \
+            --name /shortkki/prod/image-tag \
+            --value "$PREV_TAG" \
+            --type String \
+            --overwrite
+        env:
+          PREV_TAG: ${{ steps.prev.outputs.prev_tag }}
+
+      - name: Rollback Instance Refresh on failure
+        id: rollback
+        if: failure() && steps.prev.outputs.prev_tag != ''
+        run: |
+          echo "Cancelling any active Instance Refresh..."
+          aws autoscaling cancel-instance-refresh \
+            --auto-scaling-group-name "$ASG_NAME" 2>/dev/null || true
+          echo "Waiting for cancellation to take effect..."
+          sleep 10
+
+          echo "Starting rollback Instance Refresh..."
+          ROLLBACK_ID=$(aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name "$ASG_NAME" \
+            --preferences '{
+              "MinHealthyPercentage": 50,
+              "InstanceWarmup": 120
+            }' \
+            --query 'InstanceRefreshId' --output text)
+          echo "rollback_id=$ROLLBACK_ID" >> "$GITHUB_OUTPUT"
+          echo "Rollback Instance Refresh started: $ROLLBACK_ID"
+        env:
+          ASG_NAME: ${{ secrets.ASG_NAME }}
+
+      - name: Wait for rollback Instance Refresh to complete
+        if: failure() && steps.rollback.outputs.rollback_id != ''
+        run: |
+          echo "Waiting for rollback instance refresh: $ROLLBACK_ID"
+          for i in $(seq 1 60); do
+            STATUS=$(aws autoscaling describe-instance-refreshes \
+              --auto-scaling-group-name "$ASG_NAME" \
+              --instance-refresh-ids "$ROLLBACK_ID" \
+              --query 'InstanceRefreshes[0].Status' --output text)
+            echo "[$i/60] Status: $STATUS"
+            case $STATUS in
+              Successful)
+                echo "Rollback instance refresh completed successfully"
+                exit 0 ;;
+              Failed|Cancelled|RollbackSuccessful|RollbackFailed)
+                echo "Rollback instance refresh failed with status: $STATUS"
+                aws autoscaling describe-instance-refreshes \
+                  --auto-scaling-group-name "$ASG_NAME" \
+                  --instance-refresh-ids "$ROLLBACK_ID" \
+                  --query 'InstanceRefreshes[0].StatusReason' --output text
+                exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for rollback instance refresh (15 min)"
+          exit 1
+        env:
+          ASG_NAME: ${{ secrets.ASG_NAME }}
+          ROLLBACK_ID: ${{ steps.rollback.outputs.rollback_id }}
