@@ -36,6 +36,9 @@ public class SecurityConfig {
             "/api/dev/tokens",
             // group
             "/api/v1/groups/invite/**",
+            // group invite landing & well-known
+            "/.well-known/**",
+            "/group/invite/**",
             // health
             "/api/v1/health",
             // swagger

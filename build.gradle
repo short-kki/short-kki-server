@@ -82,9 +82,6 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-admin:9.7.0'
-
-    // Micrometer:Prometheus
-    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 // test

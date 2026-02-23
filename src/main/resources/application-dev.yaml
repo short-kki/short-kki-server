@@ -55,3 +55,16 @@ public-data:
 springdoc:
   api-docs:
     enabled: false
+
+deep-link:
+  web-domain: ${DEEP_LINK_WEB_DOMAIN}
+  ios:
+    team-id: ${DEEP_LINK_IOS_TEAM_ID}
+    bundle-id: ${DEEP_LINK_IOS_BUNDLE_ID}
+  android:
+    package-name: ${DEEP_LINK_ANDROID_PACKAGE}
+    sha256-cert-fingerprints:
+      - ${DEEP_LINK_ANDROID_SHA256}
+  store:
+    app-store-url: ${DEEP_LINK_APP_STORE_URL}
+    play-store-url: ${DEEP_LINK_PLAY_STORE_URL}

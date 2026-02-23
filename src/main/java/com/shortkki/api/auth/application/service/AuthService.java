@@ -80,6 +80,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .email(member.getEmail())
                 .name(member.getName())
+                .profileImageUrl(member.getProfileImgUrl())
                 .isNewMember(isNewMember)
                 .build();
     }
@@ -112,6 +113,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .email(member.getEmail())
                 .name(member.getName())
+                .profileImageUrl(member.getProfileImgUrl())
                 .isNewMember(isNewMember)
                 .build();
     }
@@ -153,6 +155,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .email(member.getEmail())
                 .name(member.getName())
+                .profileImageUrl(member.getProfileImgUrl())
                 .isNewMember(isNewMember)
                 .build();
     }

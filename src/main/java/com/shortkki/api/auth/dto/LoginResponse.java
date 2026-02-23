@@ -12,5 +12,6 @@ public class LoginResponse {
     private final String refreshToken;
     private final String email;
     private final String name;
+    private final String profileImageUrl;
     private final boolean isNewMember;
 }
