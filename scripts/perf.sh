@@ -57,11 +57,15 @@ if [[ -n "$MEMBER_ID" ]]; then
   fi
 
   echo "Issuing token for memberId=$MEMBER_ID from $BASE_URL"
-  HTTP_CODE="$(curl -sS -o /tmp/perf_token_resp.json -w "%{http_code}" \
+  TOKEN_TMP="$(mktemp)"
+  chmod 600 "$TOKEN_TMP"
+  trap 'rm -f "$TOKEN_TMP"' EXIT
+
+  HTTP_CODE="$(curl -sS -o "$TOKEN_TMP" -w "%{http_code}" \
     --connect-timeout 3 --max-time 10 \
     -X POST "$BASE_URL/api/dev/tokens?memberId=$MEMBER_ID")"
 
-  TOKEN_RESPONSE="$(cat /tmp/perf_token_resp.json)"
+  TOKEN_RESPONSE="$(cat "$TOKEN_TMP")"
   if [[ "$HTTP_CODE" != "200" ]]; then
     echo "Token API failed (status=$HTTP_CODE)"
     echo "$TOKEN_RESPONSE"
