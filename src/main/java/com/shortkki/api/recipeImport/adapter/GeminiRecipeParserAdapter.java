@@ -23,11 +23,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class GeminiRecipeParserAdapter implements RecipeParserPort {
 
+    private static final String OFFICIAL_TAGS_PLACEHOLDER = "{{OFFICIAL_TAGS}}";
     private static final String PROMPT_TEMPLATE;
 
     static {
@@ -57,13 +59,14 @@ public class GeminiRecipeParserAdapter implements RecipeParserPort {
     }
 
     @Override
-    public RecipeParseResult parseRecipeFromUrl(String youtubeUrl) {
+    public RecipeParseResult parseRecipeFromUrl(String youtubeUrl, List<String> officialTagNames) {
         try {
+            String prompt = buildPrompt(officialTagNames);
             GenerateContentResponse response = client.models.generateContent(
                     modelName,
                     Content.builder()
                             .parts(Arrays.asList(
-                                    Part.builder().text(PROMPT_TEMPLATE).build(),
+                                    Part.builder().text(prompt).build(),
                                     Part.builder()
                                             .fileData(FileData.builder()
                                                     .fileUri(youtubeUrl)
@@ -85,6 +88,23 @@ public class GeminiRecipeParserAdapter implements RecipeParserPort {
             log.error("AI 레시피 파싱 실패: {}", e.getMessage(), e);
             return RecipeParseResult.empty("파싱 실패");
         }
+    }
+
+    private String buildPrompt(List<String> officialTagNames) {
+        String officialTags = formatOfficialTags(officialTagNames);
+        return PROMPT_TEMPLATE.replace(OFFICIAL_TAGS_PLACEHOLDER, officialTags);
+    }
+
+    private String formatOfficialTags(List<String> officialTagNames) {
+        if (officialTagNames == null || officialTagNames.isEmpty()) {
+            return "(공식 태그 없음)";
+        }
+        return officialTagNames.stream()
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .distinct()
+                .map(name -> "- " + name)
+                .collect(Collectors.joining("\n"));
     }
 
     private String stripMarkdown(String content) {
