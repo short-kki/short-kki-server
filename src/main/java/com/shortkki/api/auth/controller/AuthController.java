@@ -1,8 +1,11 @@
 package com.shortkki.api.auth.controller;
 
+import com.shortkki.api.auth.application.service.AuthService;
 import com.shortkki.api.auth.application.usecase.RegisterUserUseCase;
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
+import com.shortkki.api.auth.dto.RefreshTokenRequest;
+import com.shortkki.api.auth.dto.RefreshTokenResponse;
 import com.shortkki.api.member.entity.OAuthProvider;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final RegisterUserUseCase registerUserUseCase;
+    private final AuthService authService;
 
     @PostMapping("/{provider}")
     public ResponseEntity<BaseResponse<LoginResponse>> login(
@@ -28,4 +32,15 @@ public class AuthController {
         LoginResponse response = registerUserUseCase.execute(provider, request);
         return ResponseEntity.ok(BaseResponse.success("로그인에 성공했습니다.", response));
     }
+
+    // TODO : RT 로테이션 도입 및 레디스
+    @PostMapping("/refresh")
+    public ResponseEntity<BaseResponse<RefreshTokenResponse>> refresh(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+        RefreshTokenResponse response = authService.refreshAccessToken(request.refreshToken());
+        return ResponseEntity.ok(BaseResponse.success("토큰 재발급 성공", response));
+    }
+
+
 }

@@ -2,14 +2,17 @@ package com.shortkki.api.auth.application.service;
 
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
+import com.shortkki.api.auth.dto.RefreshTokenResponse;
 import com.shortkki.global.entity.Platform;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.entity.OAuthProvider;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.global.auth.jwt.JwtTokenProvider;
 import com.shortkki.global.config.OAuth2Properties;
+import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.ErrorCode;
+import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -92,7 +95,8 @@ public class AuthService {
         OAuth2Properties.Provider providerConfig = oAuth2Properties.getProvider(configKey);
 
         // accessToken으로 바로 사용자 정보 조회
-        Map<String, Object> userInfo = getUserInfo(request.getAccessToken(), providerConfig, provider);
+        Map<String, Object> userInfo = getUserInfo(request.getAccessToken(), providerConfig,
+                provider);
 
         String oauthId = extractOAuthId(userInfo, provider);
         String email = extractEmail(userInfo, provider);
@@ -123,7 +127,8 @@ public class AuthService {
             throw new BusinessException(ErrorCode.ID_TOKEN_OR_CODE_REQUIRED);
         }
 
-        log.info("OAuth login request - provider: {}, platform: {}, hasCode: {}, hasCodeVerifier: {}",
+        log.info(
+                "OAuth login request - provider: {}, platform: {}, hasCode: {}, hasCodeVerifier: {}",
                 provider,
                 request.getPlatform(),
                 request.hasCode(),
@@ -319,6 +324,36 @@ public class AuthService {
             OAuthProvider provider) {
         Member newMember = Member.create(email, name, oauthId, provider, null);
         return memberRepository.save(newMember);
+    }
+
+    @Transactional(readOnly = true)
+    public RefreshTokenResponse refreshAccessToken(String refreshToken) {
+        validateRefreshToken(refreshToken);
+
+        Long memberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String newAccessToken = jwtTokenProvider.createAccessToken(
+                member.getId(),
+                member.getEmail(),
+                member.getRole()
+        );
+
+        return new RefreshTokenResponse(newAccessToken);
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new BadRequestException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        jwtTokenProvider.validateToken(refreshToken);
+
+        if (!jwtTokenProvider.isRefreshToken(refreshToken)) {
+            throw new BadRequestException(ErrorCode.INVALID_TOKEN);
+        }
     }
 
 }

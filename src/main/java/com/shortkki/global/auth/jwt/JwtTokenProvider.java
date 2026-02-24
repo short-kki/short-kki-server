@@ -129,4 +129,10 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(token);
         return Long.parseLong(claims.getSubject());
     }
+
+    public boolean isRefreshToken(String token) {
+        Claims claims = parseClaims(token);
+        String type = claims.get("type", String.class);
+        return "refresh".equals(type);
+    }
 }
