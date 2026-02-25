@@ -300,16 +300,16 @@ public class AuthService {
 
     private Member updateMemberIfNeeded(Member member, String name, String oauthId,
             OAuthProvider provider) {
-        boolean needsUpdate = false;
+        if (member.isDeleted()) {
+            member.reactivate();
+        }
 
         if (!member.getName().equals(name)) {
             member.updateName(name);
-            needsUpdate = true;
         }
 
         if (!Objects.equals(member.getOauthId(), oauthId)) {
             member.updateOAuthInfo(oauthId, provider);
-            needsUpdate = true;
         }
 
         return member;
