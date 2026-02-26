@@ -99,12 +99,15 @@ public class GeminiRecipeParserAdapter implements RecipeParserPort {
         if (officialTagNames == null || officialTagNames.isEmpty()) {
             return "(공식 태그 없음)";
         }
-        return officialTagNames.stream()
+        String formattedTags = officialTagNames.stream()
                 .map(String::trim)
                 .filter(name -> !name.isBlank())
                 .distinct()
-                .map(name -> "- " + name)
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(", "));
+        if (formattedTags.isBlank()) {
+            return "(공식 태그 없음)";
+        }
+        return formattedTags;
     }
 
     private String stripMarkdown(String content) {
