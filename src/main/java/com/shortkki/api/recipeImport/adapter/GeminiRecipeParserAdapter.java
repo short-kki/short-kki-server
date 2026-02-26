@@ -17,6 +17,7 @@ import com.shortkki.api.recipeImport.port.RecipeParserPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@Profile("!perf")
 public class GeminiRecipeParserAdapter implements RecipeParserPort {
 
     private static final String OFFICIAL_TAGS_PLACEHOLDER = "{{OFFICIAL_TAGS}}";
