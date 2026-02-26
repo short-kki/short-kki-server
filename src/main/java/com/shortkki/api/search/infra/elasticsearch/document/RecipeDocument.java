@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "${elasticsearch.index.recipe.name}")
+@Document(indexName = "#{@environment.getProperty('elasticsearch.index.recipe.name')}")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
