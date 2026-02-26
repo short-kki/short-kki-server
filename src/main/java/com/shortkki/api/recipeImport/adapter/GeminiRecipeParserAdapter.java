@@ -100,6 +100,7 @@ public class GeminiRecipeParserAdapter implements RecipeParserPort {
             return "(공식 태그 없음)";
         }
         String formattedTags = officialTagNames.stream()
+                .filter(name -> name != null)
                 .map(String::trim)
                 .filter(name -> !name.isBlank())
                 .distinct()
