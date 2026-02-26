@@ -25,6 +25,7 @@ docker run -d \
   -p 80:8080 \
   -v ~/shortkki/env:/app/env \
   -v ~/shortkki/secrets:/app/secrets \
+  -v ~/shortkki/logs:/app/logs \
   -e SPRING_PROFILES_ACTIVE=dev \
   "${IMAGE}:${TAG}"
 
@@ -65,6 +66,7 @@ docker run -d \
   -p 80:8080 \
   -v ~/shortkki/env:/app/env \
   -v ~/shortkki/secrets:/app/secrets \
+  -v ~/shortkki/logs:/app/logs \
   -e SPRING_PROFILES_ACTIVE=dev \
   "${PREV_IMAGE}"
 
