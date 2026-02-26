@@ -17,12 +17,6 @@ spring:
 
 oauth2:
   provider:
-    google-ios:
-      token-uri: https://oauth2.googleapis.com/token
-      user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-    google-android:
-      token-uri: https://oauth2.googleapis.com/token
-      user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
     kakao:
       token-uri: https://kauth.kakao.com/oauth/token
       user-info-uri: https://kapi.kakao.com/v2/user/me
