@@ -122,11 +122,25 @@ public class JwtTokenProvider {
                     .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
     }
 
     public Long getMemberIdFromToken(String token) {
         Claims claims = parseClaims(token);
         return Long.parseLong(claims.getSubject());
+    }
+
+    public boolean isRefreshToken(String token) {
+        Claims claims = parseClaims(token);
+        String type = claims.get("type", String.class);
+        return "refresh".equals(type);
+    }
+
+    public boolean isAccessToken(String token) {
+        Claims claims = parseClaims(token);
+        String type = claims.get("type", String.class);
+        return "access".equals(type);
     }
 }
