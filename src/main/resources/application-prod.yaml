@@ -29,6 +29,12 @@ jwt:
 server:
   shutdown: graceful
 
+elasticsearch:
+  index:
+    recipe:
+      name: recipes-prod
+      settings-path: search/index/recipe-index.json
+
 oauth2:
   provider:
     google-ios:
