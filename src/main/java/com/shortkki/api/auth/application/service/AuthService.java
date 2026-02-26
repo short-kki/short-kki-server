@@ -327,10 +327,17 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public RefreshTokenResponse refreshAccessToken(String refreshToken) {
+    public RefreshTokenResponse refreshAccessToken(String accessToken, String refreshToken) {
+        validateAccessTokenForRefresh(accessToken);
         validateRefreshToken(refreshToken);
 
+        Long accessTokenMemberId = jwtTokenProvider.getMemberIdFromToken(accessToken);
         Long memberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
+
+        if (!Objects.equals(accessTokenMemberId, memberId)) {
+            throw new BadRequestException(ErrorCode.INVALID_TOKEN);
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -339,8 +346,23 @@ public class AuthService {
                 member.getEmail(),
                 member.getRole()
         );
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
-        return new RefreshTokenResponse(newAccessToken);
+        return new RefreshTokenResponse(newAccessToken, newRefreshToken);
+    }
+
+    private void validateAccessTokenForRefresh(String accessToken) {
+        if (accessToken == null || accessToken.isBlank()) {
+            throw new BadRequestException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        if (!jwtTokenProvider.isAccessToken(accessToken)) {
+            throw new BadRequestException(ErrorCode.INVALID_TOKEN);
+        }
+
+        if (jwtTokenProvider.isTokenValid(accessToken)) {
+            throw new BadRequestException("아직 유효한 accessToken은 재발급할 수 없습니다.");
+        }
     }
 
     private void validateRefreshToken(String refreshToken) {

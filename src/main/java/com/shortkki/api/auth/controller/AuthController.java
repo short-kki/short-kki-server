@@ -38,7 +38,10 @@ public class AuthController {
     public ResponseEntity<BaseResponse<RefreshTokenResponse>> refresh(
             @Valid @RequestBody RefreshTokenRequest request
     ) {
-        RefreshTokenResponse response = authService.refreshAccessToken(request.refreshToken());
+        RefreshTokenResponse response = authService.refreshAccessToken(
+                request.accessToken(),
+                request.refreshToken()
+        );
         return ResponseEntity.ok(BaseResponse.success("토큰 재발급 성공", response));
     }
 
