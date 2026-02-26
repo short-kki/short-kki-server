@@ -17,12 +17,14 @@ import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.group.repository.GroupRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
+import com.shortkki.api.notification.event.NotificationEvent;
 import com.shortkki.api.recipe.entity.Recipe;
 import com.shortkki.api.recipe.repository.RecipeRepository;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.AccessDeniedException;
 import com.shortkki.global.error.exception.ConflictException;
 import com.shortkki.global.error.exception.NotFoundException;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,7 @@ public class FeedService {
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
         Group group = findGroupById(groupId);
@@ -113,6 +116,20 @@ public class FeedService {
         feedRepository.save(feed);
         if (image != null) {
             image.bindTarget(FileTargetType.FEED_IMG, feed.getId());
+        }
+        publishFeedAddedNotification(groupId, memberId, feed.getId(), member.getName());
+    }
+
+    private void publishFeedAddedNotification(Long groupId, Long memberId, Long feedId, String memberName) {
+        List<Long> receiverIds = groupMemberRepository.findMemberIdsByGroupId(groupId)
+                .stream()
+                .filter(id -> !id.equals(memberId))
+                .toList();
+
+        if (!receiverIds.isEmpty()) {
+            domainEventPublisher.publish(
+                    NotificationEvent.feedAdded(receiverIds, feedId, memberName, groupId)
+            );
         }
     }
 
