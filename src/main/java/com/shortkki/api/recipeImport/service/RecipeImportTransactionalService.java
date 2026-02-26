@@ -27,7 +27,6 @@ import com.shortkki.api.source.domain.SourceContent;
 import com.shortkki.global.event.DomainEventPublisher;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,14 +49,13 @@ public class RecipeImportTransactionalService {
     public Recipe saveRecipeWithRelations(
             Member member,
             SourceContent sourceContent,
-            RecipeParseResult parseResult,
-            Set<String> originalParsedTags
+            RecipeParseResult parseResult
     ) {
         Recipe recipe = saveRecipe(member, sourceContent, parseResult);
 
         saveIngredients(recipe, safeList(parseResult.ingredients()));
         saveSteps(recipe, safeList(parseResult.steps()));
-        saveTags(recipe, safeList(parseResult.tags()), originalParsedTags);
+        saveTags(recipe, safeList(parseResult.tags()));
 
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
         // TODO(#62): Notification 도메인 담당과 앱내 알림 저장/푸시 전송 분리 정책 확정 후 반영
@@ -115,18 +113,15 @@ public class RecipeImportTransactionalService {
         }
     }
 
-    private void saveTags(Recipe recipe, List<String> tags, Set<String> originalParsedTags) {
+    private void saveTags(Recipe recipe, List<String> tags) {
         List<String> normalized = normalizeTags(tags);
         if (normalized.isEmpty()) {
             return;
         }
 
-        Set<String> original = (originalParsedTags != null) ? originalParsedTags : Set.of();
-
         List<RecipeTag> recipeTags = new ArrayList<>(normalized.size());
         for (String name : normalized) {
-            TagSource source = original.contains(name) ? TagSource.SYSTEM : TagSource.USER;
-            recipeTags.add(RecipeTag.of(recipe.getId(), tagService.getOrCreateTag(name, source).getId()));
+            recipeTags.add(RecipeTag.of(recipe.getId(), tagService.getOrCreateTag(name, TagSource.USER).getId()));
         }
 
         recipeTagRepository.saveAll(recipeTags);
