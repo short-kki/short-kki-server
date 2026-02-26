@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TagService {
 
+    private static final int OFFICIAL_TAG_PROMPT_LIMIT = 200;
+
     private final TagRepository tagRepository;
     private final RecipeTagRepository recipeTagRepository;
 
@@ -49,6 +51,13 @@ public class TagService {
         }
 
         recipeTagRepository.saveAll(recipeTags);
+    }
+
+    public List<String> findSystemTagNames() {
+        return tagRepository.findAllBySourceTypeOrderByNameAsc(TagSource.SYSTEM).stream()
+                .map(Tag::getName)
+                .limit(OFFICIAL_TAG_PROMPT_LIMIT)
+                .toList();
     }
 
     private List<String> normalize(List<String> tags) {

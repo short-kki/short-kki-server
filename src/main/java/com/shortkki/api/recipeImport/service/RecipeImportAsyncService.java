@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.repository.MemberRepository;
 import com.shortkki.api.recipe.entity.Recipe;
+import com.shortkki.api.recipe.service.TagService;
 import com.shortkki.api.recipeBook.service.RecipeBookQueryService;
 import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.api.recipeImport.dto.RecipeParseResult;
@@ -14,8 +15,6 @@ import com.shortkki.api.source.domain.SourceImportHistory;
 import com.shortkki.api.source.repository.SourceContentRepository;
 import com.shortkki.api.source.repository.SourceImportHistoryRepository;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -35,6 +34,7 @@ public class RecipeImportAsyncService {
     private final SourceImportHistoryRepository sourceImportHistoryRepository;
     private final RecipeParserPort recipeParserPort;
     private final ObjectMapper objectMapper;
+    private final TagService tagService;
 
     @Async
     public void processImport(
@@ -65,7 +65,8 @@ public class RecipeImportAsyncService {
             sourceImportHistoryRepository.save(history);
 
             log.info("AI 레시피 파싱 시작: {}", sourceUrl);
-            parseResult = recipeParserPort.parseRecipeFromUrl(sourceUrl);
+            List<String> officialTagNames = tagService.findSystemTagNames();
+            parseResult = recipeParserPort.parseRecipeFromUrl(sourceUrl, officialTagNames);
             aiRawResponse = parseResult.rawResponse();
             log.info("AI 파싱 완료 - 제목: {}, 재료: {}개, 순서: {}개",
                     parseResult.title(),
@@ -93,8 +94,7 @@ public class RecipeImportAsyncService {
         }
 
         try {
-            Set<String> tags = extractOriginalTags(parseResult);
-            Recipe savedRecipe = transactionalService.saveRecipeWithRelations(member, sourceContent, parseResult, tags);
+            Recipe savedRecipe = transactionalService.saveRecipeWithRelations(member, sourceContent, parseResult);
 
             history.complete(savedRecipe.getId());
             sourceImportHistoryRepository.save(history);
@@ -109,17 +109,6 @@ public class RecipeImportAsyncService {
         }
     }
 
-    private Set<String> extractOriginalTags(RecipeParseResult parseResult) {
-        List<String> tags = parseResult.tags();
-        if (tags == null || tags.isEmpty()) {
-            return Set.of();
-        }
-        return tags.stream()
-                .filter(t -> t != null && !t.isBlank())
-                .map(String::trim)
-                .collect(Collectors.toSet());
-    }
-
     private void addToDefaultRecipeBook(Long memberId, Long recipeId) {
         recipeBookQueryService.findDefaultByMemberId(memberId)
                 .ifPresent(defaultBook ->
@@ -128,4 +117,3 @@ public class RecipeImportAsyncService {
                 );
     }
 }
-

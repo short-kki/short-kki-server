@@ -29,7 +29,6 @@ import com.shortkki.global.error.exception.BadRequestException;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.error.exception.NotFoundException;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,9 +111,8 @@ public class RecipeImportService {
         Member member = findMemberById(memberId);
         SourceContent sourceContent = findSourceContent(history.getSourceContentId());
 
-        Set<String> originalParsedTags = extractOriginalTags(history);
         RecipeParseResult parseResult = convertToParseResult(request);
-        Recipe savedRecipe = saveRecipe(member, sourceContent, parseResult, originalParsedTags);
+        Recipe savedRecipe = saveRecipe(member, sourceContent, parseResult);
 
         completeHistory(history, savedRecipe.getId());
         addToDefaultRecipeBook(memberId, savedRecipe.getId());
@@ -171,29 +169,6 @@ public class RecipeImportService {
         }
     }
 
-    private Set<String> extractOriginalTags(SourceImportHistory history) {
-        String parsedContent = history.getParsedContent();
-        if (parsedContent == null || parsedContent.isBlank()) {
-            return Set.of();
-        }
-
-        try {
-            RecipeParseResult parsed = objectMapper.readValue(parsedContent,
-                    RecipeParseResult.class);
-            List<String> tags = parsed.tags();
-            if (tags == null || tags.isEmpty()) {
-                return Set.of();
-            }
-
-            return tags.stream()
-                    .filter(t -> t != null && !t.isBlank())
-                    .map(String::trim)
-                    .collect(java.util.stream.Collectors.toSet());
-        } catch (Exception e) {
-            return Set.of();
-        }
-    }
-
     // -------------------------
     // Helper methods (commands)
     // -------------------------
@@ -221,12 +196,9 @@ public class RecipeImportService {
     }
 
     private Recipe saveRecipe(Member member, SourceContent sourceContent,
-            RecipeParseResult parseResult,
-            Set<String> originalParsedTags
-    ) {
+            RecipeParseResult parseResult) {
         try {
-            return transactionalService.saveRecipeWithRelations(member, sourceContent, parseResult,
-                    originalParsedTags);
+            return transactionalService.saveRecipeWithRelations(member, sourceContent, parseResult);
         } catch (Exception e) {
             throw new BusinessException(
                     ErrorCode.INTERNAL_SERVER_ERROR,
