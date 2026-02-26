@@ -14,6 +14,10 @@ echo "Previous image: ${PREV_IMAGE:-none}"
 echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
 docker pull "${IMAGE}:${TAG}"
 
+# 로그 디렉토리 생성 (볼륨 마운트 시 appuser 쓰기 권한 확보)
+mkdir -p ~/shortkki/logs
+chmod 777 ~/shortkki/logs
+
 # 기존 컨테이너 중지
 docker stop shortkki-server || true
 docker rm shortkki-server || true
