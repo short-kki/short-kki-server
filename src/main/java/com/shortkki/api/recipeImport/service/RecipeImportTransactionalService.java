@@ -60,7 +60,7 @@ public class RecipeImportTransactionalService {
         domainEventPublisher.publish(new RecipeIndexUpsertEvent(recipe.getId()));
         // TODO(#62): Notification 도메인 담당과 앱내 알림 저장/푸시 전송 분리 정책 확정 후 반영
         domainEventPublisher.publish(
-                NotificationEvent.importedRecipeCompleted(member.getId(), recipe.getId()));
+                NotificationEvent.importedRecipeCompleted(member.getId(), recipe.getId(), recipe.getBasicInfo().getTitle()));
         return recipe;
     }
 
