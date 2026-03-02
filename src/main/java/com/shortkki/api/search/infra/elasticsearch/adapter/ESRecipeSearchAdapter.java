@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -60,11 +61,11 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
                 searchWord, tags, ingredients, recipeSource, cuisineTypes, mealTypes, difficulties
         );
 
+        Pageable slicePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() + 1);
         NativeQueryBuilder queryBuilder = NativeQuery.builder()
                 .withQuery(applyFunctionScore(bool.build()._toQuery()))
                 .withSort(s -> s.score(sc -> sc.order(SortOrder.Desc)))
-                .withMaxResults(pageable.getPageSize() + 1)
-                .withPageable(pageable);
+                .withPageable(slicePageable);
 
         if (!hasSearchWord) {
             queryBuilder
@@ -87,11 +88,11 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
         bool.filter(f -> f.term(t -> t.field("contentStatus").value(ContentStatus.AVAILABLE.name())));
         bool.filter(f -> f.term(t -> t.field("playable").value(true)));
 
+        Pageable slicePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() + 1);
         NativeQuery query = NativeQuery.builder()
                 .withQuery(applyCurationFunctionScore(bool.build()._toQuery()))
                 .withSort(s -> s.score(sc -> sc.order(SortOrder.Desc)))
-                .withMaxResults(pageable.getPageSize() + 1)
-                .withPageable(pageable)
+                .withPageable(slicePageable)
                 .build();
 
         return executeSearch(pageable, query);

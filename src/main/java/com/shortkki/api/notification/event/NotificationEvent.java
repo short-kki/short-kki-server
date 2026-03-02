@@ -90,12 +90,12 @@ public record NotificationEvent(
                 ))
         );
     }
-
-    public static NotificationEvent importedRecipeCompleted(Long receiverId, Long recipeId) {
+    
+    public static NotificationEvent importedRecipeCompleted(Long receiverId, Long recipeId, String recipeTitle) {    
         return new NotificationEvent(
                 List.of(receiverId),
                 NotificationType.RECIPE_IMPORT_COMPLETED,
-                "외부 레시피 파싱이 완료되어 저장되었어요.",
+                "'" + recipeTitle + "' 레시피가 저장되었어요.",
                 recipeId,
                 toJson(Map.of("recipeId", String.valueOf(recipeId)))
         );
