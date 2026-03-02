@@ -8,15 +8,18 @@ import com.shortkki.api.feed.service.FeedService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/groups/{groupId}/feeds")
 @RequiredArgsConstructor
+@Validated
 public class FeedController {
 
     private final FeedService feedService;
@@ -25,8 +28,8 @@ public class FeedController {
     public ResponseEntity<BaseResponse<FeedSliceResponse>> getGroupFeeds(
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long groupId,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(required = false) @Positive Long cursor,
+            @RequestParam(defaultValue = "20") @Positive int size
     ) {
         FeedSliceResponse response = feedService.getGroupFeeds(loginMember.getId(), groupId, cursor, size);
         return ResponseEntity.ok(BaseResponse.success(response));
