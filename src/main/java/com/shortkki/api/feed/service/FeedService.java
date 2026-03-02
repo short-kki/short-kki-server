@@ -3,6 +3,7 @@ package com.shortkki.api.feed.service;
 import com.shortkki.api.feed.dto.request.CreateFeedRequest;
 import com.shortkki.api.feed.dto.request.UpdateFeedRequest;
 import com.shortkki.api.feed.dto.response.FeedResponse;
+import com.shortkki.api.feed.dto.response.FeedSliceResponse;
 import com.shortkki.api.feed.entity.Feed;
 import com.shortkki.api.feed.entity.FeedLike;
 import com.shortkki.api.feed.entity.FeedType;
@@ -28,6 +29,8 @@ import com.shortkki.global.event.DomainEventPublisher;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,14 +51,12 @@ public class FeedService {
     private final RecipeRepository recipeRepository;
     private final DomainEventPublisher domainEventPublisher;
 
-    public List<FeedResponse> getGroupFeeds(Long memberId, Long groupId) {
+    public FeedSliceResponse getGroupFeeds(Long memberId, Long groupId, Long cursor, int size) {
         Group group = findGroupById(groupId);
         groupMemberValidationService.validateGroupMember(memberId, group.getId());
-        List<Feed> feeds = feedRepository.findAllByGroupWithMember(group);
-        Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feeds);
-        return feeds.stream()
-                .map(feed -> FeedResponse.from(feed, likedFeedIds.contains(feed.getId())))
-                .toList();
+        Slice<Feed> feedSlice = feedRepository.findByGroupWithCursor(group, cursor, PageRequest.of(0, size));
+        Set<Long> likedFeedIds = feedLikeRepository.findLikedFeedIdsByMemberIdAndFeedIn(memberId, feedSlice.getContent());
+        return FeedSliceResponse.from(feedSlice, likedFeedIds);
     }
 
     public FeedResponse getFeed(Long memberId, Long groupId, Long feedId) {
