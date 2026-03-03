@@ -12,6 +12,8 @@ import com.shortkki.api.recipeBook.service.RecipeBookService;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +42,29 @@ public class RecipeQueryService {
     // TODO: 페이지네이션
     public List<RecipeResponse> getAll() {
         List<Recipe> recipes = recipeRepository.findAll();
+        List<Long> recipeIds = recipes.stream().map(Recipe::getId).toList();
+
+        Map<Long, List<RecipeStep>> stepsMap = recipeStepRepository.findByRecipeIdIn(recipeIds)
+                .stream()
+                .collect(Collectors.groupingBy(step -> step.getRecipe().getId()));
+
+        Map<Long, List<RecipeIngredient>> ingredientsMap = recipeIngredientRepository.findByRecipeIdIn(recipeIds)
+                .stream()
+                .collect(Collectors.groupingBy(ing -> ing.getRecipe().getId()));
+
+        Map<Long, List<String>> tagsMap = recipeTagRepository.findTagNamesByRecipeIdIn(recipeIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        row -> (Long) row[0],
+                        Collectors.mapping(row -> (String) row[1], Collectors.toList())));
 
         return recipes.stream()
-                .map(recipe -> toRecipeResponse(recipe, null))
+                .map(recipe -> RecipeResponse.toDto(
+                        recipe,
+                        stepsMap.getOrDefault(recipe.getId(), List.of()),
+                        ingredientsMap.getOrDefault(recipe.getId(), List.of()),
+                        tagsMap.getOrDefault(recipe.getId(), List.of()),
+                        List.of()))
                 .toList();
     }
 
