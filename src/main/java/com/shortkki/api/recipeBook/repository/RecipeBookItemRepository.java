@@ -64,6 +64,13 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
   @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
   List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
 
+  @Query("SELECT DISTINCT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id IN :recipeBookIds")
+  List<Long> findRecipeIdsByRecipeBookIds(@Param("recipeBookIds") List<Long> recipeBookIds);
+
+  @Modifying
+  @Query("DELETE FROM RecipeBookItem rbi WHERE rbi.recipeBook.id IN :recipeBookIds")
+  void deleteAllByRecipeBookIds(@Param("recipeBookIds") List<Long> recipeBookIds);
+
   @Query("""
       select i from RecipeBookItem i
       join fetch i.recipe
