@@ -3,6 +3,7 @@ package com.shortkki.global.error;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -48,6 +49,18 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         log.error("BindException: {}", errorMessage);
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(BaseResponse.error(ErrorCode.INVALID_INPUT_VALUE.getCode(), errorMessage));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<BaseResponse<Void>> handleConstraintViolationException(
+            ConstraintViolationException e) {
+        String errorMessage = e.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(Collectors.joining(", "));
+        log.error("ConstraintViolationException: {}", errorMessage);
         return ResponseEntity
                 .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
                 .body(BaseResponse.error(ErrorCode.INVALID_INPUT_VALUE.getCode(), errorMessage));

@@ -10,10 +10,13 @@ import com.shortkki.api.calendar.repository.RecipeQueueRepository;
 import com.shortkki.api.group.entity.Group;
 import com.shortkki.api.group.application.service.GroupMemberValidationService;
 import com.shortkki.api.group.application.service.GroupQueryService;
+import com.shortkki.api.group.repository.GroupMemberRepository;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.api.member.service.MemberQueryService;
+import com.shortkki.api.notification.event.NotificationEvent;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
+import com.shortkki.global.event.DomainEventPublisher;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +43,8 @@ public class RecipeCalendarService {
     private final RecipeCalendarRepository recipeCalendarRepository;
     private final RecipeQueueRepository recipeQueueRepository;
     private final MemberQueryService memberQueryService;
+    private final GroupMemberRepository groupMemberRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     // TODO: 생성 개수 제한 두기
     public RecipeCalendarDetailResponse createFromQueue(Long memberId, CreateRecipeCalendarFromQueueRequest request) {
@@ -53,6 +58,11 @@ public class RecipeCalendarService {
 
         recipeCalendarRepository.save(calendar);
         recipeQueueRepository.delete(queue);
+
+        if (request.groupId() != null) {
+            publishCalendarUpdateNotification(
+                    request.groupId(), memberId, calendar.getId(), request.scheduledDate().toString());
+        }
 
         return RecipeCalendarDetailResponse.from(calendar);
     }
@@ -107,6 +117,19 @@ public class RecipeCalendarService {
         return RecipeCalendar.createForGroup(
                 queue.getRecipe(), group, scheduledDate, sortOrder
         );
+    }
+
+    private void publishCalendarUpdateNotification(Long groupId, Long memberId, Long calendarId, String date) {
+        List<Long> receiverIds = groupMemberRepository.findMemberIdsByGroupId(groupId)
+                .stream()
+                .filter(id -> !id.equals(memberId))
+                .toList();
+
+        if (!receiverIds.isEmpty()) {
+            domainEventPublisher.publish(
+                    NotificationEvent.calendarUpdate(receiverIds, calendarId, date, groupId)
+            );
+        }
     }
 
     private void validateReorderRequest(List<Long> requestIds, List<RecipeCalendar> calendars) {
