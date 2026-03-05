@@ -41,11 +41,11 @@ public class RecipeQueryService {
 
     // TODO: 페이지네이션
     public List<RecipeResponse> getAll() {
-        List<Recipe> recipes = recipeRepository.findAll();
-        if (recipes.isEmpty()) {
+        List<Long> recipeIds = recipeRepository.findAllActiveIds();
+        if (recipeIds.isEmpty()) {
             return List.of();
         }
-        List<Long> recipeIds = recipes.stream().map(Recipe::getId).toList();
+        List<Recipe> recipes = recipeRepository.findActiveByIdsWithAssociations(recipeIds);
 
         Map<Long, List<RecipeStep>> stepsMap = recipeStepRepository.findByRecipeIdIn(recipeIds)
                 .stream()

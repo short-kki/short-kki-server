@@ -128,12 +128,37 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 ## 테스트
 
 ### 테스트 기반 클래스
-- `IntegrationTestBase` - Testcontainers MySQL + Elasticsearch, MockMvc와 ObjectMapper 제공
-- `UnitTestBase` - strict stubs 설정의 Mockito 사용
-- `@WithMockMember` - 테스트에서 인증된 사용자를 모킹하는 커스텀 어노테이션
+- `IntegrationTestBase` - `@ServiceConnection`으로 Testcontainers MySQL + Elasticsearch 자동 관리, MockMvc/ObjectMapper/JdbcTemplate 제공. 정적 컨테이너로 테스트 클래스 간 재사용
+- `UnitTestBase` - `STRICT_STUBS` 모드의 Mockito (미사용 stub은 에러). Spring 컨텍스트 미로드
+- `@WithMockMember` - 커스텀 인증 모킹. 커스터마이징: `@WithMockMember(id=2L, email="test@test.com", role=Role.ADMIN)`
 
 ### 테스트 프로필
-테스트는 `@ActiveProfiles("test")`로 Testcontainers MySQL/Elasticsearch 사용.
+테스트는 `@ActiveProfiles("test")`로 Testcontainers MySQL/Elasticsearch 사용. `ddl-auto: none` (Flyway가 스키마 관리).
+
+## CI/CD
+
+### GitHub Actions
+- **CI (`ci.yml`):** push/PR → main/develop에서 트리거. JDK 21 빌드+테스트, JaCoCo 커버리지 리포트 PR 코멘트
+- **CD Dev (`cd-dev.yml`):** develop push → Docker 이미지(linux/arm64) 빌드 → GHCR push → EC2 배포
+- **CD Prod (`cd-prod.yml`):** main push → 프로덕션 배포
+- 배포 스크립트: `scripts/deploy-*.sh`
+
+## 모니터링
+
+- Actuator 엔드포인트: `/actuator/health`, `/actuator/prometheus`
+- Micrometer Prometheus 메트릭 (application tag: `short-kki`)
+- 모니터링 스택: `monitoring/docker-compose.yml` (Prometheus:9090, Grafana:3000)
+
+## Git 컨벤션
+
+### 커밋 메시지
+- 형식: `{type}: {설명}` (예: `refactor: GroupService 북마크 보정 N+1 쿼리 배치 조회로 개선`)
+- type: `feat`, `fix`, `refactor`, `docs`, `test`, `chore` 등
+- 이슈 번호 참조: `(#{이슈번호})` 접미사 (예: `(#86)`)
+
+### 브랜치 네이밍
+- `feat/#{이슈번호}-설명`, `fix/#{이슈번호}-설명`, `refactor/#{이슈번호}-설명`
+- PR 대상 브랜치: `develop`
 
 ## 주요 컨벤션
 
@@ -143,3 +168,4 @@ Repository는 Spring Data JPA와 QueryDSL을 함께 사용:
 - 설정 속성은 `@ConfigurationProperties`로 바인딩 (예: `FileUploadProperties`, `OAuth2Properties`)
 - 예외는 `ErrorCode` enum에 정의 후 적절한 예외 클래스 사용
 - JPA `open-in-view: false`, `default_batch_fetch_size: 100` 설정
+- 검증 로직은 `*ValidationService` 클래스로 분리 (예: `GroupValidationService`, `RecipeBookValidationService`)
