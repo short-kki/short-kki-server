@@ -3,6 +3,7 @@ package com.shortkki.api.recipeBook.repository;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,17 +62,8 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
       @Param("toBook") RecipeBook toBook,
       @Param("recipeId") Long recipeId);
 
-  @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
-  List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
-
-  @Query("""
-      select i from RecipeBookItem i
-      join fetch i.recipe
-      where i.recipeBook.id in :recipeBookIds
-      order by i.createdAt desc, i.id desc
-      """)
-  Slice<RecipeBookItem> findAllByRecipeBookIdsWithRecipe(
-      @Param("recipeBookIds") List<Long> recipeBookIds, Pageable pageable);
+  @Query("SELECT DISTINCT rbi.recipe.id FROM RecipeBookItem rbi JOIN rbi.recipeBook rb WHERE rb.member.id = :memberId AND rbi.recipe.id IN :recipeIds")
+  Set<Long> findBookmarkedRecipeIdsByMemberAndRecipeIds(@Param("memberId") Long memberId, @Param("recipeIds") List<Long> recipeIds);
 
   @Query("""
       select i from RecipeBookItem i

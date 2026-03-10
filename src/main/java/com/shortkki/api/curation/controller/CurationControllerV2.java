@@ -28,7 +28,7 @@ public class CurationControllerV2 {
             Pageable pageable
     ) {
         LocalDateTime now = LocalDateTime.now();
-        CurationRecommendsResponse response = curationQueryService.getRecommendedCurations(now, pageable);
+        CurationRecommendsResponse response = curationQueryService.getRecommendedCurations(member.getId(), now, pageable);
         return ResponseEntity.ok(BaseResponse.success("추천 큐레이션이 조회되었습니다.", response));
     }
 
@@ -38,7 +38,7 @@ public class CurationControllerV2 {
             @PathVariable long id,
             Pageable pageable
     ) {
-        RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCuration(id, pageable);
+        RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCuration(member.getId(), id, pageable);
         return ResponseEntity.ok(BaseResponse.success("큐레이션 레시피 검색 결과가 조회되었습니다.", response));
     }
 }

@@ -1,6 +1,6 @@
 package com.shortkki.api.curation.controller.dto.response;
 
-import com.shortkki.api.recipe.dto.response.RecipeSummaryResponse;
+import com.shortkki.api.recipe.dto.response.RecipeSearchItemResponse;
 import com.shortkki.api.recipe.entity.CuisineType;
 import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
@@ -15,7 +15,7 @@ public record CurationRecommendResponse(
         String description,
         Set<MealType> mealTypes,
         Set<CuisineType> cuisineTypes,
-        List<RecipeSummaryResponse> recipes,
+        List<RecipeSearchItemResponse> recipes,
         SlicePageInfoResponse pageInfo
 ) {
 }

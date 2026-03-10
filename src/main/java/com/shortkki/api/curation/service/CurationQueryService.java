@@ -7,8 +7,9 @@ import com.shortkki.api.curation.entity.Curation;
 import com.shortkki.api.curation.entity.DayType;
 import com.shortkki.api.curation.entity.TimeType;
 import com.shortkki.api.curation.repository.CurationRepository;
-import com.shortkki.api.recipe.dto.response.RecipeSummaryResponse;
+import com.shortkki.api.recipe.dto.response.RecipeSearchItemResponse;
 import com.shortkki.api.recipe.entity.RecipeSource;
+import com.shortkki.api.recipeBook.service.RecipeBookReadService;
 import com.shortkki.api.search.application.port.RecipeSearchPort;
 import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import com.shortkki.global.error.ErrorCode;
@@ -16,6 +17,7 @@ import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,31 +34,34 @@ public class CurationQueryService {
 
     private final CurationRepository curationRepository;
     private final RecipeSearchPort jpaSearchPort;
+    private final RecipeBookReadService recipeBookReadService;
 
     public CurationQueryService(
             CurationRepository curationRepository,
-            @Qualifier("jpaRecipeSearch") RecipeSearchPort jpaSearchPort
+            @Qualifier("jpaRecipeSearch") RecipeSearchPort jpaSearchPort,
+            RecipeBookReadService recipeBookReadService
     ) {
         this.curationRepository = curationRepository;
         this.jpaSearchPort = jpaSearchPort;
+        this.recipeBookReadService = recipeBookReadService;
     }
 
-    public CurationRecommendsResponse getRecommendedCurations(LocalDateTime now, Pageable pageable) {
+    public CurationRecommendsResponse getRecommendedCurations(Long memberId, LocalDateTime now, Pageable pageable) {
         Pageable limited = limitPageSize(pageable);
         Slice<Curation> curations = getCurrentCurations(now, limited);
         Pageable recipePageable = PageRequest.of(0, RECIPES_PER_CURATION);
 
         List<CurationRecommendResponse> items = curations.getContent().stream()
-                .map(c -> toCurationRecommendResponse(c, search(c, recipePageable)))
+                .map(c -> toCurationRecommendResponse(memberId, c, search(c, recipePageable)))
                 .toList();
 
         return new CurationRecommendsResponse(items, SlicePageInfoResponse.from(curations));
     }
 
-    public RecipeCurationSearchResponse searchRecipesByCuration(long id, Pageable pageable) {
+    public RecipeCurationSearchResponse searchRecipesByCuration(Long memberId, long id, Pageable pageable) {
         Curation curation = findById(id);
         Slice<RecipeSearchItem> result = search(curation, pageable);
-        return toRecipeCurationSearchResponse(curation, result);
+        return toRecipeCurationSearchResponse(memberId, curation, result);
     }
 
     public Curation findById(long id) {
@@ -85,11 +90,9 @@ public class CurationQueryService {
     }
 
     private CurationRecommendResponse toCurationRecommendResponse(
-            Curation curation, Slice<RecipeSearchItem> searchResult
+            Long memberId, Curation curation, Slice<RecipeSearchItem> searchResult
     ) {
-        List<RecipeSummaryResponse> recipes = searchResult.stream()
-                .map(RecipeSummaryResponse::from)
-                .toList();
+        List<RecipeSearchItemResponse> recipes = toSearchItemResponses(memberId, searchResult.getContent());
 
         return CurationRecommendResponse.builder()
                 .curationId(curation.getId())
@@ -103,12 +106,17 @@ public class CurationQueryService {
     }
 
     private RecipeCurationSearchResponse toRecipeCurationSearchResponse(
-            Curation curation, Slice<RecipeSearchItem> searchResult
+            Long memberId, Curation curation, Slice<RecipeSearchItem> searchResult
     ) {
-        List<RecipeSummaryResponse> recipes = searchResult.stream()
-                .map(RecipeSummaryResponse::from)
-                .toList();
-
+        List<RecipeSearchItemResponse> recipes = toSearchItemResponses(memberId, searchResult.getContent());
         return new RecipeCurationSearchResponse(curation.getId(), recipes, SlicePageInfoResponse.from(searchResult));
+    }
+
+    private List<RecipeSearchItemResponse> toSearchItemResponses(Long memberId, List<RecipeSearchItem> items) {
+        List<Long> recipeIds = items.stream().map(RecipeSearchItem::id).toList();
+        Set<Long> bookmarkedIds = recipeBookReadService.findBookmarkedRecipeIds(memberId, recipeIds);
+        return items.stream()
+                .map(item -> RecipeSearchItemResponse.from(item, bookmarkedIds.contains(item.id())))
+                .toList();
     }
 }

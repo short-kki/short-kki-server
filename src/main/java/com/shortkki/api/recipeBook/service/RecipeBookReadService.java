@@ -11,6 +11,7 @@ import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import com.shortkki.api.recipeBook.repository.RecipeBookItemRepository;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -37,6 +38,13 @@ public class RecipeBookReadService {
     public List<Long> findOwnedRecipeBookIdsByRecipe(Long memberId, Long recipeId) {
         return recipeBookItemRepository.findOwnedRecipeBookIdsByRecipeIdAndMemberId(recipeId,
                 memberId);
+    }
+
+    public Set<Long> findBookmarkedRecipeIds(Long memberId, List<Long> recipeIds) {
+        if (recipeIds.isEmpty()) {
+            return Set.of();
+        }
+        return recipeBookItemRepository.findBookmarkedRecipeIdsByMemberAndRecipeIds(memberId, recipeIds);
     }
 
     public RecipeBookListResponse getGroupRecipeBooks(Long memberId, Long groupId,

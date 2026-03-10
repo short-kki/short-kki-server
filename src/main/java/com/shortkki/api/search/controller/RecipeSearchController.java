@@ -6,12 +6,14 @@ import com.shortkki.api.recipe.entity.MealType;
 import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.search.application.service.RecipeSearchService;
 import com.shortkki.api.search.controller.dto.RecipeSearchResponse;
+import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,7 @@ public class RecipeSearchController {
 
     @GetMapping("/api/v1/recipes/search")
     public ResponseEntity<BaseResponse<RecipeSearchResponse>> search(
+            @AuthenticationPrincipal LoginMember member,
             @RequestParam String searchWord,
             @PageableDefault(size = 20) Pageable pageable,
             @RequestParam(required = false) RecipeSource recipeSource,
@@ -32,13 +35,14 @@ public class RecipeSearchController {
             @RequestParam(required = false) Set<Difficulty> difficulties
     ) {
         RecipeSearchResponse response = recipeSearchService.search(
-                pageable, searchWord, recipeSource, cuisineTypes, mealTypes, difficulties
+                member.getId(), pageable, searchWord, recipeSource, cuisineTypes, mealTypes, difficulties
         );
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
     @GetMapping("/api/v2/recipes/search")
     public ResponseEntity<BaseResponse<RecipeSearchResponse>> searchV2(
+            @AuthenticationPrincipal LoginMember member,
             @RequestParam(required = false) String searchWord,
             @PageableDefault(size = 20) Pageable pageable,
             @RequestParam(required = false) RecipeSource recipeSource,
@@ -47,7 +51,7 @@ public class RecipeSearchController {
             @RequestParam(required = false) Set<Difficulty> difficulties
     ) {
         RecipeSearchResponse response = recipeSearchService.searchV2(
-                pageable, searchWord, recipeSource, cuisineTypes, mealTypes, difficulties
+                member.getId(), pageable, searchWord, recipeSource, cuisineTypes, mealTypes, difficulties
         );
         return ResponseEntity.ok(BaseResponse.success(response));
     }
