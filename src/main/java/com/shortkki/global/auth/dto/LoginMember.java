@@ -18,13 +18,15 @@ public class LoginMember implements UserDetails {
     private final String email;
     private final String name;
     private final Role role;
+    private final String jti;
 
     @Builder
-    private LoginMember(Long id, String email, String name, Role role) {
+    private LoginMember(Long id, String email, String name, Role role, String jti) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.role = role;
+        this.jti = jti;
     }
 
     public static LoginMember from(Member member) {

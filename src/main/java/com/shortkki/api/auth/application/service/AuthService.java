@@ -45,6 +45,9 @@ public class AuthService {
     private final RefreshTokenStore refreshTokenStore;
     private final AccessTokenBlacklist accessTokenBlacklist;
 
+    @Value("${jwt.access-token-validity}")
+    private long accessTokenValidityMs;
+
     @Value("${jwt.refresh-token-validity}")
     private long refreshTokenValidityMs;
 
@@ -349,34 +352,37 @@ public class AuthService {
             throw new BadRequestException(ErrorCode.INVALID_TOKEN);
         }
 
-        String storedToken = refreshTokenStore.find(memberId);
-        if (storedToken == null) {
-            throw new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
-        }
-
-        if (!storedToken.equals(refreshToken)) {
-            refreshTokenStore.delete(memberId);
-            throw new BusinessException(ErrorCode.REFRESH_TOKEN_REUSED);
-        }
-
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        Duration ttl = Duration.ofMillis(refreshTokenValidityMs);
+
+        // Lua 스크립트로 원자적 CAS: 저장된 RT == 제출된 RT이면 새 RT로 교체
+        boolean rotated = refreshTokenStore.rotate(memberId, refreshToken, newRefreshToken, ttl);
+        if (!rotated) {
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_REUSED);
+        }
 
         String newAccessToken = jwtTokenProvider.createAccessToken(
                 member.getId(),
                 member.getEmail(),
                 member.getRole()
         );
-        String newRefreshToken = createAndStoreRefreshToken(member.getId());
 
         return new RefreshTokenResponse(newAccessToken, newRefreshToken);
     }
 
-    public void logout(String accessToken, String refreshToken) {
-        Long memberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
+    public void logout(Long memberId, String jti, String refreshToken) {
+        validateRefreshToken(refreshToken);
+
+        Long rtMemberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
+        if (!Objects.equals(memberId, rtMemberId)) {
+            throw new BadRequestException(ErrorCode.INVALID_TOKEN);
+        }
+
         refreshTokenStore.delete(memberId);
-        String jti = jwtTokenProvider.getJti(accessToken);
-        accessTokenBlacklist.add(jti, jwtTokenProvider.getRemainingValidity(accessToken));
+        accessTokenBlacklist.add(jti, Duration.ofMillis(accessTokenValidityMs));
     }
 
     private String createAndStoreRefreshToken(Long memberId) {

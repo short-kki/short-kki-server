@@ -42,9 +42,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             try {
                 if (jwtTokenProvider.validateToken(token)) {
-                    String jti = jwtTokenProvider.getJti(token);
-                    if (jti != null && accessTokenBlacklist.isBlacklisted(jti)) {
+                    if (!jwtTokenProvider.isAccessToken(token)) {
                         throw new BusinessException(ErrorCode.INVALID_TOKEN);
+                    }
+                    try {
+                        String jti = jwtTokenProvider.getJti(token);
+                        if (jti == null) {
+                            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+                        }
+                        if (accessTokenBlacklist.isBlacklisted(jti)) {
+                            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+                        }
+                    } catch (BusinessException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        log.warn("블랙리스트 조회 실패, 건너뜀: {}", e.getMessage());
                     }
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -93,10 +93,11 @@ class RefreshTokenRotationTest extends IntegrationTestBase {
         String rt = jwtTokenProvider.createRefreshToken(testMember.getId());
         refreshTokenStore.store(testMember.getId(), rt, Duration.ofMinutes(10));
 
-        LogoutRequest request = new LogoutRequest(at, rt);
+        LogoutRequest request = new LogoutRequest(rt);
 
         // when
-        mockMvc.perform(post("/api/auth/logout")
+        mockMvc.perform(post("/api/v1/auth/logout")
+                        .header("Authorization", "Bearer " + at)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())

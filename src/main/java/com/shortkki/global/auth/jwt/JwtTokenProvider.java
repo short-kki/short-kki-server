@@ -83,6 +83,7 @@ public class JwtTokenProvider {
                 .id(memberId)
                 .email(email)
                 .role(role)
+                .jti(claims.getId())
                 .build();
 
         return new UsernamePasswordAuthenticationToken(loginMember, "",
