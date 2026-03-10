@@ -1,6 +1,7 @@
 package com.shortkki.test.security;
 
 import com.shortkki.global.auth.dto.LoginMember;
+import java.util.UUID;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ public final class WithMockMemberSecurityContextFactory
                 .email(annotation.email())
                 .name(annotation.name())
                 .role(annotation.role())
+                .jti(UUID.randomUUID().toString())
                 .build();
 
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

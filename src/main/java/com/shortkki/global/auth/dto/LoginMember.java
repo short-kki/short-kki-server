@@ -29,12 +29,13 @@ public class LoginMember implements UserDetails {
         this.jti = jti;
     }
 
-    public static LoginMember from(Member member) {
+    public static LoginMember from(Member member, String jti) {
         return LoginMember.builder()
                 .id(member.getId())
                 .email(member.getEmail())
                 .name(member.getName())
                 .role(member.getRole())
+                .jti(jti)
                 .build();
     }
 
