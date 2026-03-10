@@ -94,6 +94,10 @@ public class Member extends BaseEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
+    public void reactivate() {
+        this.deletedAt = null;
+    }
+
     public boolean isDeleted() {
         return deletedAt != null;
     }

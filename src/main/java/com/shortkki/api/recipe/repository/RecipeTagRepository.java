@@ -28,6 +28,15 @@ public interface RecipeTagRepository extends JpaRepository<RecipeTag, Long> {
             """)
     List<String> findTagNamesByRecipeId(@Param("recipeId") Long recipeId);
 
+    @Query("""
+                select rt.recipeId, t.name
+                from RecipeTag rt
+                join Tag t
+                    on t.id = rt.tagId
+                where rt.recipeId in :recipeIds
+            """)
+    List<Object[]> findTagNamesByRecipeIdIn(@Param("recipeIds") List<Long> recipeIds);
+
     @Modifying
     @Query("delete from RecipeTag rt where rt.recipeId = :recipeId")
     void deleteByRecipeId(@Param("recipeId") Long recipeId);

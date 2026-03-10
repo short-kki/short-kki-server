@@ -73,6 +73,18 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
     }
 
     @Override
+    public List<Long> findRecipeIdsBookmarkedElsewhere(Long groupId, List<Long> recipeIds) {
+        return queryFactory
+                .selectDistinct(recipeBookItem.recipe.id)
+                .from(recipeBookItem)
+                .where(
+                        recipeBookItem.recipe.id.in(recipeIds),
+                        recipeBookItem.recipeBook.groupId.isNull()
+                                .or(recipeBookItem.recipeBook.groupId.ne(groupId)))
+                .fetch();
+    }
+
+    @Override
     public Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds) {
         NumberExpression<Long> countExpr = recipeBookItem.count();
         List<Tuple> rows = queryFactory

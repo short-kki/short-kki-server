@@ -77,11 +77,25 @@ public record NotificationEvent(
         );
     }
 
-    public static NotificationEvent importedRecipeCompleted(Long receiverId, Long recipeId) {
+    public static NotificationEvent feedAdded(List<Long> receiverIds, Long feedId,
+            String memberName, Long groupId) {
+        return new NotificationEvent(
+                receiverIds,
+                NotificationType.FEED_ADDED,
+                memberName + "님이 새 피드를 작성했습니다.",
+                feedId,
+                toJson(Map.of(
+                        "groupId", String.valueOf(groupId),
+                        "feedId", String.valueOf(feedId)
+                ))
+        );
+    }
+    
+    public static NotificationEvent importedRecipeCompleted(Long receiverId, Long recipeId, String recipeTitle) {    
         return new NotificationEvent(
                 List.of(receiverId),
                 NotificationType.RECIPE_IMPORT_COMPLETED,
-                "외부 레시피 파싱이 완료되어 저장되었어요.",
+                "'" + recipeTitle + "' 레시피가 저장되었어요.",
                 recipeId,
                 toJson(Map.of("recipeId", String.valueOf(recipeId)))
         );

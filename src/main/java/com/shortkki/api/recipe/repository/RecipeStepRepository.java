@@ -8,5 +8,7 @@ public interface RecipeStepRepository extends JpaRepository<RecipeStep, Long> {
 
     List<RecipeStep> findByRecipeId(Long recipeId);
 
+    List<RecipeStep> findByRecipeIdIn(List<Long> recipeIds);
+
     void deleteByRecipeId(Long recipeId);
 }

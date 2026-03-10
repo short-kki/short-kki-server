@@ -15,4 +15,6 @@ public interface RecipeBookItemRepositoryCustom {
             Long excludeBookId);
 
     Map<Long, Long> countByRecipeBookIds(List<Long> recipeBookIds);
+
+    List<Long> findRecipeIdsBookmarkedElsewhere(Long groupId, List<Long> recipeIds);
 }

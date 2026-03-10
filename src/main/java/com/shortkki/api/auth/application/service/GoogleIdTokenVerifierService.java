@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.HashSet;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -26,46 +24,33 @@ public class GoogleIdTokenVerifierService {
     private final OAuth2Properties oAuth2Properties;
 
     private GoogleIdTokenVerifier verifier;
-    private Set<String> allowedClientIds;
+    private String webClientId;
 
     @PostConstruct
     public void init() {
         // audience 검증 없이 서명만 검증하는 verifier 생성
-        // audience는 수동으로 검증
+        // audience는 수동으로 Web Client ID와 비교 검증
         this.verifier = new GoogleIdTokenVerifier.Builder(
                 new NetHttpTransport(),
                 GsonFactory.getDefaultInstance())
                 .build();
 
-        // 허용된 클라이언트 ID 목록 수집
-        this.allowedClientIds = getGoogleClientIds();
+        this.webClientId = resolveWebClientId();
 
-        if (allowedClientIds.isEmpty()) {
-            throw new IllegalStateException(
-                    "No Google client IDs configured. Set oauth2.provider.google-web.client-id (or google-ios/android)");
-        }
-
-        log.info("GoogleIdTokenVerifier initialized with {} client IDs", allowedClientIds.size());
+        log.info("GoogleIdTokenVerifier initialized with Web Client ID");
     }
 
-    private Set<String> getGoogleClientIds() {
-        Set<String> clientIds = new HashSet<>();
-
-        String[] providerKeys = {"google-ios", "google-android", "google-web"};
-
-        for (String key : providerKeys) {
-            try {
-                String clientId = oAuth2Properties.getProvider(key).getClientId();
-                if (clientId != null && !clientId.isBlank() && !clientId.startsWith("${")) {
-                    clientIds.add(clientId);
-                    log.debug("Added {} client ID", key);
-                }
-            } catch (Exception e) {
-                log.debug("{} not configured", key);
+    private String resolveWebClientId() {
+        try {
+            String clientId = oAuth2Properties.getProvider("google-web").getClientId();
+            if (clientId != null && !clientId.isBlank() && !clientId.startsWith("${")) {
+                return clientId;
             }
+        } catch (Exception e) {
+            // fall through
         }
-
-        return clientIds;
+        throw new IllegalStateException(
+                "Google Web Client ID not configured. Set oauth2.provider.google-web.client-id");
     }
 
     public GoogleUserInfo verify(String idTokenString, Platform platform) {
@@ -83,9 +68,9 @@ public class GoogleIdTokenVerifierService {
             GoogleIdToken.Payload payload = idToken.getPayload();
             String aud = (String) payload.getAudience();
 
-            // audience 검증
-            if (!allowedClientIds.contains(aud)) {
-                log.error("Token audience not in allowed list. Add client ID to oauth2.provider config.");
+            // audience 검증 (iOS/Android SDK의 idToken도 aud는 항상 Web Client ID)
+            if (!webClientId.equals(aud)) {
+                log.error("Token audience mismatch. expected={}, actual={}", webClientId, aud);
                 throw new BusinessException(ErrorCode.INVALID_ID_TOKEN,
                         "허용되지 않은 클라이언트입니다.");
             }
