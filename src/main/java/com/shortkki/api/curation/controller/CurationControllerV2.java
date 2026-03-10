@@ -2,7 +2,7 @@ package com.shortkki.api.curation.controller;
 
 import com.shortkki.api.curation.controller.dto.response.CurationRecommendsResponse;
 import com.shortkki.api.curation.controller.dto.response.RecipeCurationSearchResponse;
-import com.shortkki.api.curation.service.CurationQueryService;
+import com.shortkki.api.curation.service.CurationQueryServiceV2;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class CurationControllerV2 {
 
-    private final CurationQueryService curationQueryService;
+    private final CurationQueryServiceV2 curationQueryService;
 
     @GetMapping("/api/v2/recipes/curations/recommended")
     public ResponseEntity<BaseResponse<CurationRecommendsResponse>> getRecommendedCurationsV2(
@@ -28,7 +28,7 @@ public class CurationControllerV2 {
             Pageable pageable
     ) {
         LocalDateTime now = LocalDateTime.now();
-        CurationRecommendsResponse response = curationQueryService.getRecommendedCurationsV2(now, pageable);
+        CurationRecommendsResponse response = curationQueryService.getRecommendedCurations(now, pageable);
         return ResponseEntity.ok(BaseResponse.success("추천 큐레이션이 조회되었습니다.", response));
     }
 
@@ -38,7 +38,7 @@ public class CurationControllerV2 {
             @PathVariable long id,
             Pageable pageable
     ) {
-        RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCurationV2(id, pageable);
+        RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCuration(id, pageable);
         return ResponseEntity.ok(BaseResponse.success("큐레이션 레시피 검색 결과가 조회되었습니다.", response));
     }
 }
