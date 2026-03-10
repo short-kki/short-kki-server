@@ -11,9 +11,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, Long>,
-    RecipeBookItemRepositoryCustom {
-
+public interface RecipeBookItemRepository
+        extends JpaRepository<RecipeBookItem, Long>, RecipeBookItemRepositoryCustom
+{
   List<RecipeBookItem> findAllByRecipeBookId(Long recipeBookId);
 
   long countByRecipeBookId(Long recipeBookId);
@@ -75,15 +75,6 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
        WHERE rbi.recipeBook.id IN :recipeBookIds
       """)
   void deleteAllByRecipeBookIds(@Param("recipeBookIds") List<Long> recipeBookIds);
-
-  @Query("""
-      SELECT DISTINCT rbi.recipe.id
-        FROM RecipeBookItem rbi
-        JOIN rbi.recipeBook rb
-       WHERE rb.member.id = :memberId
-         AND rbi.recipe.id IN :recipeIds
-      """)
-  Set<Long> findBookmarkedRecipeIdsByMemberAndRecipeIds(@Param("memberId") Long memberId, @Param("recipeIds") List<Long> recipeIds);
 
   @Query("""
       select i from RecipeBookItem i

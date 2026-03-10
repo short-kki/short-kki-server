@@ -28,6 +28,10 @@ import org.hibernate.annotations.Fetch;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecipeBookItem extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private RecipeBook recipeBook;
@@ -35,11 +39,6 @@ public class RecipeBookItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
 
     @Builder
     private RecipeBookItem(RecipeBook recipeBook, Recipe recipe) {
@@ -53,6 +52,5 @@ public class RecipeBookItem extends BaseEntity {
                 .recipe(recipe)
                 .build();
     }
-
 
 }

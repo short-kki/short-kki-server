@@ -71,10 +71,10 @@ public class RecipeBookController {
     @GetMapping("/recipes/{recipeId}")
     public ResponseEntity<BaseResponse<RecipeBookIdsResponse>> findRecipeBookIdsByRecipe(
             @AuthenticationPrincipal LoginMember loginMember,
-            @PathVariable Long recipeId) {
+            @PathVariable Long recipeId
+    ) {
         RecipeBookIdsResponse response = RecipeBookIdsResponse.from(
-                recipeBookService.findOwnedRecipeBookIdsByRecipe(
-                        loginMember.getId(), recipeId));
+                recipeBookService.findOwnedRecipeBookIdsByRecipe(loginMember.getId(), recipeId));
         return ResponseEntity.ok(BaseResponse.success(response));
     }
 
@@ -83,7 +83,8 @@ public class RecipeBookController {
             @AuthenticationPrincipal LoginMember loginMember,
             @PathVariable Long id,
             @PageableDefault(size = 12) Pageable pageable,
-            @RequestParam(name = "recipeSort", defaultValue = "RECENT") RecipeBookRecipeSortType recipeSort) {
+            @RequestParam(name = "recipeSort", defaultValue = "RECENT") RecipeBookRecipeSortType recipeSort
+    ) {
         Pageable sanitizedPageable = sanitizePageable(pageable);
         RecipeBookDetailResponse response = recipeBookService.findById(
                 loginMember.getId(), id, sanitizedPageable, recipeSort);
