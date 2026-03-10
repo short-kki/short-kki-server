@@ -92,415 +92,415 @@ VALUES ('2026-02-05 17:29:39.649239', 14, '2026-02-05 17:29:39.649239', '델리 
 
 
 -- 원본 컨텐츠
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:41:49.600759', 26, 4, '2026-02-05 16:41:49.600759', 'e_AdUSt4gkE',
+VALUES ('2026-02-05 16:41:49.600759', 26, 4, '2026-02-05 16:41:49.600759', 'e_AdUSt4gkE',
         'https://www.youtube.com/shorts/e_AdUSt4gkE',
         'https://i.ytimg.com/vi/e_AdUSt4gkE/hqdefault.jpg', '제발그냥데치지마세요 고사리나물 황금레시피 #shrots',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:45:12.267962', 27, 4, '2026-02-05 16:45:12.267962', 'PGUhdvta16Y',
+VALUES ('2026-02-05 16:45:12.267962', 27, 4, '2026-02-05 16:45:12.267962', 'PGUhdvta16Y',
         'https://www.youtube.com/shorts/PGUhdvta16Y',
         'https://i.ytimg.com/vi/PGUhdvta16Y/hqdefault.jpg', '한정식집 양배추 흑임자드레싱 샐러드 #shrots', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:46:18.135380', 28, 4, '2026-02-05 16:46:18.135380', '1eWh49zqJmI',
+VALUES ('2026-02-05 16:46:18.135380', 28, 4, '2026-02-05 16:46:18.135380', '1eWh49zqJmI',
         'https://www.youtube.com/shorts/1eWh49zqJmI',
         'https://i.ytimg.com/vi/1eWh49zqJmI/hqdefault.jpg',
         '조기구이 할때 식용유 절대 쓰지마세요! #생선구이 #조기구이 #shorts', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:46:25.792252', 29, 4, '2026-02-05 16:46:25.792252', 'tcwAwQcd4oE',
+VALUES ('2026-02-05 16:46:25.792252', 29, 4, '2026-02-05 16:46:25.792252', 'tcwAwQcd4oE',
         'https://www.youtube.com/shorts/tcwAwQcd4oE',
         'https://i.ytimg.com/vi/tcwAwQcd4oE/hqdefault.jpg', '유명고깃집 파절이와 육전 #shrots', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:46:37.908962', 30, 4, '2026-02-05 16:46:37.908962', 'aKdWMEY6Rdw',
+VALUES ('2026-02-05 16:46:37.908962', 30, 4, '2026-02-05 16:46:37.908962', 'aKdWMEY6Rdw',
         'https://www.youtube.com/shorts/aKdWMEY6Rdw',
         'https://i.ytimg.com/vi/aKdWMEY6Rdw/hqdefault.jpg', '[⭐️100만⭐️] 명절에꼭만들어야하는 나박김치 #shrots',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:46:46.921124', 31, 4, '2026-02-05 16:46:46.921124', 'dRNb-3TiewI',
+VALUES ('2026-02-05 16:46:46.921124', 31, 4, '2026-02-05 16:46:46.921124', 'dRNb-3TiewI',
         'https://www.youtube.com/shorts/dRNb-3TiewI',
         'https://i.ytimg.com/vi/dRNb-3TiewI/hqdefault.jpg',
         '[⭐️70만⭐️] 양배추를 이렇게 만들었더니 너무 맛나요!! 간단하면서 매일 먹어도 질리지 않구요!', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:46:57.154563', 32, 4, '2026-02-05 16:46:57.154563', 'mN2MrravYMA',
+VALUES ('2026-02-05 16:46:57.154563', 32, 4, '2026-02-05 16:46:57.154563', 'mN2MrravYMA',
         'https://www.youtube.com/shorts/mN2MrravYMA',
         'https://i.ytimg.com/vi/mN2MrravYMA/hqdefault.jpg',
         '[⭐️30만⭐️] 명절에는 입이 개운한 도라지무침 #shrots #명절반찬', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:47:06.311774', 33, 4, '2026-02-05 16:47:06.311774', 'ecBoonhnbrY',
+VALUES ('2026-02-05 16:47:06.311774', 33, 4, '2026-02-05 16:47:06.311774', 'ecBoonhnbrY',
         'https://www.youtube.com/shorts/ecBoonhnbrY',
         'https://i.ytimg.com/vi/ecBoonhnbrY/hqdefault.jpg', '[⭐️190만⭐️] 80인분 버섯잡채 황금레시피 #shorts',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:47:17.308748', 34, 4, '2026-02-05 16:47:17.308748', 'VAMsgVlNj_w',
+VALUES ('2026-02-05 16:47:17.308748', 34, 4, '2026-02-05 16:47:17.308748', 'VAMsgVlNj_w',
         'https://www.youtube.com/shorts/VAMsgVlNj_w',
         'https://i.ytimg.com/vi/VAMsgVlNj_w/hqdefault.jpg',
         '[⭐️50만⭐️] 선재스님 고추간장 #흑백요리사2 #선재스님 #shorts', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:47:39.068525', 35, 4, '2026-02-05 16:47:39.068525', 'R1sdQQ5v5IE',
+VALUES ('2026-02-05 16:47:39.068525', 35, 4, '2026-02-05 16:47:39.068525', 'R1sdQQ5v5IE',
         'https://www.youtube.com/shorts/R1sdQQ5v5IE',
         'https://i.ytimg.com/vi/R1sdQQ5v5IE/hqdefault.jpg', '진짜 김치왕만두 #shrots', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:49:07.416210', 37, 5, '2026-02-05 16:49:07.416210', 'KxINtgqMaIs',
+VALUES ('2026-02-05 16:49:07.416210', 37, 5, '2026-02-05 16:49:07.416210', 'KxINtgqMaIs',
         'https://www.youtube.com/shorts/KxINtgqMaIs',
         'https://i.ytimg.com/vi/KxINtgqMaIs/hqdefault.jpg', '카다이프 스트레스 많이 받을거야', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:50:45.188323', 38, 5, '2026-02-05 16:50:45.188323', 'ZzESeKSZgf8',
+VALUES ('2026-02-05 16:50:45.188323', 38, 5, '2026-02-05 16:50:45.188323', 'ZzESeKSZgf8',
         'https://www.youtube.com/shorts/ZzESeKSZgf8',
         'https://i.ytimg.com/vi/ZzESeKSZgf8/hqdefault.jpg', '여왕님이 드시던 궁중요리', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:50:52.681664', 39, 5, '2026-02-05 16:50:52.681664', 'bX5yYtzToZA',
+VALUES ('2026-02-05 16:50:52.681664', 39, 5, '2026-02-05 16:50:52.681664', 'bX5yYtzToZA',
         'https://www.youtube.com/shorts/bX5yYtzToZA',
         'https://i.ytimg.com/vi/bX5yYtzToZA/hqdefault.jpg', '다이어트를 진심으로 대하는 자세', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:51:15.224156', 40, 5, '2026-02-05 16:51:15.224156', 'XrPRKHjNNNw',
+VALUES ('2026-02-05 16:51:15.224156', 40, 5, '2026-02-05 16:51:15.224156', 'XrPRKHjNNNw',
         'https://www.youtube.com/shorts/XrPRKHjNNNw',
         'https://i.ytimg.com/vi/XrPRKHjNNNw/hqdefault.jpg', '최강록 욕망의 조림... 근데 이제 홍어애랑 트러플만 곁들인...',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:53:52.947005', 41, 6, '2026-02-05 16:53:52.947005', 'FFDDNX5XTfM',
+VALUES ('2026-02-05 16:53:52.947005', 41, 6, '2026-02-05 16:53:52.947005', 'FFDDNX5XTfM',
         'https://www.youtube.com/shorts/FFDDNX5XTfM',
         'https://i.ytimg.com/vi/FFDDNX5XTfM/hqdefault.jpg', '이연복셰프의 두부계란볶음#shorts #레시피 #먹방 #이연복',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:54:01.430794', 42, 6, '2026-02-05 16:54:01.430794', 'XrjCPcaqm_8',
+VALUES ('2026-02-05 16:54:01.430794', 42, 6, '2026-02-05 16:54:01.430794', 'XrjCPcaqm_8',
         'https://www.youtube.com/shorts/XrjCPcaqm_8',
         'https://i.ytimg.com/vi/XrjCPcaqm_8/hqdefault.jpg', '이연복셰프의 오이무침#shorts #레시피 #먹방 #이연복',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:54:21.768506', 43, 6, '2026-02-05 16:54:21.768506', 'YA14AeYS3vw',
+VALUES ('2026-02-05 16:54:21.768506', 43, 6, '2026-02-05 16:54:21.768506', 'YA14AeYS3vw',
         'https://www.youtube.com/shorts/YA14AeYS3vw',
         'https://i.ytimg.com/vi/YA14AeYS3vw/hqdefault.jpg', '이연복셰프의 계란덮밥 #shorts #레시피 #먹방 #이연복',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:55:33.085798', 44, 7, '2026-02-05 16:55:33.085798', 'y-13uymxwLE',
+VALUES ('2026-02-05 16:55:33.085798', 44, 7, '2026-02-05 16:55:33.085798', 'y-13uymxwLE',
         'https://www.youtube.com/shorts/y-13uymxwLE',
         'https://i.ytimg.com/vi/y-13uymxwLE/hqdefault.jpg', '이탈리안보양식 토마토비프스튜 쉽게 만드는 방법', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:55:44.265649', 45, 7, '2026-02-05 16:55:44.265649', 'S2JFyoQzkAg',
+VALUES ('2026-02-05 16:55:44.265649', 45, 7, '2026-02-05 16:55:44.265649', 'S2JFyoQzkAg',
         'https://www.youtube.com/shorts/S2JFyoQzkAg',
         'https://i.ytimg.com/vi/S2JFyoQzkAg/hqdefault.jpg', '스트레스 싹! 풀리는 쫀득~한 국물닭발🐔', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:55:53.917633', 46, 7, '2026-02-05 16:55:53.917633', 'Q2bXdS9Po5Q',
+VALUES ('2026-02-05 16:55:53.917633', 46, 7, '2026-02-05 16:55:53.917633', 'Q2bXdS9Po5Q',
         'https://www.youtube.com/shorts/Q2bXdS9Po5Q',
         'https://i.ytimg.com/vi/Q2bXdS9Po5Q/hqdefault.jpg', '푸딩계란찜이 5분만에 된다고?!🥚', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:56:59.066055', 47, 8, '2026-02-05 16:56:59.066055', '4AzWcw_u_Zc',
+VALUES ('2026-02-05 16:56:59.066055', 47, 8, '2026-02-05 16:56:59.066055', '4AzWcw_u_Zc',
         'https://www.youtube.com/shorts/4AzWcw_u_Zc',
         'https://i.ytimg.com/vi/4AzWcw_u_Zc/hqdefault.jpg', '양식 조리사 도전기 3일차, 쉬림프 카나페', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:57:29.159124', 48, 8, '2026-02-05 16:57:29.159124', 'fiRjI4zmLSs',
+VALUES ('2026-02-05 16:57:29.159124', 48, 8, '2026-02-05 16:57:29.159124', 'fiRjI4zmLSs',
         'https://www.youtube.com/shorts/fiRjI4zmLSs',
         'https://i.ytimg.com/vi/fiRjI4zmLSs/hqdefault.jpg', '농심 40주년 신라면 골드가 출시했습니다 과연 그 맛은???',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:57:36.839375', 49, 8, '2026-02-05 16:57:36.839375', 'YeZTlhp00Zo',
+VALUES ('2026-02-05 16:57:36.839375', 49, 8, '2026-02-05 16:57:36.839375', 'YeZTlhp00Zo',
         'https://www.youtube.com/shorts/YeZTlhp00Zo',
         'https://i.ytimg.com/vi/YeZTlhp00Zo/hqdefault.jpg',
         '용형의 짜장은 과연 맛있을까 @일하는용형', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:57:54.224004', 50, 8, '2026-02-05 16:57:54.224004', 'CunLRJHOtjs',
+VALUES ('2026-02-05 16:57:54.224004', 50, 8, '2026-02-05 16:57:54.224004', 'CunLRJHOtjs',
         'https://www.youtube.com/shorts/CunLRJHOtjs',
         'https://i.ytimg.com/vi/CunLRJHOtjs/hqdefault.jpg', '1. 토마토 파스타 쉽게 알려드립니다', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:58:13.485914', 51, 8, '2026-02-05 16:58:13.485914', 'APYw4JDlzvM',
+VALUES ('2026-02-05 16:58:13.485914', 51, 8, '2026-02-05 16:58:13.485914', 'APYw4JDlzvM',
         'https://www.youtube.com/shorts/APYw4JDlzvM',
         'https://i.ytimg.com/vi/APYw4JDlzvM/hqdefault.jpg', '단 한가지만 더 추가하면 대단해지는 옥동식 곰탕', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:58:23.977757', 52, 8, '2026-02-05 16:58:23.977757', 'fCBSBUWSwRA',
+VALUES ('2026-02-05 16:58:23.977757', 52, 8, '2026-02-05 16:58:23.977757', 'fCBSBUWSwRA',
         'https://www.youtube.com/shorts/fCBSBUWSwRA',
         'https://i.ytimg.com/vi/fCBSBUWSwRA/hqdefault.jpg', '은수저의 근본 알리오 올리오', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:58:57.020138', 53, 9, '2026-02-05 16:58:57.020138', 'sn6bI4bSYGw',
+VALUES ('2026-02-05 16:58:57.020138', 53, 9, '2026-02-05 16:58:57.020138', 'sn6bI4bSYGw',
         'https://www.youtube.com/shorts/sn6bI4bSYGw',
         'https://i.ytimg.com/vi/sn6bI4bSYGw/hqdefault.jpg', '그놈의 두쫀쿠가 뭐라고', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:59:14.210093', 54, 9, '2026-02-05 16:59:14.210093', 'Leiz0i5do5I',
+VALUES ('2026-02-05 16:59:14.210093', 54, 9, '2026-02-05 16:59:14.210093', 'Leiz0i5do5I',
         'https://www.youtube.com/shorts/Leiz0i5do5I',
         'https://i.ytimg.com/vi/Leiz0i5do5I/hqdefault.jpg', '새해 다이어트 결심한 분 들어오세요', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:59:21.315793', 55, 9, '2026-02-05 16:59:21.315793', 'Viq5soXmVO4',
+VALUES ('2026-02-05 16:59:21.315793', 55, 9, '2026-02-05 16:59:21.315793', 'Viq5soXmVO4',
         'https://www.youtube.com/shorts/Viq5soXmVO4',
         'https://i.ytimg.com/vi/Viq5soXmVO4/hqdefault.jpg', '일본 여행 안 가도 되는 맛', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:59:31.451103', 56, 9, '2026-02-05 16:59:31.451103', 'N_3V2x5NWSA',
+VALUES ('2026-02-05 16:59:31.451103', 56, 9, '2026-02-05 16:59:31.451103', 'N_3V2x5NWSA',
         'https://www.youtube.com/shorts/N_3V2x5NWSA',
         'https://i.ytimg.com/vi/N_3V2x5NWSA/hqdefault.jpg', '바쁜 연말에 식단이 10배 쉬워지는 법', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 16:59:47.275866', 57, 9, '2026-02-05 16:59:47.275866', 'rXYAViv5_LQ',
+VALUES ('2026-02-05 16:59:47.275866', 57, 9, '2026-02-05 16:59:47.275866', 'rXYAViv5_LQ',
         'https://www.youtube.com/shorts/rXYAViv5_LQ',
         'https://i.ytimg.com/vi/rXYAViv5_LQ/hqdefault.jpg', '크래미 100배 맛있게 먹는 법', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:03:13.334232', 58, 9, '2026-02-05 17:03:13.334232', 'pIqJyaKUcG4',
+VALUES ('2026-02-05 17:03:13.334232', 58, 9, '2026-02-05 17:03:13.334232', 'pIqJyaKUcG4',
         'https://www.youtube.com/shorts/pIqJyaKUcG4',
         'https://i.ytimg.com/vi/pIqJyaKUcG4/hqdefault.jpg', '이것만큼은 채널 걸고 추천합니다.', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:05:16.356921', 59, 9, '2026-02-05 17:05:16.356921', 'jdNi4LLBopk',
+VALUES ('2026-02-05 17:05:16.356921', 59, 9, '2026-02-05 17:05:16.356921', 'jdNi4LLBopk',
         'https://www.youtube.com/shorts/jdNi4LLBopk',
         'https://i.ytimg.com/vi/jdNi4LLBopk/hqdefault.jpg', '딱 하나만 고르시오.(10점)', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:05:34.311435', 60, 9, '2026-02-05 17:05:34.311435', 'uxaADfZYq3A',
+VALUES ('2026-02-05 17:05:34.311435', 60, 9, '2026-02-05 17:05:34.311435', 'uxaADfZYq3A',
         'https://www.youtube.com/shorts/uxaADfZYq3A',
         'https://i.ytimg.com/vi/uxaADfZYq3A/hqdefault.jpg', '겉바속쫀의 정석', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:06:01.292304', 61, 9, '2026-02-05 17:06:01.292304', 'Mqsr5rtISd8',
+VALUES ('2026-02-05 17:06:01.292304', 61, 9, '2026-02-05 17:06:01.292304', 'Mqsr5rtISd8',
         'https://www.youtube.com/shorts/Mqsr5rtISd8',
         'https://i.ytimg.com/vi/Mqsr5rtISd8/hqdefault.jpg', '만 오천 원 주고도 사 먹을 맛', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:06:33.037961', 62, 9, '2026-02-05 17:06:33.037961', '_uKOqmQSKhc',
+VALUES ('2026-02-05 17:06:33.037961', 62, 9, '2026-02-05 17:06:33.037961', '_uKOqmQSKhc',
         'https://www.youtube.com/shorts/_uKOqmQSKhc',
         'https://i.ytimg.com/vi/_uKOqmQSKhc/hqdefault.jpg', '배달 앱 삭제시킬', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:06:56.726760', 63, 10, '2026-02-05 17:06:56.726760', 'xUPLuJt-lKU',
+VALUES ('2026-02-05 17:06:56.726760', 63, 10, '2026-02-05 17:06:56.726760', 'xUPLuJt-lKU',
         'https://www.youtube.com/shorts/xUPLuJt-lKU',
         'https://i.ytimg.com/vi/xUPLuJt-lKU/hqdefault.jpg',
         '영화 속 요리 줄리앤줄리아에 나온 프랑스 가정식 \'솔 뫼니에르\' French Home Cooking Sole Meuniere #프랑스요리 #고든램지 #가자미구이',
         'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:07:09.726771', 64, 10, '2026-02-05 17:07:09.726771', 'xXHusOBcseU',
+VALUES ('2026-02-05 17:07:09.726771', 64, 10, '2026-02-05 17:07:09.726771', 'xXHusOBcseU',
         'https://www.youtube.com/shorts/xXHusOBcseU',
         'https://i.ytimg.com/vi/xXHusOBcseU/hqdefault.jpg',
         '꾸덕 꾸덕 크리미한 리얼 까르보나라 레시피 Carbonara Pasta #파스타 #cooking #자취요리', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:07:17.871680', 65, 10, '2026-02-05 17:07:17.871680', '7QP5N3aq-4c',
+VALUES ('2026-02-05 17:07:17.871680', 65, 10, '2026-02-05 17:07:17.871680', '7QP5N3aq-4c',
         'https://www.youtube.com/shorts/7QP5N3aq-4c',
         'https://i.ytimg.com/vi/7QP5N3aq-4c/hqdefault.jpg',
         '대파가 듬뿍 들어간 육즙 팡팡 고기만두 초간단 레시피 Green onion meat dumplings #대파 #kfood #명절음식', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:07:28.313839', 66, 10, '2026-02-05 17:07:28.313839', 'ZYxOyzXxilE',
+VALUES ('2026-02-05 17:07:28.313839', 66, 10, '2026-02-05 17:07:28.313839', 'ZYxOyzXxilE',
         'https://www.youtube.com/shorts/ZYxOyzXxilE',
         'https://i.ytimg.com/vi/ZYxOyzXxilE/hqdefault.jpg',
         '이연복 셰프의 건강하고 살빠지는 \"알배추찜\" 레시피 Steamed cabbage #배추요리 #냉장고를부탁해 #레시피를부탁해', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:07:34.984882', 67, 10, '2026-02-05 17:07:34.984882', 'XV3jmiHlJCI',
+VALUES ('2026-02-05 17:07:34.984882', 67, 10, '2026-02-05 17:07:34.984882', 'XV3jmiHlJCI',
         'https://www.youtube.com/shorts/XV3jmiHlJCI',
         'https://i.ytimg.com/vi/XV3jmiHlJCI/hqdefault.jpg',
         '육즙 가득 무수분 대파수육 Boiled Pork Belly with Green Onion #수육 #kfood #삼겹살', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:07:49.522823', 68, 10, '2026-02-05 17:07:49.522823', 'qmnYM3XnD84',
+VALUES ('2026-02-05 17:07:49.522823', 68, 10, '2026-02-05 17:07:49.522823', 'qmnYM3XnD84',
         'https://www.youtube.com/shorts/qmnYM3XnD84',
         'https://i.ytimg.com/vi/qmnYM3XnD84/hqdefault.jpg',
         '촉촉한 카스테라 프렌치 토스트 Castella French Toast #토스트 #디저트 #레시피', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:07:57.528620', 69, 10, '2026-02-05 17:07:57.528620', 'NJ_1YyS0sl0',
+VALUES ('2026-02-05 17:07:57.528620', 69, 10, '2026-02-05 17:07:57.528620', 'NJ_1YyS0sl0',
         'https://www.youtube.com/shorts/NJ_1YyS0sl0',
         'https://i.ytimg.com/vi/NJ_1YyS0sl0/hqdefault.jpg',
         '맛있는 스팸 더 맛있게 먹기! 초간단 무스비  레시피  #musubi #kimbap #초간단요리', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:08:14.259107', 70, 10, '2026-02-05 17:08:14.259107', '_b3usRqYtYE',
+VALUES ('2026-02-05 17:08:14.259107', 70, 10, '2026-02-05 17:08:14.259107', '_b3usRqYtYE',
         'https://www.youtube.com/shorts/_b3usRqYtYE',
         'https://i.ytimg.com/vi/_b3usRqYtYE/hqdefault.jpg',
         '[달밤요리] 트러플향 솔솔 감칠맛 최고 오이 소금 김밥 Truffle Salt Cucumber Kimbap #김밥 #야식 #kfood', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:09:07.819198', 71, 10, '2026-02-05 17:09:07.819198', 'ZpjO8lM_1PQ',
+VALUES ('2026-02-05 17:09:07.819198', 71, 10, '2026-02-05 17:09:07.819198', 'ZpjO8lM_1PQ',
         'https://www.youtube.com/shorts/ZpjO8lM_1PQ',
         'https://i.ytimg.com/vi/ZpjO8lM_1PQ/hqdefault.jpg',
         '[달밤요리] 허브 페스토 파스타 레시피 Herb Pesto Pasta #파스타 #흑백요리사 #트리플스타', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:09:40.680455', 72, 10, '2026-02-05 17:09:40.680455', '5VmDZ_pqfVE',
+VALUES ('2026-02-05 17:09:40.680455', 72, 10, '2026-02-05 17:09:40.680455', '5VmDZ_pqfVE',
         'https://www.youtube.com/shorts/5VmDZ_pqfVE',
         'https://i.ytimg.com/vi/5VmDZ_pqfVE/hqdefault.jpg',
         '[달밤요리] 흑백요리사 트리플스타님의 허브볶음밥 #흑백요리사 #파인다이닝 #cooking', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:11:41.887124', 73, 10, '2026-02-05 17:11:41.887124', '5qBfts30QOg',
+VALUES ('2026-02-05 17:11:41.887124', 73, 10, '2026-02-05 17:11:41.887124', '5qBfts30QOg',
         'https://www.youtube.com/shorts/5qBfts30QOg',
         'https://i.ytimg.com/vi/5qBfts30QOg/hqdefault.jpg',
         '[달밤요리] 방울토마토 절임을 활용한 카프레제 샐러드 #간단요리 #cooking #다이어트식단 #레시피 #플레이팅', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:12:45.667515', 74, 11, '2026-02-05 17:12:45.667515', 'QhDBclLAOPQ',
+VALUES ('2026-02-05 17:12:45.667515', 74, 11, '2026-02-05 17:12:45.667515', 'QhDBclLAOPQ',
         'https://www.youtube.com/shorts/QhDBclLAOPQ',
         'https://i.ytimg.com/vi/QhDBclLAOPQ/hqdefault.jpg', '2시간이나 걸리는 동파육', 'VIDEO', 'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:26:40.748541', 75, 5, '2026-02-05 17:26:40.748541', 'jN7F_muuK9s',
+VALUES ('2026-02-05 17:26:40.748541', 75, 5, '2026-02-05 17:26:40.748541', 'jN7F_muuK9s',
         'https://www.youtube.com/shorts/jN7F_muuK9s',
         'https://i.ytimg.com/vi/jN7F_muuK9s/hqdefault.jpg', '흑백요리사에 강림 한 대파 천재', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:27:20.756155', 76, 12, '2026-02-05 17:27:20.756155', 'c3GTYnc8jec',
+VALUES ('2026-02-05 17:27:20.756155', 76, 12, '2026-02-05 17:27:20.756155', 'c3GTYnc8jec',
         'https://www.youtube.com/shorts/c3GTYnc8jec',
         'https://i.ytimg.com/vi/c3GTYnc8jec/hqdefault.jpg', '(스포) 흑백요리사 에드워드리 나머지 떡볶이 ㅠㅠ', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:27:45.937309', 77, 13, '2026-02-05 17:27:45.937309', 'hhl1CnS1Y68',
+VALUES ('2026-02-05 17:27:45.937309', 77, 13, '2026-02-05 17:27:45.937309', 'hhl1CnS1Y68',
         'https://www.youtube.com/shorts/hhl1CnS1Y68',
         'https://i.ytimg.com/vi/hhl1CnS1Y68/hqdefault.jpg', '흑백요리사 최강록쉐프 무스테이크 이런걸까', 'VIDEO',
         'YOUTUBE');
-INSERT IGNORE INTO `source_content` (`is_active`, `created_at`, `id`, `source_author_id`,
+INSERT IGNORE INTO `source_content` (`created_at`, `id`, `source_author_id`,
                                      `updated_at`,
                                      `external_key`, `canonical_url`, `thumbnail_url`, `title`,
                                      `content_type`, `platform`)
-VALUES (1, '2026-02-05 17:29:39.650293', 78, 14, '2026-02-05 17:29:39.650293', 'cp0u5Da75zM',
+VALUES ('2026-02-05 17:29:39.650293', 78, 14, '2026-02-05 17:29:39.650293', 'cp0u5Da75zM',
         'https://www.youtube.com/shorts/cp0u5Da75zM',
         'https://i.ytimg.com/vi/cp0u5Da75zM/hqdefault.jpg', '흑백요리사2 치킨 프리카세 만들어 봤어요🥘✨', 'VIDEO',
         'YOUTUBE');
@@ -1138,172 +1138,6 @@ INSERT IGNORE INTO `recipe_tag` (`id`, `recipe_id`, `tag_id`)
 VALUES (426, 81, 72);
 INSERT IGNORE INTO `recipe_tag` (`id`, `recipe_id`, `tag_id`)
 VALUES (422, 81, 122);
-
--- 조리 순서
-# INSERT IGNORE INTO `recipe_step` (`step_order`, `id`, `recipe_id`, `description`)
-# VALUES (1, 144, 31, '건고사리 150g을 물에 6시간 동안 불려 준비합니다.'),
-#        (2, 145, 31, '불린 고사리에 밀가루 1/2컵을 넣고 바락바락 주물러 쓴맛을 제거한 뒤 단단한 밑동은 잘라냅니다.'),
-#        (3, 146, 31, '깨끗한 물에 2시간 정도 담가 남은 쓴맛을 우려냅니다.'),
-#        (4, 147, 31, '냄비에 물과 남은 밀가루 1/2컵을 풀어 밀가루물을 만들고, 고사리를 넣어 끓기 시작하면 10분간 삶은 뒤 찬물에 헹굽니다.'),
-#        (5, 148, 31, '팬에 고사리를 담고 다진 마늘 1.5큰술, 국간장 2큰술, 진간장 2큰술, 참기름 2큰술을 넣어 조물조물 무친 후 20분간 숙성합니다.'),
-#        (6, 149, 31, '팬을 가열하여 고사리에서 나온 국물과 함께 볶아주며, 식감이 뻣뻣할 경우 물 1컵을 추가해 더 볶아줍니다.'),
-#        (7, 150, 31, '다진 대파 1대, 통깨 1큰술, 들기름 2큰술, 들깨가루 1큰술을 넣고 고루 버무려 마무리합니다.'),
-#        (1, 151, 32, '양배추의 겉잎을 제거하고 4등분한 뒤 채칼을 이용해 가늘게 채 썹니다.'),
-#        (2, 152, 32, '적양배추와 당근도 채칼로 얇게 썰어 준비합니다.'),
-#        (3, 153, 32, '검은깨를 절구에 넣고 고소한 풍미가 살도록 곱게 갈아줍니다.'),
-#        (4, 154, 32, '볼에 그릭요거트, 들기름, 간 검은깨, 다진 마늘, 소금, 후추, 식초, 올리고당을 넣고 골고루 섞어 드레싱을 만듭니다.'),
-#        (5, 155, 32, '접시에 준비한 채소를 담고 그 위에 흑임자 드레싱을 듬뿍 뿌려 완성합니다.'),
-#        (1, 156, 33, '칼을 이용해 꼬리에서 머리 방향으로 긁어 조기의 비늘을 제거합니다.'),
-#        (2, 157, 33, '가위로 조기의 꼬리, 등, 가슴, 배 지느러미를 깔끔하게 잘라냅니다.'),
-#        (3, 158, 33, '흐르는 물에 조기의 아가미 부분을 깨끗이 씻어냅니다.'),
-#        (4, 159, 33, '천일염 1큰술과 소주 1잔을 뿌려 1분간 재운 뒤 물에 헹궈 비린내를 제거합니다.'),
-#        (5, 160, 33, '키친타월로 조기의 물기를 닦아내고, 에어프라이어 바닥에 대파를 깔아줍니다.'),
-#        (6, 161, 33, '조기를 대파 위에 올리고 꼬리 부분에 잘라둔 대파를 끼워 타지 않게 보호합니다.'),
-#        (7, 162, 33, '180도 온도에서 15분간 굽고, 뒤집어서 7분 더 구워 마무리합니다.'),
-#        (1, 163, 34, '대파는 심을 제거하고 가늘게 채 썬 뒤 물에 10분간 담가 아린 맛을 빼고 물기를 제거한다.'),
-#        (2, 164, 34, '고춧가루, 식초, 간장, 소금, 통깨, 참기름, 설탕, 올리고당을 섞어 파절이 양념을 만든다.'),
-#        (3, 165, 34, '준비한 양념에 파채를 넣고 버무려 파절이를 완성한다.'),
-#        (4, 166, 34, '믹서에 마늘, 생강, 소금, 후추, 물, 식용유를 넣고 갈아 고기 양념을 만든다.'),
-#        (5, 167, 34, '돼지고기는 먹기 좋은 크기로 잘라 갈아둔 양념에 버무려 재워둔다.'),
-#        (6, 168, 34, '계란 8개를 곱게 풀어 계란물을 만든다.'),
-#        (7, 169, 34, '팬에 양념한 고기를 먼저 볶다가 부추를 뿌리고 계란물을 부어 앞뒤로 노릇하게 굽는다.'),
-#        (8, 170, 34, '완성된 육전을 먹기 좋게 자르고 파절이를 곁들여 마무리한다.'),
-#        (1, 171, 35, '무와 알배추를 2cm 크기로 나박 썰어 준비합니다.'),
-#        (2, 172, 35, '쪽파는 6cm 길이로 썰고, 배와 고추는 적당한 크기로 썰어 고추씨를 제거합니다.'),
-#        (3, 173, 35, '썰어둔 무에 꽃소금 7.5큰술을 넣어 버무린 후 배추를 넣고 30분간 절입니다.'),
-#        (4, 174, 35, '냄비에 다시마와 물을 넣고 끓이다가 다시마를 건져낸 후 찹쌀가루 물을 넣어 풀을 쑤어 식힙니다.'),
-#        (5, 175, 35, '믹서기에 찹쌀풀, 양파, 배, 마늘, 생강, 고춧가루를 넣고 곱게 갑니다.'),
-#        (6, 176, 35, '절여진 채소에 체망을 올리고 갈아둔 양념과 물 5L를 부어 양념을 걸러냅니다.'),
-#        (7, 177, 35, '쪽파와 고추를 넣고 섞은 뒤 냉장고에서 천천히 익혀 완성합니다.'),
-#        (1, 178, 36, '양배추 1통을 4등분하여 심지를 제거하고 가늘게 채 썹니다.'),
-#        (2, 179, 36, '채 썬 양배추를 물에 10분간 담가 씻어준 뒤 물기를 뺍니다.'),
-#        (3, 180, 36, '양배추에 천일염, 설탕, 물엿을 각각 2큰술씩 넣고 30분간 절입니다.'),
-#        (4, 181, 36, '적양파 1개와 당근 0.5개를 가늘게 채 썰어 준비합니다.'),
-#        (5, 182, 36, '절여진 양배추는 채소 탈수기를 사용하여 물기를 최대한 제거합니다.'),
-#        (6, 183, 36, '팬에 식용유 3큰술, 들기름 3큰술을 두르고 다진 마늘 2큰술을 볶아 마늘 기름을 냅니다.'),
-#        (7, 184, 36, '굵은 고춧가루 0.5큰술, 채 썬 적양파, 국간장 2큰술을 넣고 볶습니다.'),
-#        (8, 185, 36, '채 썬 당근과 절인 양배추를 넣고 숨이 죽을 때까지 충분히 볶아줍니다.'),
-#        (9, 186, 36, '들깨가루 3큰술을 넣어 채소에서 나온 수분을 흡수시키며 골고루 섞어 마무리합니다.'),
-#        (1, 187, 37, '도라지에 천일염 2큰술, 원당 2큰술, 물 2컵을 넣고 바락바락 주물러 30분간 재워 쓴맛을 제거합니다.'),
-#        (2, 188, 37, '오이는 가시를 제거한 뒤 어슷하게 썰어 고운 소금 0.5큰술을 넣고 20분간 절입니다.'),
-#        (3, 189, 37, '쓴 물이 나온 도라지는 찬물에 헹군 뒤 키친타월로 물기를 꼼꼼하게 제거합니다.'),
-#        (4, 190, 37, '절인 오이는 씻지 않고 베보자기에 넣어 물기를 꽉 짜냅니다.'),
-#        (5, 191, 37, '준비한 도라지에 고춧가루 5큰술을 먼저 넣고 버무려 붉은 색을 입힙니다.'),
-#        (6, 192, 37, '다진 마늘, 진간장, 고주장, 양조식초, 매실액, 원당, 물엿을 넣고 골고루 무칩니다.'),
-#        (7, 193, 37, '물기를 짠 오이를 넣고 함께 버무린 뒤 통깨를 뿌려 완성합니다.'),
-#        (1, 194, 38, '청양고추 30개를 다지기나 칼을 이용해 잘게 다져줍니다.'),
-#        (2, 195, 38, '다시마 1조각에 뜨거운 물 1컵을 붓고 30분간 불려 다시마 물을 만듭니다.'),
-#        (3, 196, 38, '팬에 다진 고추와 참기름 5큰술을 넣고 볶아줍니다.'),
-#        (4, 197, 38, '양조간장 5큰술을 넣고 간장이 고추에 배도록 함께 볶습니다.'),
-#        (5, 198, 38, '미리 준비한 다시마 물을 붓고 센 불에서 국물이 자작해질 때까지 졸여줍니다.'),
-#        (6, 199, 38, '국물이 졸아들면 통깨 1큰술을 뿌려 마무리합니다.'),
-#        (1, 200, 39, '당면은 찬물에 2시간 동안 불리고, 건표고버섯과 건목이버섯도 각각 물에 불려 준비합니다.'),
-#        (2, 201, 39, '느타리버섯은 가닥가닥 찢고, 당근과 양파는 채 썰어 준비합니다.'),
-#        (3, 202, 39, '끓는 물에 천일염을 넣고 시금치를 30초간 데친 후 찬물에 헹궈 물기를 짭니다.'),
-#        (4, 203, 39, '물 2.4L에 표고버섯 불린 물과 다시마를 넣고 끓이다가 물이 끓으면 다시마는 건져냅니다.'),
-#        (5, 204, 39, '육수 위에 찜기를 올려 버섯류를 7분간 찌고, 이어 당근과 양파도 7분간 쪄서 익힙니다.'),
-#        (6, 205, 39, '남은 육수에 다진 마늘, 미림, 설탕, 간장, 후추, 식용유, 참기름 0.5컵을 넣어 양념장을 만듭니다.'),
-#        (7, 206, 39, '양념장이 끓으면 불린 당면을 넣고 3분간 중간중간 뒤집어가며 조리듯 끓입니다.'),
-#        (8, 207, 39, '익은 당면을 넓은 대야에 옮겨 담고 참기름 0.5컵을 추가해 골고루 버무려둡니다.'),
-#        (9, 208, 39, '쪄낸 채소와 버섯에 참기름, 소금, 통깨를 넣어 가볍게 밑간을 합니다.'),
-#        (10, 209, 39, '당면에 양념한 채소들을 모두 넣고 잘 버무린 후 통깨를 뿌려 마무리합니다.'),
-#        (1, NULL, 40, '부추, 팽이버섯, 느타리버섯, 표고버섯을 적당한 크기로 썰어 준비합니다.'),
-#        (2, 211, 40, '두부는 면보를 사용하여 물기를 꽉 짜줍니다.'),
-#        (3, 212, 40, '당면은 10분간 삶은 뒤 다짐기를 이용해 잘게 다집니다.'),
-#        (4, 213, 40, '부추, 물기를 짠 두부, 돼지 앞다리살도 각각 다짐기로 잘게 다집니다.'),
-#        (5, 214, 40, '다진 재료들에 생강과 소금을 넣고 잘 섞어 만두소를 만듭니다.'),
-#        (6, 215, 40, '묵은지 잎을 펼치고 만두소를 적당량 넣어 돌돌 말아 김치만두를 빚습니다.'),
-#        (7, 216, 40, '전골 냄비에 김치만두를 두르고 새우젓, 고추장, 고춧가루, 조선간장, 미림, 대파, 다진마늘을 넣습니다.'),
-#        (8, NULL, 40, '가운데에 손질한 버섯들을 올리고 김치 국물과 물을 붓습니다.'),
-#        (9, 218, 40, '만두가 익을 때까지 보글보글 끓인 뒤 마지막에 부추를 올려 완성합니다.'),
-#        (1, 224, 42, '팬에 버터를 넉넉히 넣고 완전히 녹여줍니다.'),
-#        (2, 225, 42, '녹은 버터 위에 카다이프 면을 골고루 깔아줍니다.'),
-#        (3, 226, 42, '카다이프 위에 모짜렐라 치즈와 아몬드 슬라이스를 듬뿍 올려줍니다.'),
-#        (4, 227, 42, '다시 카다이프 면을 올려 덮어준 뒤, 약불에서 치즈가 녹고 바닥면이 노릇해질 때까지 굽습니다.'),
-#        (5, 228, 42, '뒤집개나 접시를 이용해 조심스럽게 뒤집어 반대편도 구워줍니다.'),
-#        (6, 229, 42, '설탕과 물을 1:1 비율로 끓여 만든 시럽을 팬에 붓고 표면이 코팅되도록 졸여줍니다.'),
-#        (7, 230, 42, '그릇에 담고 마지막으로 아몬드 슬라이스를 뿌려 마무리합니다.'),
-#        (1, 231, 43, '소 안심을 조리용 실로 묶어 고정합니다.'),
-#        (2, 232, 43, '안심 겉면에 굵게 간 후추를 듬뿍 묻히고 소금으로 간을 합니다.'),
-#        (3, 233, 43, '달군 팬에 안심을 올려 모든 면을 노릇하게 시어링합니다.'),
-#        (4, 234, 43, '고기를 구운 팬에 다진 샬롯과 손질한 양송이버섯을 넣고 볶습니다.'),
-#        (5, 235, 43, '브랜디를 넣어 알코올을 날린 후 생크림을 부어 졸입니다.'),
-#        (6, 236, 43, '시어링한 고기를 소스에 넣고 기호에 맞게(웰던) 익혀 완성합니다.'),
-#        (1, 237, 44, '감자의 껍질을 벗긴 후 식감을 위해 일반적인 감자튀김보다 두툼하게 썹니다.'),
-#        (2, 238, 44, '냄비에 물과 감자, 마늘, 로즈마리, 월계수잎, 소금을 넣고 감자가 쉽게 으스러질 정도로 삶습니다.'),
-#        (3, 239, 44, '삶은 감자를 조심스럽게 건져내어 냉동고에 넣고 차갑게 식힙니다.'),
-#        (4, 240, 44, '기름을 예열한 뒤 식힌 감자를 넣고, 튀기고 식히는 과정을 반복하며 총 3번 튀겨 짙은 갈색을 냅니다.'),
-#        (5, 241, 44, '케첩에 파프리카 가루를 섞어 소스를 만들고 완성된 감자튀김과 곁들입니다.'),
-#        (1, 242, 45, '홍어애 겉면의 얇은 근막을 조심스럽게 제거하여 손질합니다.'),
-#        (2, 243, 45, '다시마와 가쓰오부시를 활용해 밑국물(이치방다시)을 만듭니다.'),
-#        (3, 244, 45, '밑국물 4, 청주 1, 미림 1, 진간장 1의 비율로 섞어 조림장을 준비합니다.'),
-#        (4, 245, 45, '손질된 홍어애를 조림장에 넣고 약불에서 40~50분간 뭉근하게 졸인 후 상온에서 식힙니다.'),
-#        (5, 246, 45, '트러플도 동일한 비율의 조림장에 짧게 졸여 준비합니다.'),
-#        (6, 247, 45, '밑국물을 내고 남은 다시마를 한번 삶은 뒤 조림장에 졸여 준비합니다.'),
-#        (7, 248, 45, '식초, 설탕, 소금을 섞어 만든 초대리로 밥에 밑간을 합니다.'),
-#        (8, 249, 45, '계란은 스크램블보다 조금 더 단단한 식감이 나도록 볶아 준비합니다.'),
-#        (9, 250, 45, '밥 위에 볶은 계란을 깔고, 먹기 좋게 썬 홍어애, 트러플, 다시마 조림을 올려 완성합니다.'),
-#        (1, 251, 46, '계란 3개를 잘 풀어주고, 두부는 24조각 정도로 깍둑썰기합니다.'),
-#        (2, 252, 46, '대파, 고추, 마늘 등의 야채를 잘게 다져 준비합니다.'),
-#        (3, 253, 46, '물 200ml에 굴소스, 설탕, 미림, 간장, 전분을 섞어 소스를 만듭니다.'),
-#        (4, 254, 46, '팬에 두부와 계란물을 넣고 스크램블하듯 가볍게 볶아낸 뒤 따로 접시에 덜어둡니다.'),
-#        (5, 255, 46, '다시 팬에 기름을 두르고 다진 야채를 볶아 향을 냅니다.'),
-#        (6, 256, 46, '야채 향이 올라오면 준비한 소스를 붓고 보글보글 끓입니다.'),
-#        (7, 257, 46, '소스가 끓어오르면 덜어두었던 두부와 계란을 넣고 빠르게 버무려 완성합니다.'),
-#        (1, 258, 47, '오이 2개의 꼭지를 잘라내고 껍질을 군데군데 얼기설기 깎아줍니다.'),
-#        (2, 259, 47, '오이를 칼등으로 두드려 적당히 깬 뒤 먹기 좋은 크기로 썰어줍니다.'),
-#        (3, 260, 47, '대파와 청양고추를 잘게 송송 썰어 준비합니다.'),
-#        (4, 261, 47, '볼에 손질한 오이, 다진 마늘, 대파, 청양고추를 모두 담습니다.'),
-#        (5, NULL, 47, '두반장 1큰술, 굴소스 1큰술, 설탕 1.5큰술, 식초 3큰술, 간장 1큰술, 고추기름 2큰술을 넣습니다.'),
-#        (6, 263, 47, '양념이 골고루 배도록 조물조물 버무려 완성합니다.'),
-#        (1, 264, 48, '계란 3개에 손질한 새우, 팽이버섯, 송송 썬 대파, 소금 한 꼬집을 넣고 잘 섞어줍니다.'),
-#        (2, 265, 48, '팬에 식용유를 두르고 준비한 계란물을 부어 중불에서 앞뒤로 노릇하게 부쳐줍니다.'),
-#        (3, 266, 48, '그릇에 따뜻한 밥을 담고 그 위에 부쳐낸 계란을 통째로 올립니다.'),
-#        (4, 267, 48, '팬에 물 250ml, 완두콩, 미림 2큰술, 굴소스 1큰술, 간장 1큰술, 설탕 0.5큰술을 넣고 끓입니다.'),
-#        (5, 268, 48, '감자전분 1큰술과 물 2큰술을 섞어 만든 전분물을 끓는 소스에 저어가며 부어 걸쭉하게 농도를 맞춥니다.'),
-#        (6, 269, 48, '완성된 소스를 밥과 계란 위에 골고루 부어 마무리합니다.'),
-#        (1, 270, 49, '소고기를 먹기 좋은 크기로 썰어 소금과 후추로 밑간을 합니다.'),
-#        (2, 271, 49, '냄비에 버터를 녹인 후 다진 마늘과 손질한 양파를 넣어 함께 볶습니다.'),
-#        (3, 272, 49, '밑간한 소고기와 먹기 좋게 썬 당근, 감자를 냄비에 추가합니다.'),
-#        (4, 273, 49, '물 250ml와 토마토 통조림 한 캔을 모두 넣습니다.'),
-#        (5, NULL, 49, '치킨스톡과 매콤한 맛을 위한 페퍼론치노를 넣고 섞어줍니다.'),
-#        (6, 275, 49, '뚜껑을 덮고 약불에서 1시간 동안 뭉근하게 끓여줍니다.'),
-#        (7, 276, 49, '완성된 스튜를 그릇에 담고 파슬리 가루를 뿌려 마무리합니다.'),
-#        (1, 277, 50, '냄비에 물 3컵, 소주 1컵, 통후추 한 줌을 넣고 닭발을 10분간 삶습니다.'),
-#        (2, 278, 50, '삶은 닭발을 흐르는 물에 3번 씻어 뽀득뽀득하게 준비합니다.'),
-#        (3, 279, 50, '고춧가루, 고추장, 간장, 설탕, 물엿, 다진 마늘, 다진 생강, 굴소스, 후추, 매실청을 섞어 양념장을 만듭니다.'),
-#        (4, 280, 50, '준비한 닭발에 양념장을 넣고 조물조물 버무립니다.'),
-#        (5, 281, 50, '새 냄비에 물 3컵, 콩나물, 소금을 넣고 2분간 삶은 뒤 콩나물만 따로 건져둡니다.'),
-#        (6, 282, 50, '콩나물을 삶은 육수에 양념한 닭발을 넣고 국물이 진득해질 때까지 10분간 끓입니다.'),
-#        (7, 283, 50, '송송 썬 대파와 미리 삶아둔 콩나물을 올려 마무리합니다.'),
-#        (1, 284, 51, '용기에 계란 3개를 풀고 미지근한 물 2컵을 부어 섞어줍니다.'),
-#        (2, 285, 51, '꽃게액 1큰술과 맛소금을 약간 넣어 간을 하고 잘 풀어줍니다.'),
-#        (3, 286, 51, '계란물을 체에 한 번 걸러 알끈을 제거해 매끈한 상태로 만듭니다.'),
-#        (4, 287, 51, '전자레인지 전용 용기의 뚜껑을 살짝 열어둔 상태로 5분간 조리합니다.'),
-#        (5, 288, 51, '완성된 계란찜 위에 참기름 한 바퀴, 송송 썬 대파와 통깨를 뿌려 마무리합니다.'),
-#        (1, 289, 52, '냄비에 계란이 잠길 정도로 물을 붓고 소금을 약간 넣어 강불에서 15분간 삶아 완숙으로 익힙니다.'),
-#        (2, 290, 52, '양파, 셀러리, 파슬리 줄기를 얇게 채 썰어 미르푸아를 준비합니다.'),
-#        (3, 291, 52, '새우는 이쑤시개를 이용해 내장을 제거하고 손질합니다.'),
-#        (4, 292, 52, '새로 끓인 물에 레몬즙과 미르푸아를 넣고 새우를 넣어 붉은색이 날 때까지 삶은 뒤 껍질을 벗깁니다.'),
-#        (5, 293, 52, '익은 새우는 등 쪽에서 칼집을 내어 1cm 정도 남기고 넓게 펼쳐 모양을 잡습니다.'),
-#        (6, 294, 52, '식빵은 지름 4cm 정도의 원형 틀로 찍어내거나 가위로 동그랗게 자릅니다.'),
-#        (7, 295, 52, '마른 팬에 식빵을 올려 앞뒤로 바삭하게 굽고 윗면에 버터를 얇게 바릅니다.'),
-#        (8, 296, 52, '버터를 바른 식빵 위에 슬라이스한 계란, 새우 순으로 올리고 케첩과 파슬리 잎을 얹어 마무리합니다.'),
-#        (1, 297, 53, '냄비에 물 500ml를 붓고 불을 켜서 물을 끓입니다.'),
-#        (2, 298, 53, '물이 끓기 시작하면 면과 분말스프, 후레이크를 모두 넣습니다.'),
-#        (3, 299, 53, '면이 골고루 익도록 약 4분 30초간 더 끓여줍니다.'),
-#        (4, 300, 53, '라면이 다 익으면 그릇에 옮겨 담고 얇게 썬 양송이버섯과 고추를 고명으로 얹어 완성합니다.'),
-#        (1, 301, 54, '마늘은 칼날로 으깬 뒤 다지고, 대추 방울토마토는 반으로 썬다.'),
-#        (2, 302, 54, '팬에 올리브유 2큰술을 두르고 다진 마늘과 방울토마토를 넣어 볶는다.'),
-#        (3, 303, 54, '잘게 썬 대파를 넣고 국자로 방울토마토를 으깨며 충분히 볶아준다.'),
-#        (4, 304, 54, '홀토마토 통조림 200g과 토마토 퓨레 220g을 팬에 넣는다.'),
-#        (5, 305, 54, '물 200ml와 소금을 넣고 약불에서 15분간 뭉근하게 끓여 소스를 완성한다.'),
-#        (6, 306, 54, '다른 냄비에 삶아둔 숏 파스타를 소스 팬에 넣고 올리브유 1큰술을 추가해 버무린다.'),
-#        (7, 307, 54, '소스의 신맛을 중화시키기 위해 설탕 2꼬집을 넣고 잘 섞어준다.'),
-#        (8, 308, 54, '불을 끄고 얇게 채 썬 바질과 후추를 뿌려 향을 더한다.'),
-#        (9, 309, 54, '그릇에 옮겨 담은 뒤 치즈 가루를 뿌려 마무리한다.'),
-#        (1, 310, 55, '멀티쿠커에 핏물을 뺀 돼지고기, 껍질째 썬 우엉, 표고버섯, 무, 생강, 대파, 쪽파, 마늘 7알을 넣습니다.'),
-#        (2, 311, 55, '재료가 잠길 정도로 물을 붓고 천일염을 넣어 간을 한 뒤 멀티쿠커에서 1시간 30분간 조리합니다.');
 
 INSERT IGNORE INTO `recipe_step` (`step_order`,`id`,`recipe_id`,`description`) VALUES (1,144,31,'건고사리 150g을 물에 6시간 동안 불려 준비합니다.');
 INSERT IGNORE INTO `recipe_step` (`step_order`,`id`,`recipe_id`,`description`) VALUES (2,145,31,'불린 고사리에 밀가루 1/2컵을 넣고 바락바락 주물러 쓴맛을 제거한 뒤 단단한 밑동은 잘라냅니다.');
@@ -2463,130 +2297,6 @@ INSERT IGNORE INTO `recipe_ingredient` (`amount`,`created_at`,`id`,`ingredient_i
 INSERT IGNORE INTO `recipe_ingredient` (`amount`,`created_at`,`id`,`ingredient_id`,`recipe_id`,`updated_at`,`name`,`unit`) VALUES (5,'2026-02-05 17:30:18.016172',709,NULL,81,'2026-02-05 17:30:18.016172','이태리 파슬리','g');
 INSERT IGNORE INTO `recipe_ingredient` (`amount`,`created_at`,`id`,`ingredient_id`,`recipe_id`,`updated_at`,`name`,`unit`) VALUES (10,'2026-02-05 17:30:18.016400',710,NULL,81,'2026-02-05 17:30:18.016400','치즈','g');
 
-
-
-
-# INSERT IGNORE INTO `recipe_ingredient` (`amount`, `created_at`, `id`, `ingredient_id`, `recipe_id`,
-#                                         `updated_at`, `name`, `unit`)
-# VALUES (150, '2026-02-05 16:42:30.839950', 158, NULL, 31, '2026-02-05 16:42:30.839950', '건고사리',
-#         'g'),
-#        (1, '2026-02-05 16:42:30.842923', 159, 81, 31, '2026-02-05 16:42:30.842923', '밀가루', '컵'),
-#        (1.5, '2026-02-05 16:42:30.843438', 160, NULL, 31, '2026-02-05 16:42:30.843438', '다진 마늘',
-#         '큰술'),
-#        (2, '2026-02-05 16:42:30.843827', 161, 33, 31, '2026-02-05 16:42:30.843827', '국간장', '큰술'),
-#        (2, '2026-02-05 16:42:30.844272', 162, NULL, 31, '2026-02-05 16:42:30.844272', '진간장', '큰술'),
-#        (2, '2026-02-05 16:42:30.844671', 163, 5, 31, '2026-02-05 16:42:30.844671', '참기름', '큰술'),
-#        (1, '2026-02-05 16:42:30.845070', 164, 8, 31, '2026-02-05 16:42:30.845070', '대파', '대'),
-#        (1, '2026-02-05 16:42:30.845528', 165, NULL, 31, '2026-02-05 16:42:30.845528', '통깨', '큰술'),
-#        (2, '2026-02-05 16:42:30.845956', 166, NULL, 31, '2026-02-05 16:42:30.845956', '들기름', '큰술'),
-#        (1, '2026-02-05 16:42:30.846426', 167, NULL, 31, '2026-02-05 16:42:30.846426', '들깨가루', '큰술'),
-#        (0.25, '2026-02-05 16:45:46.376337', 168, 20, 32, '2026-02-05 16:45:46.376337', '양배추', '개'),
-#        (50, '2026-02-05 16:45:46.377106', 169, NULL, 32, '2026-02-05 16:45:46.377106', '적양배추', 'g'),
-#        (30, '2026-02-05 16:45:46.377627', 170, 14, 32, '2026-02-05 16:45:46.377627', '당근', 'g'),
-#        (5, '2026-02-05 16:45:46.378159', 171, NULL, 32, '2026-02-05 16:45:46.378159', '그릭요거트',
-#         '큰술'),
-#        (2, '2026-02-05 16:45:46.378547', 172, NULL, 32, '2026-02-05 16:45:46.378547', '들기름', '큰술'),
-#        (1, '2026-02-05 16:45:46.378985', 173, NULL, 32, '2026-02-05 16:45:46.378985', '검은깨', '큰술'),
-#        (0.5, '2026-02-05 16:45:46.379381', 174, NULL, 32, '2026-02-05 16:45:46.379381', '다진 마늘',
-#         '큰술'),
-#        (3, '2026-02-05 16:45:46.379768', 175, 1, 32, '2026-02-05 16:45:46.379768', '소금', '꼬집'),
-#        (0.1, '2026-02-05 16:45:46.380073', 176, 2, 32, '2026-02-05 16:45:46.380073', '후추', '큰술'),
-#        (1, '2026-02-05 16:45:46.380442', 177, 71, 32, '2026-02-05 16:45:46.380442', '식초', '큰술'),
-#        (1, '2026-02-05 16:45:46.380776', 178, NULL, 32, '2026-02-05 16:45:46.380776', '올리고당', '큰술'),
-#        (2, '2026-02-05 16:46:50.067613', 179, NULL, 33, '2026-02-05 16:46:50.067613', '조기', '마리'),
-#        (1, '2026-02-05 16:46:50.068290', 180, NULL, 33, '2026-02-05 16:46:50.068290', '천일염', '큰술'),
-#        (1, '2026-02-05 16:46:50.068649', 181, NULL, 33, '2026-02-05 16:46:50.068649', '소주', '잔'),
-#        (1, '2026-02-05 16:46:50.069026', 182, 8, 33, '2026-02-05 16:46:50.069026', '대파', '대'),
-#        (3, '2026-02-05 16:47:03.259681', 183, 8, 34, '2026-02-05 16:47:03.259681', '대파', '대'),
-#        (1, '2026-02-05 16:47:03.260514', 184, 30, 34, '2026-02-05 16:47:03.260514', '고춧가루', '큰술'),
-#        (2, '2026-02-05 16:47:03.260916', 185, 71, 34, '2026-02-05 16:47:03.260916', '식초', '큰술'),
-#        (2, '2026-02-05 16:47:03.261250', 186, 32, 34, '2026-02-05 16:47:03.261250', '간장', '큰술'),
-#        (1, '2026-02-05 16:47:03.261610', 187, 1, 34, '2026-02-05 16:47:03.261610', '소금', '꼬집'),
-#        (1, '2026-02-05 16:47:03.261950', 188, NULL, 34, '2026-02-05 16:47:03.261950', '통깨', '큰술'),
-#        (1, '2026-02-05 16:47:03.262488', 189, 5, 34, '2026-02-05 16:47:03.262488', '참기름', '큰술'),
-#        (1, '2026-02-05 16:47:03.262817', 190, 3, 34, '2026-02-05 16:47:03.262817', '설탕', '큰술'),
-#        (1, '2026-02-05 16:47:03.263148', 191, NULL, 34, '2026-02-05 16:47:03.263148', '올리고당', '큰술'),
-#        (4, '2026-02-05 16:47:03.263468', 192, 10, 34, '2026-02-05 16:47:03.263468', '마늘', '개'),
-#        (0.5, '2026-02-05 16:47:03.263733', 193, 11, 34, '2026-02-05 16:47:03.263733', '생강', '톨'),
-#        (0.6, '2026-02-05 16:47:03.264021', 194, 1, 34, '2026-02-05 16:47:03.264021', '소금', '큰술'),
-#        (0.3, '2026-02-05 16:47:03.264318', 195, 2, 34, '2026-02-05 16:47:03.264318', '후추', '큰술'),
-#        (0.5, '2026-02-05 16:47:03.264590', 196, 214, 34, '2026-02-05 16:47:03.264590', '물', '컵'),
-#        (3, '2026-02-05 16:47:03.264876', 197, 4, 34, '2026-02-05 16:47:03.264876', '식용유', '큰술'),
-#        (600, '2026-02-05 16:47:03.265144', 198, 36, 34, '2026-02-05 16:47:03.265144', '돼지고기 앞다리살',
-#         'g'),
-#        (8, '2026-02-05 16:47:03.265434', 199, 205, 34, '2026-02-05 16:47:03.265434', '계란', '개'),
-#        (20, '2026-02-05 16:47:03.265899', 200, 89, 34, '2026-02-05 16:47:03.265899', '부추', 'g'),
-#        (1, '2026-02-05 16:47:17.305136', 201, 16, 35, '2026-02-05 16:47:17.305136', '무', '개'),
-#        (3, '2026-02-05 16:47:17.305999', 202, NULL, 35, '2026-02-05 16:47:17.305999', '알배추', '개'),
-#        (150, '2026-02-05 16:47:17.306664', 203, 9, 35, '2026-02-05 16:47:17.306664', '쪽파', 'g'),
-#        (1, '2026-02-05 16:47:17.307306', 204, 107, 35, '2026-02-05 16:47:17.307306', '배', '개'),
-#        (6, '2026-02-05 16:47:17.307826', 205, 12, 35, '2026-02-05 16:47:17.307826', '청양고추', '개'),
-#        (3, '2026-02-05 16:47:17.308342', 206, 13, 35, '2026-02-05 16:47:17.308342', '홍고추', '개'),
-#        (7.5, '2026-02-05 16:47:17.308718', 207, NULL, 35, '2026-02-05 16:47:17.308718', '꽃소금',
-#         '큰술'),
-#        (3, '2026-02-05 16:47:17.309069', 208, 169, 35, '2026-02-05 16:47:17.309069', '찹쌀가루', '큰술'),
-#        (1, '2026-02-05 16:47:17.309480', 209, 180, 35, '2026-02-05 16:47:17.309480', '다시마', '장'),
-#        (1, '2026-02-05 16:47:17.309953', NULL, 7, 35, '2026-02-05 16:47:17.309953', '양파', '개'),
-#        (50, '2026-02-05 16:47:17.310461', 211, 10, 35, '2026-02-05 16:47:17.310461', '마늘', 'g'),
-#        (1, '2026-02-05 16:47:17.310939', 212, 11, 35, '2026-02-05 16:47:17.310939', '생강', '톨'),
-#        (5, '2026-02-05 16:47:17.312345', 213, 30, 35, '2026-02-05 16:47:17.312345', '고춧가루', '큰술'),
-#        (6, '2026-02-05 16:47:17.313313', 214, 214, 35, '2026-02-05 16:47:17.313313', '물', 'L'),
-#        (1, '2026-02-05 16:47:20.392991', 215, 20, 36, '2026-02-05 16:47:20.392991', '양배추', '통'),
-#        (2, '2026-02-05 16:47:20.393686', 216, NULL, 36, '2026-02-05 16:47:20.393686', '천일염', '큰술'),
-#        (2, '2026-02-05 16:47:20.394391', NULL, 3, 36, '2026-02-05 16:47:20.394391', '설탕', '큰술'),
-#        (2, '2026-02-05 16:47:20.394765', 218, 121, 36, '2026-02-05 16:47:20.394765', '물엿', '큰술'),
-#        (1, '2026-02-05 16:47:20.395095', 219, NULL, 36, '2026-02-05 16:47:20.395095', '적양파', '개'),
-#        (0.5, '2026-02-05 16:47:20.395436', 220, 14, 36, '2026-02-05 16:47:20.395436', '당근', '개'),
-#        (3, '2026-02-05 16:47:20.395758', 221, 4, 36, '2026-02-05 16:47:20.395758', '식용유', '큰술'),
-#        (3, '2026-02-05 16:47:20.396580', 222, NULL, 36, '2026-02-05 16:47:20.396580', '들기름', '큰술'),
-#        (2, '2026-02-05 16:47:20.396937', 223, NULL, 36, '2026-02-05 16:47:20.396937', '다진 마늘',
-#         '큰술'),
-#        (0.5, '2026-02-05 16:47:20.397346', 224, NULL, 36, '2026-02-05 16:47:20.397346', '굵은 고춧가루',
-#         '큰술'),
-#        (2, '2026-02-05 16:47:20.397746', 225, 33, 36, '2026-02-05 16:47:20.397746', '국간장', '큰술'),
-#        (3, '2026-02-05 16:47:20.398056', 226, NULL, 36, '2026-02-05 16:47:20.398056', '들깨가루', '큰술'),
-#        (500, '2026-02-05 16:47:43.835586', 227, NULL, 37, '2026-02-05 16:47:43.835586', '손질 도라지',
-#         'g'),
-#        (2, '2026-02-05 16:47:43.836191', 228, 21, 37, '2026-02-05 16:47:43.836191', '오이', '개'),
-#        (2, '2026-02-05 16:47:43.836680', 229, NULL, 37, '2026-02-05 16:47:43.836680', '천일염', '큰술'),
-#        (4, '2026-02-05 16:47:43.837025', 230, NULL, 37, '2026-02-05 16:47:43.837025', '원당', '큰술'),
-#        (0.5, '2026-02-05 16:47:43.837353', 231, NULL, 37, '2026-02-05 16:47:43.837353', '고운 소금',
-#         '큰술'),
-#        (5, '2026-02-05 16:47:43.837668', 232, 30, 37, '2026-02-05 16:47:43.837668', '고춧가루', '큰술'),
-#        (1, '2026-02-05 16:47:43.837989', 233, NULL, 37, '2026-02-05 16:47:43.837989', '다진 마늘',
-#         '큰술'),
-#        (2, '2026-02-05 16:47:43.838290', 234, NULL, 37, '2026-02-05 16:47:43.838290', '진간장', '큰술'),
-#        (2, '2026-02-05 16:47:43.838594', 235, 29, 37, '2026-02-05 16:47:43.838594', '고추장', '큰술'),
-#        (4, '2026-02-05 16:47:43.838878', 236, NULL, 37, '2026-02-05 16:47:43.838878', '양조식초', '큰술'),
-#        (2, '2026-02-05 16:47:43.839138', 237, NULL, 37, '2026-02-05 16:47:43.839138', '매실액', '큰술'),
-#        (4, '2026-02-05 16:47:43.839417', 238, 121, 37, '2026-02-05 16:47:43.839417', '물엿', '큰술'),
-#        (1, '2026-02-05 16:47:43.839672', 239, NULL, 37, '2026-02-05 16:47:43.839672', '통깨', '큰술'),
-#        (300, '2026-02-05 16:47:48.536178', 240, 12, 38, '2026-02-05 16:47:48.536178', '청양고추', 'g'),
-#        (1, '2026-02-05 16:47:48.536786', 241, 180, 38, '2026-02-05 16:47:48.536786', '다시마', '조각'),
-#        (1, '2026-02-05 16:47:48.537166', 242, NULL, 38, '2026-02-05 16:47:48.537166', '뜨거운 물', '컵'),
-#        (5, '2026-02-05 16:47:48.537619', 243, 5, 38, '2026-02-05 16:47:48.537619', '참기름', '큰술'),
-#        (5, '2026-02-05 16:47:48.538119', 244, NULL, 38, '2026-02-05 16:47:48.538119', '양조간장', '큰술'),
-#        (1, '2026-02-05 16:47:48.538603', 245, NULL, 38, '2026-02-05 16:47:48.538603', '통깨', '큰술'),
-#        (2, '2026-02-05 16:47:51.616322', 246, 144, 39, '2026-02-05 16:47:51.616322', '당면', 'kg'),
-#        (5, '2026-02-05 16:47:51.616831', 247, NULL, 39, '2026-02-05 16:47:51.616831', '건표고버섯', '개'),
-#        (60, '2026-02-05 16:47:51.617142', 248, NULL, 39, '2026-02-05 16:47:51.617142', '건목이버섯',
-#         'g'),
-#        (1, '2026-02-05 16:47:51.617455', 249, 126, 39, '2026-02-05 16:47:51.617455', '느타리버섯', 'kg'),
-#        (600, '2026-02-05 16:47:51.617744', 250, 14, 39, '2026-02-05 16:47:51.617744', '당근', 'g'),
-#        (4, '2026-02-05 16:47:51.618029', 251, 7, 39, '2026-02-05 16:47:51.618029', '양파', '개'),
-#        (1.2, '2026-02-05 16:47:51.618294', 252, 22, 39, '2026-02-05 16:47:51.618294', '시금치', 'kg'),
-#        (2.4, '2026-02-05 16:47:51.618540', 253, 214, 39, '2026-02-05 16:47:51.618540', '물', 'L'),
-#        (1, '2026-02-05 16:47:51.618785', 254, 180, 39, '2026-02-05 16:47:51.618785', '다시마', '장'),
-#        (4, '2026-02-05 16:47:51.619028', 255, NULL, 39, '2026-02-05 16:47:51.619028', '다진 마늘',
-#         '큰술'),
-#        (1, '2026-02-05 16:47:51.619331', 256, 70, 39, '2026-02-05 16:47:51.619331', '미림', '컵'),
-#        (1, '2026-02-05 16:47:51.619628', 257, 3, 39, '2026-02-05 16:47:51.619628', '설탕', '컵'),
-#        (2, '2026-02-05 16:47:51.619890', 258, NULL, 39, '2026-02-05 16:47:51.619890', '양조간장', '컵'),
-#        (1, '2026-02-05 16:47:51.620135', 259, 2, 39, '2026-02-05 16:47:51.620135', '후추', '큰술'),
-#        (0.5, '2026-02-05 16:47:51.620393', 260, 4, 39, '2026-02-05 16:47:51.620393', '식용유', '컵'),
-#        (1, '2026-02-05 16:47:51.620650', 261, 5, 39, '2026-02-05 16:47:51.620650', '참기름', '컵');
-
-
 -- =============================================
 -- 큐레이션 데이터
 -- =============================================
@@ -2932,208 +2642,3 @@ INSERT IGNORE INTO recipe_book_item (id, book_id, recipe_id, created_at, updated
 (28, 4, 34, NOW(6), NOW(6)), -- 돼지고기 육전
 (29, 4, 44, NOW(6), NOW(6)), -- 감자튀김
 (30, 4, 78, NOW(6), NOW(6)); -- 동파육
-
--- 그룹 기본 레시피북
-INSERT IGNORE INTO recipe_book (id, member_id, group_id, title, is_default, sort_order, created_at, updated_at) VALUES
-(5, NULL, 1, '새싹 백엔드 친구들 🌱 레시피북', true, 1, NOW(6), NOW(6)),
-(6, NULL, 2, '00즈 레시피북', true, 1, NOW(6), NOW(6)),
-(7, NULL, 3, '이씨네 가족 🐶 레시피북', true, 1, NOW(6), NOW(6)),
-(8, NULL, 4, '요리 동호회 레시피북', true, 1, NOW(6), NOW(6));
-
-
--- 그룹
-INSERT IGNORE INTO member_group (id, name, description, thumbnail_img_url, group_type, created_at, updated_at) VALUES
-(1, '새싹 백엔드 친구들 🌱', '새싹 백엔드 개발자 친구들', NULL, 'FRIENDS', NOW(6), NOW(6)),
-(2, '00즈', '우리끼리 요리 공유', NULL, 'FRIENDS', NOW(6), NOW(6)),
-(3, '이씨네 가족 🐶', '이씨네 가족 그룹', NULL, 'FAMILY', NOW(6), NOW(6)),
-(4, '요리 동호회', '요리를 좋아하는 사람들의 모임', NULL, 'ETC', NOW(6), NOW(6));
-
-
-
--- 그룹멤버: 요리 동호회 (8명 - 이찬미 ADMIN + 7명)
-INSERT IGNORE INTO group_member (id, group_id, member_id, role, created_at, updated_at) VALUES
-(1, 1, 1, 'ADMIN', NOW(6), NOW(6)),   -- 이찬미
-(2, 1, 2, 'MEMBER', NOW(6), NOW(6)),  -- 조은서
-(3, 1, 4, 'MEMBER', NOW(6), NOW(6)),  -- 박준하
-(4, 1, 5, 'MEMBER', NOW(6), NOW(6)),  -- 안희찬
-(5, 1, 6, 'MEMBER', NOW(6), NOW(6)),  -- 김현수
-(6, 1, 7, 'MEMBER', NOW(6), NOW(6)),  -- 김지민
-(7, 1, 9, 'MEMBER', NOW(6), NOW(6)),  -- 허지우
-(8, 1, 13, 'MEMBER', NOW(6), NOW(6)); -- 홍찬용
-
--- 그룹멤버: 이씨네 가족 🐶 (3명 - 이 성씨 가족)
-INSERT IGNORE INTO group_member (id, group_id, member_id, role, created_at, updated_at) VALUES
-(9, 2, 1, 'ADMIN', NOW(6), NOW(6)),   -- 이찬미
-(10, 2, 3, 'MEMBER', NOW(6), NOW(6)), -- 이동훈
-(11, 2, 11, 'MEMBER', NOW(6), NOW(6)); -- 이준형
-
--- 그룹멤버: 00즈 (3명)
-INSERT IGNORE INTO group_member (id, group_id, member_id, role, created_at, updated_at) VALUES
-(12, 3, 1, 'ADMIN', NOW(6), NOW(6)),  -- 이찬미
-(13, 3, 2, 'MEMBER', NOW(6), NOW(6)), -- 조은서
-(14, 3, 3, 'MEMBER', NOW(6), NOW(6)); -- 이동훈
-
--- 그룹멤버: 새싹 백엔드 친구들 🌱 (전원 14명)
-INSERT IGNORE INTO group_member (id, group_id, member_id, role, created_at, updated_at) VALUES
-(15, 4, 1, 'ADMIN', NOW(6), NOW(6)),   -- 이찬미
-(16, 4, 2, 'MEMBER', NOW(6), NOW(6)),  -- 조은서
-(17, 4, 3, 'MEMBER', NOW(6), NOW(6)),  -- 이동훈
-(18, 4, 4, 'MEMBER', NOW(6), NOW(6)),  -- 박준하
-(19, 4, 5, 'MEMBER', NOW(6), NOW(6)),  -- 안희찬
-(20, 4, 6, 'MEMBER', NOW(6), NOW(6)),  -- 김현수
-(21, 4, 7, 'MEMBER', NOW(6), NOW(6)),  -- 김지민
-(22, 4, 8, 'MEMBER', NOW(6), NOW(6)),  -- 정준영
-(23, 4, 9, 'MEMBER', NOW(6), NOW(6)),  -- 허지우
-(24, 4, 10, 'MEMBER', NOW(6), NOW(6)), -- 박준형
-(25, 4, 11, 'MEMBER', NOW(6), NOW(6)), -- 이준형
-(26, 4, 12, 'MEMBER', NOW(6), NOW(6)), -- 김나현
-(27, 4, 13, 'MEMBER', NOW(6), NOW(6)), -- 홍찬용
-(28, 4, 14, 'MEMBER', NOW(6), NOW(6)); -- 박종균
-
--- =============================================
--- 내 식단 - 1월 (member_id=1, 이찬미)
--- =============================================
-INSERT IGNORE INTO recipe_calendar (id, recipe_id, member_id, group_id, scheduled_date, sort_order, created_at, updated_at) VALUES
--- 1/2 (2개)
-(1, 62, 1, NULL, '2026-01-02', 1, NOW(6), NOW(6)),   -- 샐러드 파스타
-(2, 75, 1, NULL, '2026-01-02', 2, NOW(6), NOW(6)),   -- 허브 볶음밥
--- 1/4 (3개)
-(3, 79, 1, NULL, '2026-01-04', 1, NOW(6), NOW(6)),   -- 떡볶이 디저트
-(4, 60, 1, NULL, '2026-01-04', 2, NOW(6), NOW(6)),   -- 참치마요 밥버거
-(5, 44, 1, NULL, '2026-01-04', 3, NOW(6), NOW(6)),   -- 감자튀김
--- 1/6 (2개)
-(83, 57, NULL, 1, '2026-02-12', 1, NOW(6), NOW(6)),  -- 다이어트 두쫀쿠
-(84, 61, NULL, 1, '2026-02-12', 2, NOW(6), NOW(6)),  -- 게살 볶음밥
--- 1/8 (3개)
-(8, 78, 1, NULL, '2026-01-08', 1, NOW(6), NOW(6)),   -- 동파육
-(9, 61, 1, NULL, '2026-01-08', 2, NOW(6), NOW(6)),   -- 게살 볶음밥
-(10, 57, 1, NULL, '2026-01-08', 3, NOW(6), NOW(6)),  -- 다이어트 두쫀쿠
--- 1/10 (2개)
-(11, 44, 1, NULL, '2026-01-10', 1, NOW(6), NOW(6)),  -- 감자튀김
-(12, 62, 1, NULL, '2026-01-10', 2, NOW(6), NOW(6)),  -- 샐러드 파스타
--- 1/12 (3개)
-(13, 75, 1, NULL, '2026-01-12', 1, NOW(6), NOW(6)),  -- 허브 볶음밥
-(14, 79, 1, NULL, '2026-01-12', 2, NOW(6), NOW(6)),  -- 떡볶이 디저트
-(15, 65, 1, NULL, '2026-01-12', 3, NOW(6), NOW(6)),  -- 명란 크림 파스타
--- 1/14 (2개)
-(16, 60, 1, NULL, '2026-01-14', 1, NOW(6), NOW(6)),  -- 참치마요 밥버거
-(17, 72, 1, NULL, '2026-01-14', 2, NOW(6), NOW(6)),  -- 스팸 무스비
--- 1/16 (3개)
-(18, 57, 1, NULL, '2026-01-16', 1, NOW(6), NOW(6)),  -- 다이어트 두쫀쿠
-(19, 78, 1, NULL, '2026-01-16', 2, NOW(6), NOW(6)),  -- 동파육
-(20, 44, 1, NULL, '2026-01-16', 3, NOW(6), NOW(6)),  -- 감자튀김
--- 1/18 (2개)
-(21, 61, 1, NULL, '2026-01-18', 1, NOW(6), NOW(6)),  -- 게살 볶음밥
-(22, 65, 1, NULL, '2026-01-18', 2, NOW(6), NOW(6)),  -- 명란 크림 파스타
--- 1/22 (2개)
-(26, 72, 1, NULL, '2026-01-22', 1, NOW(6), NOW(6)),  -- 스팸 무스비
-(27, 60, 1, NULL, '2026-01-22', 2, NOW(6), NOW(6)),  -- 참치마요 밥버거
--- 1/24 (3개)
-(28, 44, 1, NULL, '2026-01-24', 1, NOW(6), NOW(6)),  -- 감자튀김
-(29, 57, 1, NULL, '2026-01-24', 2, NOW(6), NOW(6)),  -- 다이어트 두쫀쿠
-(30, 78, 1, NULL, '2026-01-24', 3, NOW(6), NOW(6)),  -- 동파육
--- 1/26 (2개)
-(31, 65, 1, NULL, '2026-01-26', 1, NOW(6), NOW(6)),  -- 명란 크림 파스타
-(32, 61, 1, NULL, '2026-01-26', 2, NOW(6), NOW(6)),  -- 게살 볶음밥
--- 1/28 (3개)
-(33, 62, 1, NULL, '2026-01-28', 1, NOW(6), NOW(6)),  -- 샐러드 파스타
-(34, 79, 1, NULL, '2026-01-28', 2, NOW(6), NOW(6)),  -- 떡볶이 디저트
-(35, 72, 1, NULL, '2026-01-28', 3, NOW(6), NOW(6)),  -- 스팸 무스비
--- 1/30 (2개)
-(36, 75, 1, NULL, '2026-01-30', 1, NOW(6), NOW(6)),  -- 허브 볶음밥
-(37, 60, 1, NULL, '2026-01-30', 2, NOW(6), NOW(6));  -- 참치마요 밥버거
-
--- =============================================
--- 내 식단 - 2월 (member_id=1, 이찬미)
--- =============================================
-INSERT IGNORE INTO recipe_calendar (id, recipe_id, member_id, group_id, scheduled_date, sort_order, created_at, updated_at) VALUES
--- 2/1 (2개)
-(38, 78, 1, NULL, '2026-02-01', 1, NOW(6), NOW(6)),  -- 동파육
-(39, 62, 1, NULL, '2026-02-01', 2, NOW(6), NOW(6)),  -- 샐러드 파스타
--- 2/3 (3개)
-(40, 44, 1, NULL, '2026-02-03', 1, NOW(6), NOW(6)),  -- 감자튀김
-(41, 65, 1, NULL, '2026-02-03', 2, NOW(6), NOW(6)),  -- 명란 크림 파스타
-(42, 79, 1, NULL, '2026-02-03', 3, NOW(6), NOW(6)),  -- 떡볶이 디저트
--- 2/6 (2개)
-(48, 65, 1, NULL, '2026-02-06', 1, NOW(6), NOW(6)),  -- 명란 크림 파스타
-(49, 78, 1, NULL, '2026-02-06', 2, NOW(6), NOW(6)),  -- 동파육
--- 2/7 오늘 (3개)
-(50, 62, 1, NULL, '2026-02-07', 1, NOW(6), NOW(6)),  -- 샐러드 파스타
-(51, 79, 1, NULL, '2026-02-07', 2, NOW(6), NOW(6)),  -- 떡볶이 디저트
-(52, 44, 1, NULL, '2026-02-07', 3, NOW(6), NOW(6)),  -- 감자튀김
--- 2/8 (2개)
-(53, 61, 1, NULL, '2026-02-08', 1, NOW(6), NOW(6)),  -- 게살 볶음밥
-(54, 72, 1, NULL, '2026-02-08', 2, NOW(6), NOW(6)),  -- 스팸 무스비
--- 2/9 (3개)
-(55, 75, 1, NULL, '2026-02-09', 1, NOW(6), NOW(6)),  -- 허브 볶음밥
-(56, 57, 1, NULL, '2026-02-09', 2, NOW(6), NOW(6)),  -- 다이어트 두쫀쿠
-(57, 65, 1, NULL, '2026-02-09', 3, NOW(6), NOW(6)),  -- 명란 크림 파스타
--- 2/10 (2개)
-(58, 60, 1, NULL, '2026-02-10', 1, NOW(6), NOW(6)),  -- 참치마요 밥버거
-(59, 78, 1, NULL, '2026-02-10', 2, NOW(6), NOW(6)),  -- 동파육
--- 2/11 (3개)
-(60, 79, 1, NULL, '2026-02-11', 1, NOW(6), NOW(6)),  -- 떡볶이 디저트
-(61, 44, 1, NULL, '2026-02-11', 2, NOW(6), NOW(6)),  -- 감자튀김
-(62, 62, 1, NULL, '2026-02-11', 3, NOW(6), NOW(6)),  -- 샐러드 파스타
--- 2/13 (2개)
-(63, 72, 1, NULL, '2026-02-13', 1, NOW(6), NOW(6)),  -- 스팸 무스비
-(64, 61, 1, NULL, '2026-02-13', 2, NOW(6), NOW(6)),  -- 게살 볶음밥
--- 2/15 (3개)
-(65, 57, 1, NULL, '2026-02-15', 1, NOW(6), NOW(6)),  -- 다이어트 두쫀쿠
-(66, 75, 1, NULL, '2026-02-15', 2, NOW(6), NOW(6)),  -- 허브 볶음밥
-(67, 78, 1, NULL, '2026-02-15', 3, NOW(6), NOW(6)),  -- 동파육
--- 2/17 (2개)
-(68, 65, 1, NULL, '2026-02-17', 1, NOW(6), NOW(6)),  -- 명란 크림 파스타
-(69, 60, 1, NULL, '2026-02-17', 2, NOW(6), NOW(6)),  -- 참치마요 밥버거
--- 2/19 (3개)
-(70, 44, 1, NULL, '2026-02-19', 1, NOW(6), NOW(6)),  -- 감자튀김
-(71, 79, 1, NULL, '2026-02-19', 2, NOW(6), NOW(6)),  -- 떡볶이 디저트
-(72, 72, 1, NULL, '2026-02-19', 3, NOW(6), NOW(6)),  -- 스팸 무스비
--- 2/21 (2개)
-(73, 62, 1, NULL, '2026-02-21', 1, NOW(6), NOW(6)),  -- 샐러드 파스타
-(74, 61, 1, NULL, '2026-02-21', 2, NOW(6), NOW(6));  -- 게살 볶음밥
-
--- =============================================
--- 그룹 식단 - 1월/2월 (요리 동호회, 새싹 백엔드만)
--- =============================================
-INSERT IGNORE INTO recipe_calendar (id, recipe_id, member_id, group_id, scheduled_date, sort_order, created_at, updated_at) VALUES
--- 요리 동호회 (group_id=1)
-(75, 62, NULL, 1, '2026-01-05', 1, NOW(6), NOW(6)),  -- 샐러드 파스타
-(76, 78, NULL, 1, '2026-01-05', 2, NOW(6), NOW(6)),  -- 동파육
-(77, 75, NULL, 1, '2026-01-15', 1, NOW(6), NOW(6)),  -- 허브 볶음밥
-(78, 44, NULL, 1, '2026-01-15', 2, NOW(6), NOW(6)),  -- 감자튀김
-(79, 60, NULL, 1, '2026-01-25', 1, NOW(6), NOW(6)),  -- 참치마요 밥버거
-(80, 79, NULL, 1, '2026-01-25', 2, NOW(6), NOW(6)),  -- 떡볶이 디저트
-
--- 새싹 백엔드 친구들 (group_id=4)
-(85, 79, NULL, 4, '2026-01-08', 1, NOW(6), NOW(6)),  -- 떡볶이 디저트
-(86, 65, NULL, 4, '2026-01-08', 2, NOW(6), NOW(6)),  -- 명란 크림 파스타
-(91, 60, NULL, 4, '2026-02-14', 1, NOW(6), NOW(6)),  -- 참치마요 밥버거
-(92, 75, NULL, 4, '2026-02-14', 2, NOW(6), NOW(6)); -- 허브 볶음밥
-
--- =============================================
--- 2/7 오늘 - 그룹 식단 (4개 그룹 전부)
--- =============================================
-INSERT IGNORE INTO recipe_calendar (id, recipe_id, member_id, group_id, scheduled_date, sort_order, created_at, updated_at) VALUES
--- 요리 동호회 (3개)
-(93, 78, NULL, 1, '2026-02-07', 1, NOW(6), NOW(6)),  -- 동파육
-(94, 65, NULL, 1, '2026-02-07', 2, NOW(6), NOW(6)),  -- 명란 크림 파스타
-(95, 72, NULL, 1, '2026-02-07', 3, NOW(6), NOW(6)),  -- 스팸 무스비
--- 이씨네 가족 (2개)
-(96, 62, NULL, 2, '2026-02-07', 1, NOW(6), NOW(6)),  -- 샐러드 파스타
-(97, 44, NULL, 2, '2026-02-07', 2, NOW(6), NOW(6)),  -- 감자튀김
--- 00즈 (1개)
-(98, 75, NULL, 3, '2026-02-07', 1, NOW(6), NOW(6)),  -- 허브 볶음밥
--- 새싹 백엔드 친구들 (2개)
-(99, 60, NULL, 4, '2026-02-07', 1, NOW(6), NOW(6)),  -- 참치마요 밥버거
-(100, 79, NULL, 4, '2026-02-07', 2, NOW(6), NOW(6)); -- 떡볶이 디저트
-
--- =============================================
--- 대기열 (member_id=1, 이찬미)
--- =============================================
-INSERT IGNORE INTO recipe_queue (id, recipe_id, member_id, created_at, updated_at) VALUES
-(1, 79, 1, NOW(6), NOW(6)), -- 떡볶이 디저트
-(2, 62, 1, NOW(6), NOW(6)), -- 샐러드 파스타
-(3, 78, 1, NOW(6), NOW(6)), -- 동파육
-(4, 61, 1, NOW(6), NOW(6)), -- 게살 볶음밥
-(5, 44, 1, NOW(6), NOW(6)); -- 감자튀김
