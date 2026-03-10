@@ -15,6 +15,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     boolean existsBySourceContentId(Long sourceContentId);
 
+    @Query("SELECT r.id FROM Recipe r WHERE r.isActive = true")
+    List<Long> findAllActiveIds();
+
     @Query("""
             SELECT r FROM Recipe r
             LEFT JOIN FETCH r.member

@@ -310,12 +310,11 @@ public class GroupService {
             return;
         }
 
-        List<Long> allRecipeIds = books.stream()
-                .flatMap(book -> recipeBookItemRepository.findRecipeIdsByRecipeBookId(book.getId()).stream())
-                .distinct()
-                .toList();
+        List<Long> bookIds = books.stream().map(RecipeBook::getId).toList();
 
+        List<Long> allRecipeIds = recipeBookItemRepository.findRecipeIdsByRecipeBookIds(bookIds);
         if (allRecipeIds.isEmpty()) {
+            recipeBookItemRepository.deleteAllByRecipeBookIds(bookIds);
             return;
         }
 
@@ -330,9 +329,7 @@ public class GroupService {
             recipeRepository.decrementBookmarkCountBulk(recipeIdsToDecrement);
         }
 
-        for (RecipeBook book : books) {
-            recipeBookItemRepository.deleteAllByRecipeBookId(book.getId());
-        }
+        recipeBookItemRepository.deleteAllByRecipeBookIds(bookIds);
     }
 
     private InviteLink getOrCreateValidInviteLink(Group group) {

@@ -12,6 +12,8 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
 
     List<RecipeIngredient> findByRecipeId(Long recipeId);
 
+    List<RecipeIngredient> findByRecipeIdIn(List<Long> recipeIds);
+
     void deleteByRecipeId(Long recipeId);
 
     @Query("SELECT ri FROM RecipeIngredient ri JOIN FETCH ri.ingredient WHERE ri.id IN :ids")
