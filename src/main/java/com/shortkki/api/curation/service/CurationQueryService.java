@@ -16,12 +16,16 @@ import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import com.shortkki.global.response.page.SlicePageInfoResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +52,7 @@ public class CurationQueryService {
 
     public CurationRecommendsResponse getRecommendedCurations(Long memberId, LocalDateTime now, Pageable pageable) {
         Pageable limited = limitPageSize(pageable);
-        Slice<Curation> curations = getCurrentCurations(now, limited);
+        Slice<Curation> curations = getShuffledCurations(now, limited);
         Pageable recipePageable = PageRequest.of(0, RECIPES_PER_CURATION);
 
         List<CurationRecommendResponse> items = curations.getContent().stream()
@@ -83,10 +87,27 @@ public class CurationQueryService {
         return pageable;
     }
 
-    private Slice<Curation> getCurrentCurations(LocalDateTime now, Pageable pageable) {
+    private Slice<Curation> getShuffledCurations(LocalDateTime now, Pageable pageable) {
         DayType dayType = DayType.from(now.getDayOfWeek());
         TimeType timeType = TimeType.from(now.toLocalTime());
-        return curationRepository.findMatchingCurations(dayType.name(), timeType.name(), pageable);
+
+        // 조건에 맞는 모든 큐레이션 쿼리 후 섞기
+        List<Curation> all = new ArrayList<>(
+                curationRepository.findAllMatchingCurations(dayType.name(), timeType.name()));
+        Collections.shuffle(all, new Random(now.toLocalDate().toEpochDay()));
+
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        int fromIndex = page * size;
+
+        // 범위를 넘으면,
+        if (fromIndex >= all.size()) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
+
+        // 범위 내면,
+        int toIndex = Math.min(fromIndex + size, all.size());
+        return new SliceImpl<>(all.subList(fromIndex, toIndex), pageable, toIndex < all.size());
     }
 
     private CurationRecommendResponse toCurationRecommendResponse(
