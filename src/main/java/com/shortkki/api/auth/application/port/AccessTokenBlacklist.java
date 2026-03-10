@@ -4,7 +4,7 @@ import java.time.Duration;
 
 public interface AccessTokenBlacklist {
 
-    void add(String accessToken, Duration ttl);
+    void add(String jti, Duration ttl);
 
-    boolean isBlacklisted(String accessToken);
+    boolean isBlacklisted(String jti);
 }

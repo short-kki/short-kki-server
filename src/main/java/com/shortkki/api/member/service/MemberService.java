@@ -8,6 +8,7 @@ import com.shortkki.api.file.entity.FileMetadata;
 import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
+import java.time.Duration;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,11 +56,14 @@ public class MemberService {
         validateNotDeleted(member);
         member.delete();
 
+        String jti = jwtTokenProvider.getJti(accessToken);
+        Duration ttl = jwtTokenProvider.getRemainingValidity(accessToken);
+
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
                 refreshTokenStore.delete(memberId);
-                accessTokenBlacklist.add(accessToken, jwtTokenProvider.getRemainingValidity(accessToken));
+                accessTokenBlacklist.add(jti, ttl);
             }
         });
     }

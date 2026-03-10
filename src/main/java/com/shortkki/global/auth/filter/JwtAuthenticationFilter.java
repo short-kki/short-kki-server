@@ -42,7 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             try {
                 if (jwtTokenProvider.validateToken(token)) {
-                    if (accessTokenBlacklist.isBlacklisted(token)) {
+                    String jti = jwtTokenProvider.getJti(token);
+                    if (jti != null && accessTokenBlacklist.isBlacklisted(jti)) {
                         throw new BusinessException(ErrorCode.INVALID_TOKEN);
                     }
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);

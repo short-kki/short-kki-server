@@ -16,18 +16,18 @@ public class RedisAccessTokenBlacklist implements AccessTokenBlacklist {
     private final StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public void add(String accessToken, Duration ttl) {
+    public void add(String jti, Duration ttl) {
         if (ttl.isPositive()) {
-            stringRedisTemplate.opsForValue().set(key(accessToken), BLACKLISTED, ttl);
+            stringRedisTemplate.opsForValue().set(key(jti), BLACKLISTED, ttl);
         }
     }
 
     @Override
-    public boolean isBlacklisted(String accessToken) {
-        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(key(accessToken)));
+    public boolean isBlacklisted(String jti) {
+        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(key(jti)));
     }
 
-    private String key(String accessToken) {
-        return KEY_PREFIX + accessToken;
+    private String key(String jti) {
+        return KEY_PREFIX + jti;
     }
 }

@@ -79,10 +79,7 @@ class RefreshTokenRotationTest extends IntegrationTestBase {
         String newRt = jwtTokenProvider.createRefreshToken(testMember.getId());
         refreshTokenStore.store(testMember.getId(), newRt, Duration.ofMinutes(10));
 
-        // AT는 만료된 것처럼 만들기 어려우므로, 서비스 직접 호출로 테스트할 수도 있지만
-        // 여기서는 Redis 저장된 RT와 불일치하는 경우를 검증
-
-        // Redis에 저장된 RT가 newRt인지 확인
+        // Redis 저장된 RT와 불일치하는 경우를 검증
         assertThat(refreshTokenStore.find(testMember.getId())).isEqualTo(newRt);
         assertThat(refreshTokenStore.find(testMember.getId())).isNotEqualTo(oldRt);
     }
@@ -107,7 +104,8 @@ class RefreshTokenRotationTest extends IntegrationTestBase {
 
         // then
         assertThat(refreshTokenStore.find(testMember.getId())).isNull();
-        assertThat(accessTokenBlacklist.isBlacklisted(at)).isTrue();
+        String jti = jwtTokenProvider.getJti(at);
+        assertThat(accessTokenBlacklist.isBlacklisted(jti)).isTrue();
     }
 
     @DisplayName("재로그인 시 기존 세션 무효화 (새 RT 저장)")

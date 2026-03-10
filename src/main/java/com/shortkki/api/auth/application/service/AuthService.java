@@ -375,7 +375,8 @@ public class AuthService {
     public void logout(String accessToken, String refreshToken) {
         Long memberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
         refreshTokenStore.delete(memberId);
-        accessTokenBlacklist.add(accessToken, jwtTokenProvider.getRemainingValidity(accessToken));
+        String jti = jwtTokenProvider.getJti(accessToken);
+        accessTokenBlacklist.add(jti, jwtTokenProvider.getRemainingValidity(accessToken));
     }
 
     private String createAndStoreRefreshToken(Long memberId) {
