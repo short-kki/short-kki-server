@@ -1,6 +1,8 @@
 package com.shortkki.global.auth.filter;
 
+import com.shortkki.api.auth.application.port.AccessTokenBlacklist;
 import com.shortkki.global.auth.jwt.JwtTokenProvider;
+import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BusinessException;
 import com.shortkki.global.response.BaseResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AccessTokenBlacklist accessTokenBlacklist;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -39,9 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             try {
                 if (jwtTokenProvider.validateToken(token)) {
+                    if (accessTokenBlacklist.isBlacklisted(token)) {
+                        throw new BusinessException(ErrorCode.INVALID_TOKEN);
+                    }
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    // TODO: 멤버 존재 검증
                     log.debug(
                             "Set Authentication to SecurityContext for '{}', uri: {}",
                             authentication.getName(), request.getRequestURI()

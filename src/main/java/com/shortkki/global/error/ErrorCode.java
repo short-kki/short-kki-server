@@ -26,6 +26,8 @@ public enum ErrorCode {
     PLATFORM_REQUIRED_FOR_GOOGLE(HttpStatus.BAD_REQUEST, "AUTH_005", "Google 로그인 시 platform은 필수입니다."),
     INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_006", "유효하지 않은 idToken입니다."),
     ID_TOKEN_OR_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "AUTH_007", "idToken 또는 code 중 하나는 필수입니다."),
+    REFRESH_TOKEN_REUSED(HttpStatus.UNAUTHORIZED, "AUTH_008", "토큰이 탈취된 것으로 감지되어 강제 로그아웃되었습니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_009", "리프레시 토큰이 만료되었거나 존재하지 않습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_001", "회원을 찾을 수 없습니다."),

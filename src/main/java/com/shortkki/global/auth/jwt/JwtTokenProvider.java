@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 
 @Slf4j
@@ -142,5 +143,11 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(token);
         String type = claims.get("type", String.class);
         return "access".equals(type);
+    }
+
+    public Duration getRemainingValidity(String token) {
+        Claims claims = parseClaims(token);
+        long remainingMs = claims.getExpiration().getTime() - System.currentTimeMillis();
+        return remainingMs > 0 ? Duration.ofMillis(remainingMs) : Duration.ZERO;
     }
 }

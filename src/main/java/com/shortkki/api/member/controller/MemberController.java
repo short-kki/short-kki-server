@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,9 +56,11 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping
     public ResponseEntity<BaseResponse<Void>> withdraw(
-            @AuthenticationPrincipal LoginMember loginMember
+            @AuthenticationPrincipal LoginMember loginMember,
+            @RequestHeader("Authorization") String authorization
     ) {
-        memberService.withdraw(loginMember.getId());
+        String accessToken = authorization.substring("Bearer ".length());
+        memberService.withdraw(loginMember.getId(), accessToken);
         return ResponseEntity.ok(BaseResponse.success());
     }
 }
