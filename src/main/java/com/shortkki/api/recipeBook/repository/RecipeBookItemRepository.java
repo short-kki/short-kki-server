@@ -3,6 +3,7 @@ package com.shortkki.api.recipeBook.repository;
 import com.shortkki.api.recipeBook.entity.RecipeBook;
 import com.shortkki.api.recipeBook.entity.RecipeBookItem;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +11,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, Long>,
-    RecipeBookItemRepositoryCustom {
-
+public interface RecipeBookItemRepository
+        extends JpaRepository<RecipeBookItem, Long>, RecipeBookItemRepositoryCustom
+{
   List<RecipeBookItem> findAllByRecipeBookId(Long recipeBookId);
 
   long countByRecipeBookId(Long recipeBookId);
@@ -61,24 +62,19 @@ public interface RecipeBookItemRepository extends JpaRepository<RecipeBookItem, 
       @Param("toBook") RecipeBook toBook,
       @Param("recipeId") Long recipeId);
 
-  @Query("SELECT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id = :recipeBookId")
-  List<Long> findRecipeIdsByRecipeBookId(@Param("recipeBookId") Long recipeBookId);
-
-  @Query("SELECT DISTINCT rbi.recipe.id FROM RecipeBookItem rbi WHERE rbi.recipeBook.id IN :recipeBookIds")
+  @Query("""
+      SELECT DISTINCT rbi.recipe.id
+        FROM RecipeBookItem rbi
+       WHERE rbi.recipeBook.id IN :recipeBookIds
+      """)
   List<Long> findRecipeIdsByRecipeBookIds(@Param("recipeBookIds") List<Long> recipeBookIds);
 
   @Modifying
-  @Query("DELETE FROM RecipeBookItem rbi WHERE rbi.recipeBook.id IN :recipeBookIds")
-  void deleteAllByRecipeBookIds(@Param("recipeBookIds") List<Long> recipeBookIds);
-
   @Query("""
-      select i from RecipeBookItem i
-      join fetch i.recipe
-      where i.recipeBook.id in :recipeBookIds
-      order by i.createdAt desc, i.id desc
+      DELETE FROM RecipeBookItem rbi
+       WHERE rbi.recipeBook.id IN :recipeBookIds
       """)
-  Slice<RecipeBookItem> findAllByRecipeBookIdsWithRecipe(
-      @Param("recipeBookIds") List<Long> recipeBookIds, Pageable pageable);
+  void deleteAllByRecipeBookIds(@Param("recipeBookIds") List<Long> recipeBookIds);
 
   @Query("""
       select i from RecipeBookItem i

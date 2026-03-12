@@ -31,22 +31,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class CurationQueryService {
+public class CurationQueryServiceV2 {
 
     private static final int DEFAULT_CURATION_COUNT = 5;
     private static final int RECIPES_PER_CURATION = 10;
 
     private final CurationRepository curationRepository;
-    private final RecipeSearchPort jpaSearchPort;
+    private final RecipeSearchPort esSearchPort;
     private final RecipeBookReadService recipeBookReadService;
 
-    public CurationQueryService(
+    public CurationQueryServiceV2(
             CurationRepository curationRepository,
-            @Qualifier("jpaRecipeSearch") RecipeSearchPort jpaSearchPort,
+            @Qualifier("esRecipeSearch") RecipeSearchPort esSearchPort,
             RecipeBookReadService recipeBookReadService
     ) {
         this.curationRepository = curationRepository;
-        this.jpaSearchPort = jpaSearchPort;
+        this.esSearchPort = esSearchPort;
         this.recipeBookReadService = recipeBookReadService;
     }
 
@@ -68,13 +68,22 @@ public class CurationQueryService {
         return toRecipeCurationSearchResponse(memberId, curation, result);
     }
 
-    public Curation findById(long id) {
+    public RecipeCurationSearchResponse searchTopCuration(Long memberId, Pageable pageable) {
+        Slice<RecipeSearchItem> result = esSearchPort.searchForCuration(
+                pageable, null, null, null,
+                RecipeSource.IMPORT, null, null, null
+        );
+
+        return toRecipeCurationSearchResponse(memberId, null, result);
+    }
+
+    private Curation findById(long id) {
         return curationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CURATION_NOT_FOUND));
     }
 
     private Slice<RecipeSearchItem> search(Curation curation, Pageable pageable) {
-        return jpaSearchPort.search(
+        return esSearchPort.search(
                 pageable, curation.getSearchWord(), curation.getTags(), curation.getIngredients(),
                 RecipeSource.IMPORT, curation.getCuisineTypes(), curation.getMealTypes(), curation.getDifficulties()
         );
@@ -104,7 +113,6 @@ public class CurationQueryService {
         if (fromIndex >= all.size()) {
             return new SliceImpl<>(List.of(), pageable, false);
         }
-
         // 범위 내면,
         int toIndex = Math.min(fromIndex + size, all.size());
         return new SliceImpl<>(all.subList(fromIndex, toIndex), pageable, toIndex < all.size());
@@ -130,7 +138,11 @@ public class CurationQueryService {
             Long memberId, Curation curation, Slice<RecipeSearchItem> searchResult
     ) {
         List<RecipeSearchItemResponse> recipes = toSearchItemResponses(memberId, searchResult.getContent());
-        return new RecipeCurationSearchResponse(curation.getId(), recipes, SlicePageInfoResponse.from(searchResult));
+        return new RecipeCurationSearchResponse(
+                curation != null ? curation.getId() : null,
+                recipes,
+                SlicePageInfoResponse.from(searchResult)
+        );
     }
 
     private List<RecipeSearchItemResponse> toSearchItemResponses(Long memberId, List<RecipeSearchItem> items) {

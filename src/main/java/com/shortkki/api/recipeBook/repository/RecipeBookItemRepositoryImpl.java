@@ -6,8 +6,10 @@ import static com.shortkki.api.recipeBook.entity.QRecipeBookItem.recipeBookItem;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.core.Tuple;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,24 @@ public class RecipeBookItemRepositoryImpl implements RecipeBookItemRepositoryCus
                         recipeBookItem.recipeBook.member.id.eq(memberId)
                                 .or(groupMember.member.id.eq(memberId)))
                 .fetch();
+    }
+
+    @Override
+    public Set<Long> findBookmarkedRecipeIdsByMemberAndRecipeIds(Long memberId, List<Long> recipeIds) {
+        if (recipeIds.isEmpty()) {
+            return Set.of();
+        }
+        List<Long> result = queryFactory.selectDistinct(recipeBookItem.recipe.id)
+                .from(recipeBookItem)
+                .leftJoin(groupMember)
+                .on(recipeBookItem.recipeBook.groupId.eq(groupMember.group.id))
+                .where(
+                        recipeBookItem.recipe.id.in(recipeIds),
+                        recipeBookItem.recipeBook.member.id.eq(memberId)
+                                .or(groupMember.member.id.eq(memberId)))
+                .fetch();
+
+        return new HashSet<>(result);
     }
 
     @Override

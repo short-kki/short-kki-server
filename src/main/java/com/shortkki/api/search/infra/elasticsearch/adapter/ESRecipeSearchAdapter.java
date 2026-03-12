@@ -263,6 +263,7 @@ public class ESRecipeSearchAdapter implements RecipeSearchPort {
                 recipe.getId(),
                 recipe.getBasicInfo().getTitle(),
                 recipe.getBookmarkCount(),
+                recipe.getBasicInfo().getCookingTime(),
                 recipe.getMainImgUrl(),
                 recipe.getSourceType(),
                 recipe.getAuthorName(),

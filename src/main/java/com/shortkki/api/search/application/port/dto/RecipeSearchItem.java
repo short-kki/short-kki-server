@@ -7,6 +7,7 @@ public record RecipeSearchItem(
         Long id,
         String title,
         int bookmarkCount,
+        int cookingTime,
         String mainImgUrl,
         RecipeSource recipeSource,
         String authorName,

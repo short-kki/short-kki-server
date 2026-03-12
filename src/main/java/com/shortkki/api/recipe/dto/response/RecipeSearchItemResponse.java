@@ -4,10 +4,11 @@ import com.shortkki.api.recipe.entity.RecipeSource;
 import com.shortkki.api.search.application.port.dto.RecipeSearchItem;
 import com.shortkki.api.source.domain.SourcePlatform;
 
-public record RecipeSummaryResponse(
+public record RecipeSearchItemResponse(
         Long id,
         String title,
         int bookmarkCount,
+        int cookingTime,
         String sourceUrl,
         String mainImgUrl,
         RecipeSource recipeSource,
@@ -15,14 +16,16 @@ public record RecipeSummaryResponse(
         String authorProfileImgUrl,
         SourcePlatform platform,
         String creatorName,
-        String creatorProfileImgUrl
+        String creatorProfileImgUrl,
+        boolean isBookmarked
 ) {
 
-    public static RecipeSummaryResponse from(RecipeSearchItem item) {
-        return new RecipeSummaryResponse(
+    public static RecipeSearchItemResponse from(RecipeSearchItem item, boolean isBookmarked) {
+        return new RecipeSearchItemResponse(
                 item.id(),
                 item.title(),
                 item.bookmarkCount(),
+                item.cookingTime(),
                 item.sourceUrl(),
                 item.mainImgUrl(),
                 item.recipeSource(),
@@ -30,7 +33,8 @@ public record RecipeSummaryResponse(
                 item.authorProfileImgUrl(),
                 item.platform(),
                 item.creatorName(),
-                item.creatorProfileImgUrl()
+                item.creatorProfileImgUrl(),
+                isBookmarked
         );
     }
 }

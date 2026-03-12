@@ -12,16 +12,21 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+#    defer-datasource-initialization: false
     properties:
       hibernate:
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true
         generate_statistics: true
-#        show_sql: true
+  #        show_sql: true
 #        format_sql: true
 
   elasticsearch:
     uris: http://localhost:9200
+
+#  sql:
+#    init:
+#      mode: always
 
 jwt:
   secret: local__dev_only__short-kki__jwt-secret__32chars_min

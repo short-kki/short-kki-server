@@ -1,17 +1,16 @@
 package com.shortkki.api.curation.controller;
 
 import com.shortkki.api.curation.controller.dto.request.CreateCurationRequest;
-import com.shortkki.api.curation.controller.dto.response.CurationRecommendResponse;
 import com.shortkki.api.curation.controller.dto.response.CurationRecommendsResponse;
 import com.shortkki.api.curation.controller.dto.response.CurationResponse;
 import com.shortkki.api.curation.controller.dto.response.RecipeCurationSearchResponse;
 import com.shortkki.api.curation.service.CurationQueryService;
+import com.shortkki.api.curation.service.CurationQueryServiceV2;
 import com.shortkki.api.curation.service.CurationService;
 import com.shortkki.global.auth.dto.LoginMember;
 import com.shortkki.global.response.BaseResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,6 +33,7 @@ public class CurationController {
 
     private final CurationService curationService;
     private final CurationQueryService curationQueryService;
+    private final CurationQueryServiceV2 curationQueryServiceV2;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -52,7 +51,7 @@ public class CurationController {
             Pageable pageable
     ) {
         LocalDateTime now = LocalDateTime.now();
-        CurationRecommendsResponse response = curationQueryService.getRecommendedCurations(now, pageable);
+        CurationRecommendsResponse response = curationQueryService.getRecommendedCurations(member.getId(), now, pageable);
         return ResponseEntity.ok(BaseResponse.success("추천 큐레이션이 조회되었습니다.", response));
     }
 
@@ -62,7 +61,7 @@ public class CurationController {
             @PathVariable long id,
             Pageable pageable
     ) {
-        RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCuration(id, pageable);
+        RecipeCurationSearchResponse response = curationQueryService.searchRecipesByCuration(member.getId(), id, pageable);
         return ResponseEntity.ok(BaseResponse.success("큐레이션 레시피 검색 결과가 조회되었습니다.", response));
     }
 
@@ -71,7 +70,7 @@ public class CurationController {
             @AuthenticationPrincipal LoginMember member,
             Pageable pageable
     ) {
-        RecipeCurationSearchResponse response = curationQueryService.searchTopCuration(pageable);
+        RecipeCurationSearchResponse response = curationQueryServiceV2.searchTopCuration(member.getId(), pageable);
         return ResponseEntity.ok(BaseResponse.success("Top 큐레이션 검색 결과가 조회되었습니다.", response));
     }
 }
