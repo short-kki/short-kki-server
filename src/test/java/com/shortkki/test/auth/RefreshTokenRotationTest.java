@@ -150,7 +150,7 @@ class RefreshTokenRotationTest extends IntegrationTestBase {
         mockMvc.perform(post("/api/v1/auth/logout")
                         .header("Authorization", "Bearer " + at))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("로그아웃 성공"));
+                .andExpect(jsonPath("$.code").value("SUCCESS"));
 
         // then
         assertThat(refreshTokenStore.find(testMember.getId())).isNull();
