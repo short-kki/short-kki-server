@@ -58,6 +58,23 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /** 테스트 전용 — 이미 만료된 AT 생성 */
+    public String createExpiredAccessToken(Long memberId, String email, Role role) {
+        Date now = new Date();
+        Date expired = new Date(now.getTime() - 1000); // 1초 전 만료
+
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(String.valueOf(memberId))
+                .claim("email", email)
+                .claim("role", role.name())
+                .claim("type", "access")
+                .issuedAt(new Date(now.getTime() - 2000))
+                .expiration(expired)
+                .signWith(key)
+                .compact();
+    }
+
     public String createRefreshToken(Long memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + refreshTokenValidity);

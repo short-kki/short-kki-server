@@ -361,6 +361,7 @@ public class AuthService {
         // Lua 스크립트로 원자적 CAS: 저장된 RT == 제출된 RT이면 새 RT로 교체
         boolean rotated = refreshTokenStore.rotate(memberId, refreshToken, newRefreshToken, ttl);
         if (!rotated) {
+            log.warn("[RTR] 탈취 감지 — memberId: {}, RT 재사용 시도", memberId);
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_REUSED);
         }
 
@@ -370,19 +371,14 @@ public class AuthService {
                 member.getRole()
         );
 
+        log.info("[RTR] 토큰 갱신 성공 — memberId: {}", memberId);
         return new RefreshTokenResponse(newAccessToken, newRefreshToken);
     }
 
-    public void logout(Long memberId, String jti, String refreshToken) {
-        validateRefreshToken(refreshToken);
-
-        Long rtMemberId = jwtTokenProvider.getMemberIdFromToken(refreshToken);
-        if (!Objects.equals(memberId, rtMemberId)) {
-            throw new BadRequestException(ErrorCode.INVALID_TOKEN);
-        }
-
+    public void logout(Long memberId, String jti) {
         refreshTokenStore.delete(memberId);
         accessTokenBlacklist.add(jti, Duration.ofMillis(accessTokenValidityMs));
+        log.info("[RTR] 로그아웃 — memberId: {}, AT jti 블랙리스트 등록", memberId);
     }
 
     private String createAndStoreRefreshToken(Long memberId) {
