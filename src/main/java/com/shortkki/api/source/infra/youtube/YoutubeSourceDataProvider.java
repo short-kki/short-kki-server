@@ -10,12 +10,14 @@ import com.shortkki.global.error.exception.BadRequestException;
 import java.time.Duration;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
+@Profile("!perf")
 public class YoutubeSourceDataProvider implements SourceDataProvider {
 
     private static final Pattern VIDEO_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{11}$");
