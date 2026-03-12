@@ -21,7 +21,7 @@ public class LogoutController {
     public ResponseEntity<BaseResponse<Void>> logout(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
-        authService.logout(loginMember.getId(), loginMember.getJti());
+        authService.logout(loginMember.getId(), loginMember.getJti(), loginMember.getExp());
         return ResponseEntity.ok(BaseResponse.success());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -19,15 +20,19 @@ public class LoginMember implements UserDetails {
     private final String name;
     private final Role role;
     private final String jti;
+    private final Instant exp;
 
     @Builder
-    private LoginMember(Long id, String email, String name, Role role, String jti) {
+    private LoginMember(Long id, String email, String name, Role role, String jti, Instant exp) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.role = role;
         this.jti = jti;
+        this.exp = exp;
     }
+
+
 
     public static LoginMember from(Member member, String jti) {
         return LoginMember.builder()

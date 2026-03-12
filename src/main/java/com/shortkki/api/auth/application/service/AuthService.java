@@ -29,6 +29,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,9 +45,6 @@ public class AuthService {
     private final GoogleIdTokenVerifierService googleIdTokenVerifierService;
     private final RefreshTokenStore refreshTokenStore;
     private final AccessTokenBlacklist accessTokenBlacklist;
-
-    @Value("${jwt.access-token-validity}")
-    private long accessTokenValidityMs;
 
     @Value("${jwt.refresh-token-validity}")
     private long refreshTokenValidityMs;
@@ -375,10 +373,14 @@ public class AuthService {
         return new RefreshTokenResponse(newAccessToken, newRefreshToken);
     }
 
-    public void logout(Long memberId, String jti) {
+    public void logout(Long memberId, String jti, Instant exp) {
         refreshTokenStore.delete(memberId);
-        accessTokenBlacklist.add(jti, Duration.ofMillis(accessTokenValidityMs));
-        log.info("[RTR] 로그아웃 — memberId: {}, AT jti 블랙리스트 등록", memberId);
+        Duration remainingValidity = Duration.between(Instant.now(), exp);
+        if (remainingValidity.isNegative()) {
+            remainingValidity = Duration.ZERO;
+        }
+        accessTokenBlacklist.add(jti, remainingValidity);
+        log.info("[RTR] 로그아웃 — memberId: {}, AT jti 블랙리스트 등록, TTL: {}s", memberId, remainingValidity.getSeconds());
     }
 
     private String createAndStoreRefreshToken(Long memberId) {

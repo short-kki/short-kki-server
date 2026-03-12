@@ -101,6 +101,7 @@ public class JwtTokenProvider {
                 .email(email)
                 .role(role)
                 .jti(claims.getId())
+                .exp(claims.getExpiration().toInstant())
                 .build();
 
         return new UsernamePasswordAuthenticationToken(loginMember, "",

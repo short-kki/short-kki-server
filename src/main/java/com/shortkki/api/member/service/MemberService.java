@@ -8,9 +8,9 @@ import com.shortkki.api.member.entity.Member;
 import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.BadRequestException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -25,9 +25,6 @@ public class MemberService {
     private final FileMetadataQueryService fileMetadataQueryService;
     private final RefreshTokenStore refreshTokenStore;
     private final AccessTokenBlacklist accessTokenBlacklist;
-
-    @Value("${jwt.access-token-validity}")
-    private long accessTokenValidityMs;
 
     public void updateProfile(Long memberId, String name, Long profileImgFileId) {
         Member member = memberQueryService.findMember(memberId);
@@ -53,15 +50,20 @@ public class MemberService {
         }
     }
 
-    public void withdraw(Long memberId, String jti) {
+    public void withdraw(Long memberId, String jti, Instant exp) {
         Member member = memberQueryService.findMember(memberId);
         validateNotDeleted(member);
         member.delete();
+        Duration remainingValidity = Duration.between(Instant.now(), exp);
+        if (remainingValidity.isNegative()) {
+            remainingValidity = Duration.ZERO;
+        }
+        final Duration ttl = remainingValidity;
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
                 refreshTokenStore.delete(memberId);
-                accessTokenBlacklist.add(jti, Duration.ofMillis(accessTokenValidityMs));
+                accessTokenBlacklist.add(jti, ttl);
             }
         });
     }
