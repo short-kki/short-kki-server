@@ -57,7 +57,7 @@ public class MemberController {
     public ResponseEntity<BaseResponse<Void>> withdraw(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
-        memberService.withdraw(loginMember.getId());
+        memberService.withdraw(loginMember.getId(), loginMember.getJti(), loginMember.getExp());
         return ResponseEntity.ok(BaseResponse.success());
     }
 }

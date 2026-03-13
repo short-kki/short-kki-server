@@ -1,5 +1,7 @@
 package com.shortkki.api.auth.application.service;
 
+import com.shortkki.api.auth.application.port.AccessTokenBlacklist;
+import com.shortkki.api.auth.application.port.RefreshTokenStore;
 import com.shortkki.api.auth.dto.LoginRequest;
 import com.shortkki.api.auth.dto.LoginResponse;
 import com.shortkki.api.auth.dto.RefreshTokenResponse;
@@ -15,14 +17,19 @@ import com.shortkki.global.error.ErrorCode;
 import com.shortkki.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
@@ -36,6 +43,11 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final GoogleIdTokenVerifierService googleIdTokenVerifierService;
+    private final RefreshTokenStore refreshTokenStore;
+    private final AccessTokenBlacklist accessTokenBlacklist;
+
+    @Value("${jwt.refresh-token-validity}")
+    private long refreshTokenValidityMs;
 
     @Transactional
     public LoginResponse login(OAuthProvider provider, LoginRequest request) {
@@ -75,7 +87,7 @@ public class AuthService {
                 member.getId(),
                 member.getEmail(),
                 member.getRole());
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+        String refreshToken = createAndStoreRefreshToken(member.getId());
 
         return LoginResponse.builder()
                 .memberId(member.getId())
@@ -109,7 +121,7 @@ public class AuthService {
                 member.getId(),
                 member.getEmail(),
                 member.getRole());
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+        String refreshToken = createAndStoreRefreshToken(member.getId());
 
         return LoginResponse.builder()
                 .memberId(member.getId())
@@ -152,7 +164,7 @@ public class AuthService {
                 member.getId(),
                 member.getEmail(),
                 member.getRole());
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+        String refreshToken = createAndStoreRefreshToken(member.getId());
 
         return LoginResponse.builder()
                 .memberId(member.getId())
@@ -326,7 +338,7 @@ public class AuthService {
         return memberRepository.save(newMember);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public RefreshTokenResponse refreshAccessToken(String accessToken, String refreshToken) {
         validateAccessTokenForRefresh(accessToken);
         validateRefreshToken(refreshToken);
@@ -341,14 +353,52 @@ public class AuthService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        Duration ttl = Duration.ofMillis(refreshTokenValidityMs);
+
+        // Lua 스크립트로 원자적 CAS: 저장된 RT == 제출된 RT이면 새 RT로 교체
+        boolean rotated = refreshTokenStore.rotate(memberId, refreshToken, newRefreshToken, ttl);
+        if (!rotated) {
+            log.warn("[RTR] 탈취 감지 — memberId: {}, RT 재사용 시도", memberId);
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_REUSED);
+        }
+
         String newAccessToken = jwtTokenProvider.createAccessToken(
                 member.getId(),
                 member.getEmail(),
                 member.getRole()
         );
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
+        log.info("[RTR] 토큰 갱신 성공 — memberId: {}", memberId);
         return new RefreshTokenResponse(newAccessToken, newRefreshToken);
+    }
+
+    public void logout(Long memberId, String jti, Instant exp) {
+        refreshTokenStore.delete(memberId);
+        Duration remainingValidity = Duration.between(Instant.now(), exp);
+        if (remainingValidity.isNegative()) {
+            remainingValidity = Duration.ZERO;
+        }
+        accessTokenBlacklist.add(jti, remainingValidity);
+        log.info("[RTR] 로그아웃 — memberId: {}, AT jti 블랙리스트 등록, TTL: {}s", memberId, remainingValidity.getSeconds());
+    }
+
+    private String createAndStoreRefreshToken(Long memberId) {
+        String rt = jwtTokenProvider.createRefreshToken(memberId);
+        Duration ttl = Duration.ofMillis(refreshTokenValidityMs);
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    refreshTokenStore.store(memberId, rt, ttl);
+                }
+            });
+        } else {
+            refreshTokenStore.store(memberId, rt, ttl);
+        }
+
+        return rt;
     }
 
     private void validateAccessTokenForRefresh(String accessToken) {

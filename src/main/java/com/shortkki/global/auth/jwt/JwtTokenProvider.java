@@ -18,7 +18,9 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -45,6 +47,7 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + accessTokenValidity);
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(String.valueOf(memberId))
                 .claim("email", email)
                 .claim("role", role.name())
@@ -55,11 +58,29 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /** 테스트 전용 — 이미 만료된 AT 생성 */
+    public String createExpiredAccessToken(Long memberId, String email, Role role) {
+        Date now = new Date();
+        Date expired = new Date(now.getTime() - 1000); // 1초 전 만료
+
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(String.valueOf(memberId))
+                .claim("email", email)
+                .claim("role", role.name())
+                .claim("type", "access")
+                .issuedAt(new Date(now.getTime() - 2000))
+                .expiration(expired)
+                .signWith(key)
+                .compact();
+    }
+
     public String createRefreshToken(Long memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + refreshTokenValidity);
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(String.valueOf(memberId))
                 .claim("type", "refresh")
                 .issuedAt(now)
@@ -79,6 +100,8 @@ public class JwtTokenProvider {
                 .id(memberId)
                 .email(email)
                 .role(role)
+                .jti(claims.getId())
+                .exp(claims.getExpiration().toInstant())
                 .build();
 
         return new UsernamePasswordAuthenticationToken(loginMember, "",
@@ -142,5 +165,16 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(token);
         String type = claims.get("type", String.class);
         return "access".equals(type);
+    }
+
+    public String getJti(String token) {
+        Claims claims = parseClaims(token);
+        return claims.getId();
+    }
+
+    public Duration getRemainingValidity(String token) {
+        Claims claims = parseClaims(token);
+        long remainingMs = claims.getExpiration().getTime() - System.currentTimeMillis();
+        return remainingMs > 0 ? Duration.ofMillis(remainingMs) : Duration.ZERO;
     }
 }

@@ -1,6 +1,9 @@
 package com.shortkki.test.security;
 
 import com.shortkki.global.auth.dto.LoginMember;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +21,8 @@ public final class WithMockMemberSecurityContextFactory
                 .email(annotation.email())
                 .name(annotation.name())
                 .role(annotation.role())
+                .jti(UUID.randomUUID().toString())
+                .exp(Instant.now().plus(1, ChronoUnit.HOURS))
                 .build();
 
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

@@ -33,7 +33,6 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.success("로그인에 성공했습니다.", response));
     }
 
-    // TODO : RT 로테이션 도입 및 레디스
     @PostMapping("/refresh")
     public ResponseEntity<BaseResponse<RefreshTokenResponse>> refresh(
             @Valid @RequestBody RefreshTokenRequest request
@@ -44,6 +43,4 @@ public class AuthController {
         );
         return ResponseEntity.ok(BaseResponse.success("토큰 재발급 성공", response));
     }
-
-
 }

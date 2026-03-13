@@ -47,6 +47,16 @@ services:
     depends_on:
       - elasticsearch
 
+  redis:
+    image: redis:7-alpine
+    container_name: local-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
 volumes:
   mysql-data:
   es-data:
+  redis-data:
